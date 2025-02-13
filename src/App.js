@@ -6,15 +6,15 @@ import {
   createRoutesFromElements,
   RouterProvider,
 } from "react-router-dom";
-import RootComponent  from './components/layout/RootComponent';
-import DashBoard from './components/layout/DashBoard';
-import RootPage from './components/layout/RootPage';
+import RootComponent  from './components/RootComponent';
+import HomePage from './pages/HomePage';
+import RootPage from './components/RootPage';
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<RootComponent />}>
         <Route index element={<RootPage />} />
-        <Route path="/dashboard" element={<DashBoard/>}></Route>
+        <Route path="/dashboard" element={<HomePage/>}></Route>
       </Route>
     )
   );
