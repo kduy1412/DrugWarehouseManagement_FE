@@ -14,7 +14,7 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element={<RootComponent />}>
         <Route index element={<RootPage />} />
-        <Route path="/dashboard" element={<HomePage/>}></Route>
+        <Route path="/homepage" element={<HomePage/>}></Route>
       </Route>
     )
   );
