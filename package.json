@@ -3,19 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@vitejs/plugin-react-swc": "^3.8.0",
     "antd": "^5.24.0",
     "antd-style": "^3.7.1",
     "cra-template": "1.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.5",
-    "react-scripts": "5.0.1"
+    "vite-jsconfig-paths": "^2.0.1",
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage --watch=false"
   },
   "eslintConfig": {
     "extends": [
@@ -36,6 +39,17 @@
     ]
   },
   "devDependencies": {
-    "web-vitals": "^4.2.4"
+    "@types/node": "^22.13.9",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^3.0.7",
+    "jsdom": "^26.0.0",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0",
+    "vite-plugin-svgr": "^4.3.0",
+    "vitest": "^3.0.7",
+    "web-vitals": "^4.2.4",
+    "webpack": "^5.98.0"
   }
 }
