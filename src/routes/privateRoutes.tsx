@@ -1,14 +1,23 @@
+import { MenuItem } from "../types/menuItems";
+import { Roles } from "../types/enums/roles";
+
 import React from "react";
-import { Breadcrumb, Layout, Menu, theme } from "antd";
-import { Outlet, useNavigate } from "react-router-dom";
-import images from "../images/index.ts";
-import { Roles } from "../config/role.ts";
 
-const { Sider } = Layout;
+import InboundPage from "../pages/inbounds";
+import OutboundPage from "../pages/outbound";
+import LotPage from "../pages/lot";
+import ReportPage from "../pages/reports";
+import UserPage from "../pages/user";
+import CustomerPage from "../pages/customer";
+import SupplierPage from "../pages/supplier";
+import ProductsPage from "../pages/product";
+import WarehousePage from "../pages/warehouse";
+import HomePage from "../pages/HomePage";
+import images from "../images";
 
-const url = [
+export const privateRoutes: MenuItem[] = [
   {
-    key: `/home`, // Use the URL as the key
+    key: `/home`,
     icon: React.createElement(images.home),
     label: `Trang Chủ`,
     url: `/home`,
@@ -20,6 +29,7 @@ const url = [
       Roles.SALEADMIN,
       Roles.USER,
     ],
+    element: <HomePage />,
   },
   {
     key: `/inbound`,
@@ -34,12 +44,14 @@ const url = [
       Roles.SALEADMIN,
       Roles.USER,
     ],
+    element: <InboundPage />,
   },
   {
     key: `/outbound`,
     icon: React.createElement(images.outbound),
     label: `Xuất Hàng`,
     url: `/outbound`,
+    element: <OutboundPage />,
     children: [
       {
         key: `/outbound/create`,
@@ -53,6 +65,7 @@ const url = [
           Roles.SALEADMIN,
           Roles.USER,
         ],
+        element: <OutboundPage />,
       },
       {
         key: `/outbound/sample-export`,
@@ -66,6 +79,7 @@ const url = [
           Roles.SALEADMIN,
           Roles.USER,
         ],
+        element: <OutboundPage />,
       },
       {
         key: `/outbound/transfer`,
@@ -79,6 +93,7 @@ const url = [
           Roles.SALEADMIN,
           Roles.USER,
         ],
+        element: <OutboundPage />,
       },
       {
         key: `/outbound/history`,
@@ -92,6 +107,7 @@ const url = [
           Roles.SALEADMIN,
           Roles.USER,
         ],
+        element: <OutboundPage />,
       },
       {
         key: `/outbound/return`,
@@ -105,6 +121,7 @@ const url = [
           Roles.SALEADMIN,
           Roles.USER,
         ],
+        element: <OutboundPage />,
       },
     ],
     allowedRoles: [
@@ -117,10 +134,10 @@ const url = [
     ],
   },
   {
-    key: `/stock`,
+    key: `/lots`,
     icon: React.createElement(images.stock),
     label: `Hàng Tồn Kho`,
-    url: `/stock`,
+    url: `/lots`,
     allowedRoles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
@@ -129,6 +146,7 @@ const url = [
       Roles.SALEADMIN,
       Roles.USER,
     ],
+    element: <LotPage />,
   },
   {
     key: `/reports`,
@@ -143,6 +161,7 @@ const url = [
       Roles.SALEADMIN,
       Roles.USER,
     ],
+    element: <ReportPage />,
   },
   {
     key: `/account-management`,
@@ -157,6 +176,7 @@ const url = [
       Roles.SALEADMIN,
       Roles.USER,
     ],
+    element: <UserPage />,
   },
   {
     key: `/customers`,
@@ -171,6 +191,7 @@ const url = [
       Roles.SALEADMIN,
       Roles.USER,
     ],
+    element: <CustomerPage />,
   },
   {
     key: `/suppliers`,
@@ -185,12 +206,13 @@ const url = [
       Roles.SALEADMIN,
       Roles.USER,
     ],
+    element: <SupplierPage />,
   },
   {
-    key: `/items`,
+    key: `/products`,
     icon: React.createElement(images.pill),
     label: `Mặt Hàng`,
-    url: `/items`,
+    url: `/products`,
     allowedRoles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
@@ -199,6 +221,7 @@ const url = [
       Roles.SALEADMIN,
       Roles.USER,
     ],
+    element: <ProductsPage />,
   },
   {
     key: `/warehouse-system`,
@@ -213,76 +236,6 @@ const url = [
       Roles.SALEADMIN,
       Roles.USER,
     ],
+    element: <WarehousePage />,
   },
 ];
-
-const App = () => {
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
-  const navigate = useNavigate();
-
-  const handleMenuClick = ({ key }) => {
-    navigate(key);
-  };
-
-  return (
-    <Layout>
-      <Layout>
-        <Sider
-          width={250}
-          style={{
-            background: colorBgContainer,
-            height: "100vh",
-            overflow: "auto",
-            position: "sticky",
-            insetInlineStart: 0,
-            top: 0,
-            bottom: 0,
-            scrollbarWidth: "thin",
-            scrollbarGutter: "stable",
-            display: "flex",
-          }}
-        >
-          <div style={{ width: "70%", margin: "1rem auto" }}>
-            {React.createElement(images.sidebarBanner)}
-          </div>
-          <Menu
-            mode="inline"
-            defaultSelectedKeys={["/home"]}
-            style={{
-              height: "100%",
-              borderRight: 0,
-            }}
-            items={url}
-            onClick={handleMenuClick}
-          />
-        </Sider>
-        <Layout
-          style={{
-            padding: "0 24px 24px",
-          }}
-        >
-          <Breadcrumb
-            items={[
-              {
-                title: "Home",
-              },
-              {
-                title: "List",
-              },
-              {
-                title: "App",
-              },
-            ]}
-            style={{
-              margin: "16px 0",
-            }}
-          />
-          <Outlet />
-        </Layout>
-      </Layout>
-    </Layout>
-  );
-};
-export default App;
