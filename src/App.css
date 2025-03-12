@@ -1,3 +1,33 @@
-body {
-    font-family: 'Montserrat', sans-serif;
+.ant-layout-sider {
+  .ant-menu-item-selected {
+    background-color: var(--color-secondary-600) !important;
+    color: var(--color-primary) !important;
+    svg {
+      path {
+        fill: var(--color-primary);
+      }
+    }
+  }
+
+  .ant-menu-item,
+  .ant-menu-submenu {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-body) !important;
+  }
+
+  .ant-menu-item-active,
+  .ant-menu-submenu-active .ant-menu-submenu-title {
+    background-color: var(--color-primary) !important;
+    .ant-menu-title-content {
+      color: var(--color-secondary-900) !important;
+    }
+    svg {
+      path {
+        fill: var(--color-secondary-900);
+      }
+    }
+    .ant-menu-submenu-arrow {
+      color: var(--color-secondary-900);
+    }
+  }
 }
