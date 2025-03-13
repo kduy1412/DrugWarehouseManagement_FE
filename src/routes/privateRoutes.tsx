@@ -13,7 +13,7 @@ import SupplierPage from "../pages/supplier";
 import ProductsPage from "../pages/product";
 import WarehousePage from "../pages/warehouse";
 import HomePage from "../pages/HomePage";
-import images from "../images";
+import images from "../assets";
 
 export const privateRoutes: MenuItem[] = [
   {
@@ -21,7 +21,7 @@ export const privateRoutes: MenuItem[] = [
     icon: React.createElement(images.home),
     label: `Trang Chủ`,
     url: `/home`,
-    allowedRoles: [
+    allowedroles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
       Roles.CEO,
@@ -36,7 +36,7 @@ export const privateRoutes: MenuItem[] = [
     icon: React.createElement(images.inbound),
     label: `Nhập Hàng`,
     url: `/inbound`,
-    allowedRoles: [
+    allowedroles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
       Roles.CEO,
@@ -57,7 +57,7 @@ export const privateRoutes: MenuItem[] = [
         key: `/outbound/create`,
         label: `Tạo Đơn`,
         url: `/outbound/create`,
-        allowedRoles: [
+        allowedroles: [
           Roles.ADMIN,
           Roles.ACCOUNTANT,
           Roles.CEO,
@@ -71,7 +71,7 @@ export const privateRoutes: MenuItem[] = [
         key: `/outbound/sample-export`,
         label: `Xuất Hàng Mẫu`,
         url: `/outbound/sample-export`,
-        allowedRoles: [
+        allowedroles: [
           Roles.ADMIN,
           Roles.ACCOUNTANT,
           Roles.CEO,
@@ -85,7 +85,7 @@ export const privateRoutes: MenuItem[] = [
         key: `/outbound/transfer`,
         label: "Chuyển Kho",
         url: "/outbound/transfer",
-        allowedRoles: [
+        allowedroles: [
           Roles.ADMIN,
           Roles.ACCOUNTANT,
           Roles.CEO,
@@ -99,7 +99,7 @@ export const privateRoutes: MenuItem[] = [
         key: `/outbound/history`,
         label: "Lịch Sử Xuất Kho",
         url: "/outbound/history",
-        allowedRoles: [
+        allowedroles: [
           Roles.ADMIN,
           Roles.ACCOUNTANT,
           Roles.CEO,
@@ -113,7 +113,7 @@ export const privateRoutes: MenuItem[] = [
         key: `/outbound/return`,
         label: `Trả Hàng Xuất`,
         url: "/outbound/return",
-        allowedRoles: [
+        allowedroles: [
           Roles.ADMIN,
           Roles.ACCOUNTANT,
           Roles.CEO,
@@ -124,7 +124,7 @@ export const privateRoutes: MenuItem[] = [
         element: <OutboundPage />,
       },
     ],
-    allowedRoles: [
+    allowedroles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
       Roles.CEO,
@@ -138,7 +138,7 @@ export const privateRoutes: MenuItem[] = [
     icon: React.createElement(images.stock),
     label: `Hàng Tồn Kho`,
     url: `/lots`,
-    allowedRoles: [
+    allowedroles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
       Roles.CEO,
@@ -153,7 +153,7 @@ export const privateRoutes: MenuItem[] = [
     icon: React.createElement(images.report),
     label: `Báo Cáo Thống Kê`,
     url: `/reports`,
-    allowedRoles: [
+    allowedroles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
       Roles.CEO,
@@ -168,7 +168,7 @@ export const privateRoutes: MenuItem[] = [
     icon: React.createElement(images.accountManage),
     label: `Quản Lý Tài Khoản`,
     url: `/account-management`,
-    allowedRoles: [
+    allowedroles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
       Roles.CEO,
@@ -183,7 +183,7 @@ export const privateRoutes: MenuItem[] = [
     icon: React.createElement(images.customer),
     label: `Khách Hàng`,
     url: `/customers`,
-    allowedRoles: [
+    allowedroles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
       Roles.CEO,
@@ -198,7 +198,7 @@ export const privateRoutes: MenuItem[] = [
     icon: React.createElement(images.shoppingCart),
     label: `Nhà Cung Cấp`,
     url: `/suppliers`,
-    allowedRoles: [
+    allowedroles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
       Roles.CEO,
@@ -213,7 +213,7 @@ export const privateRoutes: MenuItem[] = [
     icon: React.createElement(images.pill),
     label: `Mặt Hàng`,
     url: `/products`,
-    allowedRoles: [
+    allowedroles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
       Roles.CEO,
@@ -228,7 +228,7 @@ export const privateRoutes: MenuItem[] = [
     icon: React.createElement(images.warehouse),
     label: `Hệ Thống Kho`,
     url: `/warehouse-system`,
-    allowedRoles: [
+    allowedroles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
       Roles.CEO,

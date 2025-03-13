@@ -6,7 +6,7 @@ export type MenuItem = {
   icon?: React.ReactElement;
   label: string;
   url: string;
-  allowedRoles: Roles[];
+  allowedroles: Roles[];
   children?: MenuItem[];
   element?: React.ReactNode | null;
 };

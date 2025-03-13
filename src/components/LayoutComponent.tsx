@@ -1,7 +1,7 @@
 import React from "react";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
-import images from "../images";
+import images from "../assets";
 import { filteredMenu } from "../routes/index.js";
 
 const { Sider } = Layout;

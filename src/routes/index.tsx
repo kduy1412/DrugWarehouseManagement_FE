@@ -5,13 +5,15 @@ import {
 } from "react-router-dom";
 
 import { filterMenuByRole } from "../utils/menuUtils";
-import { privateRoutes } from "./privateRoutes";
+import { privateRoutes } from "./PrivateRoutes";
 import { Roles } from "../types/enums/roles";
 
 import { MenuItem } from "../types/menuItems";
 
 import RootPage from "../components/RootPage";
 import LayoutComponent from "../components/LayoutComponent";
+import ProtectedRoute from "./ProtectedRoute";
+import LoginPage from "../pages/auth/login";
 
 export const filteredMenu = filterMenuByRole(privateRoutes, Roles.ADMIN);
 
@@ -29,10 +31,18 @@ const generateRoutes = (menu: MenuItem[]) => {
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<LayoutComponent />}>
-      <Route index element={<RootPage />} />
-      {generateRoutes(filteredMenu)}
-      <Route path="*" element={<RootPage />} />
-    </Route>
+    <>
+      {/* Public Routes */}
+      <Route path="/login" element={<LoginPage />} />
+
+      {/* Protected Routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<LayoutComponent />}>
+          <Route index element={<RootPage />} />
+          {generateRoutes(filteredMenu)}
+          <Route path="*" element={<RootPage />} />
+        </Route>
+      </Route>
+    </>
   )
 );
