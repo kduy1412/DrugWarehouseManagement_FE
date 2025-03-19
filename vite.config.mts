@@ -1,10 +1,11 @@
 import { defineConfig } from "vitest/config";
 import svgr from "vite-plugin-svgr";
 import react from "@vitejs/plugin-react-swc";
+import eslint from "vite-plugin-eslint";
 
 export default defineConfig({
   base: "/",
-  plugins: [react(), svgr()],
+  plugins: [react(), svgr(), eslint()],
   test: {
     globals: true,
     environment: "jsdom",

@@ -1,7 +1,8 @@
 import React from "react";
+import OutBoundHistory from "./history";
 
 const OutboundPage = () => {
-  return <div>Outbound</div>;
+  return <OutBoundHistory />;
 };
 
 export default OutboundPage;

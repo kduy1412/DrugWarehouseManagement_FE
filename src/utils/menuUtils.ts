@@ -1,9 +1,13 @@
 import { Roles } from "../types/enums/roles";
-import { MenuItem } from "../types/menuItems";
+import { MenuRoutes } from "../types/menuRoutes";
 
-export const filterMenuByRole = (menu: MenuItem[], role: Roles): MenuItem[] => {
+export const filterMenuByRole = (
+  menu: MenuRoutes[],
+  role: Roles | null
+): MenuRoutes[] => {
+  if (!role) return [];
   return menu
-    .filter((item) => item.allowedRoles.includes(role) && item.element)
+    .filter((item) => item.allowedroles.includes(role) && item.element)
     .map((item) => ({
       ...item,
       children: item.children

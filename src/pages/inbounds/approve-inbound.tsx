@@ -1,20 +1,19 @@
 import React from "react";
 import { Breadcrumb } from "antd";
-import "../inbounds/styles.css"
+import "../inbounds/styles.css";
 import InboundRequestList from "../../components/inbound/InboundRequestList";
 import SearchForm from "../../components/inbound/SearchForm";
-import InboundRequestDetail from "../../components/inbound/InboundRequestDetail";
 import ApproveInboundRequest from "../../components/inbound/ApproveInboundRequest";
 const ApproveRequest = () => {
   const listStyle: React.CSSProperties = {
-          lineHeight: '200px',
-          textAlign: 'center',
-          background: 'white',
-          padding: "30px 10px",
-      };
+    lineHeight: "200px",
+    textAlign: "center",
+    background: "white",
+    padding: "30px 10px",
+  };
   return (
     <div>
-      <div className="inbound-header" >
+      <div className="inbound-header">
         <Breadcrumb
           items={[
             {
@@ -34,10 +33,10 @@ const ApproveRequest = () => {
         <h2>Danh sách yêu cầu đặt hàng</h2>
       </div>
       <div style={listStyle}>
-        <SearchForm/>
-        <InboundRequestList/>
+        <SearchForm />
+        <InboundRequestList />
       </div>
-      <ApproveInboundRequest/>
+      <ApproveInboundRequest />
     </div>
   );
 };

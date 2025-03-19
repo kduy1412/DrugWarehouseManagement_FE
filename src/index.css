@@ -10,6 +10,8 @@ body {
 :root {
   /* Color neutral*/
   --color-primary: hsl(143, 100%, 90%);
+  --color-white: hsl(0, 0%, 96%);
+  --color-placeholder: hsl(0, 0%, 53%);
 
   /* Color brand */
   --color-secondary-50: hsl(138, 84%, 95%);
@@ -79,6 +81,24 @@ body {
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+
+  /* Spacing */
+  --line-width-extra-thin: 0.25rem; /* 4px */
+  --line-width-thin: 0.5rem; /* 8px */
+  --line-width-light: 1rem; /* 16px */
+  --line-width-medium: 1.5rem; /* 24px */
+  --line-width-regular: 2rem; /* 32px */
+  --line-width-bold: 3rem; /* 48px */
+  --line-width-heavy: 4rem; /* 64px */
+  --line-width-thick: 5rem; /* 80px */
+  --line-width-extra-thick: 7.5rem; /* 120px */
+
+  /* Status Color */
+  --status-pending: var(--color-warning-600);
+  --status-in-progress: #1890ff;
+  --status-cancelled: #bfbfbf;
+  --status-completed: var(--color-success-400);
+  --status-returned: var(--color-danger-500);
 }
 
 code {

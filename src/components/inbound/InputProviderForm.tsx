@@ -1,5 +1,6 @@
-import React from 'react';
-import { Button, Form, Input, InputNumber } from 'antd';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React from "react";
+import { Form, Input } from "antd";
 
 const layout = {
   labelCol: { span: 24 }, // Set label to take up the full width
@@ -11,12 +12,14 @@ const onFinish = (values: any) => {
 };
 
 const InputProvider: React.FC = () => (
-  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+  <div
+    style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+  >
     <Form
       {...layout}
       name="product-form"
       onFinish={onFinish}
-      style={{ maxWidth: 500, width: '100%' }} // Max width for the form container
+      style={{ maxWidth: 500, width: "100%" }} // Max width for the form container
     >
       <Form.Item
         name="name"
