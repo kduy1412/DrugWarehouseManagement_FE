@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Menu, Dropdown, Modal, Button, Form, Input, Row, Space, Table, Col , Divider} from 'antd';
+import { Menu, Dropdown, Modal, Button, Form, Input, Row, Col , Divider, Space} from 'antd';
 import type { MenuProps } from 'antd';
-import type { TableColumnsType } from 'antd';
 interface DataType {
     key: React.Key;
     name: string;
@@ -11,36 +10,14 @@ interface DataType {
 const items: MenuProps['items'] = [
   {
     key: '1',
-    label: 'Chỉnh sửa',
+    label: 'Yêu cầu chỉnh sửa',
   },
   {
     key: '2',
     label: 'Chi tiết',
   },
 ];
-const data: DataType[] = [
-  {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-  },
-  {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-  },
-  {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sydney No. 1 Lake Park',
-  },
-
-];
-
-const InboundRequestDetail: React.FC = () => {
+const ApproveInboundRequest: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState<string>('');
   const [form] = Form.useForm();
@@ -53,7 +30,7 @@ const InboundRequestDetail: React.FC = () => {
   };
   const handleMenuClick = (e: { key: string }) => {
     if (e.key === '1') {
-      showModal('You clicked on "Chỉnh sửa"');
+      showModal('You clicked on ""');
     } else if (e.key === '2') {
       showModal('You clicked on "Chi tiết"');
     }
@@ -66,39 +43,7 @@ const InboundRequestDetail: React.FC = () => {
     <Menu onClick={handleMenuClick} items={items} />
   );
   const data: DataType[] = [
-
-
 ];
-const columns: TableColumnsType<DataType> = [
-  {
-      title: 'Tên sản phẩm',
-      dataIndex: 'ten',
-  },{
-      title: 'Mã số lô',
-      dataIndex: 'masolo',
-  },
-  {
-      title: 'HSD',
-      dataIndex: 'hsd',
-  },
-  {
-      title: 'Đơn vị tính',
-      dataIndex: 'donvitinh',
-  },
-  {
-      title: 'Số lượng',
-      dataIndex: 'soluong',
-  },
-  {
-      title: 'Đơn giá nhập',
-      dataIndex: 'dongia',
-  },
-  {
-      title: 'Thành tiền',
-      dataIndex: 'thanhtien',
-  },
-];
-
   return (
     <div>
       <Dropdown overlay={menu}>
@@ -168,14 +113,23 @@ const columns: TableColumnsType<DataType> = [
                 </Col>
               </Row>
             </Form>
-            <Divider><h3 style={{ textAlign: 'center' }}>Thông tin mặt hàng</h3></Divider>
-            <Table<DataType> columns={columns} dataSource={data} size="middle" pagination={{ pageSize: 50 }}
-            scroll={{ y: 55 * 5 }} />
+            <div style={{ textAlign: 'right' }}>
+              <Space size="small">
+              <Button type="primary" htmlType="submit">
+                  Huỷ
+                </Button>
+                <Button type="primary" htmlType="submit">
+                  Yêu cầu chỉnh sửa
+                </Button>
+                <Button type="primary" htmlType="submit">
+                  Duyệt
+                </Button>
+              </Space>
+            </div>
           </div>
         </Form>
       </Modal>
     </div>
   );
 };
-
-export default InboundRequestDetail;
+export default ApproveInboundRequest;

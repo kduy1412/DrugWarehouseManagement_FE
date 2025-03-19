@@ -35,8 +35,8 @@ const InboundRequestListPage = () => {
       <div style={listStyle}>
         <SearchForm/>
         <InboundRequestList/>
-        <InboundRequestDetail/>
       </div>
+      <InboundRequestDetail/>
     </div>
   );
 };

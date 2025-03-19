@@ -13,6 +13,7 @@ import HomePage from "../pages/HomePage";
 import images from "../images";
 import InboundRequestListPage from "../pages/inbounds/request-list";
 import CreateInboundRequest from "../pages/inbounds/create-inbound";
+import ApproveRequest from "../pages/inbounds/approve-inbound";
 
 export const privateRoutes: MenuItem[] = [
   {
@@ -36,6 +37,22 @@ export const privateRoutes: MenuItem[] = [
     label: `Nhập Hàng`,
     url: `/inbound`,
     element: <InboundRequestListPage/>,
+    children: [
+      {
+        key: `/inbound/create`,
+        label: `Tạo Đơn`,
+        url: `/inbound/create`,
+        allowedRoles: [
+          Roles.ADMIN,
+          Roles.ACCOUNTANT,
+          Roles.CEO,
+          Roles.INVENTORYMANAGER,
+          Roles.SALEADMIN,
+          Roles.USER,
+        ],
+        element: <CreateInboundRequest />,
+      },
+    ],
     allowedRoles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
@@ -51,6 +68,36 @@ export const privateRoutes: MenuItem[] = [
     label: `Tạo Yêu Cầu Nhập Hàng`,
     url: `/inbound/create`,
     element: <CreateInboundRequest/>,
+    allowedRoles: [
+      Roles.ADMIN,
+      Roles.ACCOUNTANT,
+      Roles.CEO,
+      Roles.INVENTORYMANAGER,
+      Roles.SALEADMIN,
+      Roles.USER,
+    ],
+  },
+  {
+    key: `/inbound/approve`,
+    icon: React.createElement(images.inbound),
+    label: `Danh sach yêu cầu duyệt`,
+    url: `/inbound/approve`,
+    element: <ApproveRequest/>,
+    allowedRoles: [
+      Roles.ADMIN,
+      Roles.ACCOUNTANT,
+      Roles.CEO,
+      Roles.INVENTORYMANAGER,
+      Roles.SALEADMIN,
+      Roles.USER,
+    ],
+  },
+  {
+    key: `/inbound/add-to-warehouse`,
+    icon: React.createElement(images.inbound),
+    label: `Thêm vào kho`,
+    url: `/inbound/add-to-warehouse`,
+    element: <ApproveRequest/>,
     allowedRoles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
