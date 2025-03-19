@@ -30,4 +30,28 @@
       color: var(--color-secondary-900);
     }
   }
+
+  .ant-menu-submenu-selected .ant-menu-submenu-title {
+    color: var(--color-primary);
+    background-color: var(--color-secondary-600);
+    svg {
+      path {
+        fill: var(--color-primary);
+      }
+    }
+    .ant-menu-submenu-arrow {
+      color: var(--color-primary);
+    }
+  }
+
+  .ant-menu-submenu-active .ant-menu-submenu-title {
+    svg {
+      path {
+        fill: var(--color-secondary-900);
+      }
+    }
+    .ant-menu-submenu-arrow {
+      color: var(--color-secondary-900);
+    }
+  }
 }

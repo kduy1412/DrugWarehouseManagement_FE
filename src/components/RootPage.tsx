@@ -1,5 +1,5 @@
-import HomePage from "../pages/HomePage";
+import { Navigate } from "react-router-dom";
 
 export default function RootPage() {
-  return <HomePage />;
+  return <Navigate replace to={"/home"} />;
 }

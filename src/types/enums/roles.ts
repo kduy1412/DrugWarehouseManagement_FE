@@ -1,9 +1,7 @@
 export enum Roles {
-  ADMIN = "Admin",
-  USER = "User",
-  SALEADMIN = "Sale Admin",
-  ACCOUNTANT = "Accountant",
-  INVENTORYMANAGER = "Inventory Manager",
-  CEO = "Ceo",
-  TEST = "Test",
+  Admin = 1,
+  InventoryManager = 2,
+  Accountant = 3,
+  SaleAdmin = 4,
+  Director = 5
 }

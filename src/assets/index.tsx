@@ -9,6 +9,7 @@ import ShoppingCart from "./shared/ShoppingCart.svg?react";
 import Pill from "./shared/Pill.svg?react";
 import Warehouse from "./shared/warehouse.svg?react";
 import SidebarBanner from "./shared/sidebarBanner.svg?react";
+import LoginIcon from "./shared/ArrowSquareRight.svg";
 
 const images = {
   accountManage: AccountManage,
@@ -22,6 +23,7 @@ const images = {
   pill: Pill,
   warehouse: Warehouse,
   sidebarBanner: SidebarBanner,
+  loginIcon: LoginIcon,
 };
 
 export default images;
