@@ -1,9 +1,6 @@
 import { MenuItem } from "../types/menuItems";
 import { Roles } from "../types/enums/roles";
-
 import React from "react";
-
-import InboundPage from "../pages/inbounds";
 import OutboundPage from "../pages/outbound";
 import LotPage from "../pages/lot";
 import ReportPage from "../pages/reports";
@@ -14,6 +11,8 @@ import ProductsPage from "../pages/product";
 import WarehousePage from "../pages/warehouse";
 import HomePage from "../pages/HomePage";
 import images from "../images";
+import InboundRequestListPage from "../pages/inbounds/request-list";
+import CreateInboundRequest from "../pages/inbounds/create-inbound";
 
 export const privateRoutes: MenuItem[] = [
   {
@@ -36,6 +35,7 @@ export const privateRoutes: MenuItem[] = [
     icon: React.createElement(images.inbound),
     label: `Nhập Hàng`,
     url: `/inbound`,
+    element: <InboundRequestListPage/>,
     allowedRoles: [
       Roles.ADMIN,
       Roles.ACCOUNTANT,
@@ -44,7 +44,21 @@ export const privateRoutes: MenuItem[] = [
       Roles.SALEADMIN,
       Roles.USER,
     ],
-    element: <InboundPage />,
+  },
+  {
+    key: `/inbound/create`,
+    icon: React.createElement(images.inbound),
+    label: `Tạo Yêu Cầu Nhập Hàng`,
+    url: `/inbound/create`,
+    element: <CreateInboundRequest/>,
+    allowedRoles: [
+      Roles.ADMIN,
+      Roles.ACCOUNTANT,
+      Roles.CEO,
+      Roles.INVENTORYMANAGER,
+      Roles.SALEADMIN,
+      Roles.USER,
+    ],
   },
   {
     key: `/outbound`,

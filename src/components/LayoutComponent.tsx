@@ -53,22 +53,6 @@ const LayoutComponent = () => {
             padding: "0 24px 24px",
           }}
         >
-          <Breadcrumb
-            items={[
-              {
-                title: "Home",
-              },
-              {
-                title: "List",
-              },
-              {
-                title: "App",
-              },
-            ]}
-            style={{
-              margin: "16px 0",
-            }}
-          />
           <Outlet />
         </Layout>
       </Layout>
