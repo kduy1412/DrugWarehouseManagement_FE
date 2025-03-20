@@ -1,14 +1,15 @@
+import { Dayjs } from "dayjs";
 import { PaginationModelRequest } from "./paginationModelRequest";
 import { PaginationModelResponse } from "./paginationModelResponse";
 
 //POST
 export type OutboundPostRequest = {
   customerName: string;
-  customerId: number;
+  customerId: number | null;
   address: string;
   phoneNumber: string;
-  outboundOrderCode: string;
-  trackingNumber: string;
+  outboundOrderCode?: string | null;
+  trackingNumber: string | null;
   note: string;
   outboundDetails: OutboundDetailRequest[];
 };
@@ -24,17 +25,20 @@ export interface OutboundGetResponse extends PaginationModelResponse {
   items: Outbound[];
 }
 
-export type OutboundGetView = Omit<Outbound, "outboundDetails">;
+export type OutboundGetView = Outbound;
 
 //GET-PARAMS
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface OutboundGetRequestParams
   extends PaginationModelRequest,
-    Record<string, any> {
+    OutboundFilterParams,
+    Record<string, any> {}
+
+export type OutboundFilterParams = {
   Search?: string | null;
-  DateFrom?: string | null;
-  DateTo?: string | null;
-}
+  DateFrom?: Dayjs | null | string;
+  DateTo?: Dayjs | null | string;
+};
 
 //Model
 export interface Outbound {
@@ -73,8 +77,8 @@ export enum OutboundStatus {
 
 export const OutboundStatusColors = [
   "var(--status-pending)",
-  "#1890FF",
-  "#BFBFBF",
+  "var(--status-in-progress)",
+  "var(--status-cancelled)",
   "var(--status-completed)",
   "var(--status-returned)",
 ];

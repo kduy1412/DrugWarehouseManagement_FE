@@ -1,7 +1,9 @@
+import { redirect } from "react-router-dom";
 import { queryClient } from "../lib/queryClient";
 import { AuthResponse } from "../types/auth";
 import { AUTH_QUERY_KEY } from "../types/constants";
 import { refreshToken } from "./auth";
+import { notification } from "antd";
 
 const apiClient = async (endpoint: string, options: RequestInit = {}) => {
   const authData = queryClient.getQueryData<AuthResponse>(AUTH_QUERY_KEY);
@@ -30,7 +32,12 @@ const apiClient = async (endpoint: string, options: RequestInit = {}) => {
     const refreshData = queryClient.getQueryData<AuthResponse>(AUTH_QUERY_KEY);
     if (!refreshData?.refreshToken) {
       queryClient.setQueryData(AUTH_QUERY_KEY, null);
-      throw new Error("No refresh token available. Please log in again.");
+      redirect("/login");
+      notification.error({
+        message: "Session Expired!",
+        description: "No refresh token available. Please log in again.",
+      });
+      return;
     }
 
     try {
