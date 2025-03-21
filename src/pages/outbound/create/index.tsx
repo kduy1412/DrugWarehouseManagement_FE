@@ -1,4 +1,4 @@
-import { Button, Tabs, TabsProps } from "antd";
+import { Tabs, TabsProps } from "antd";
 import { useState } from "react";
 import { UserAddOutlined } from "@ant-design/icons";
 import { Pill } from "@phosphor-icons/react";
@@ -26,10 +26,6 @@ const CreateOutboundPage = () => {
 
   const handleFormUpdate = (stepData: Partial<OutboundPostRequest>) => {
     setFormData((prev) => ({ ...prev, ...stepData }));
-  };
-
-  const handleSubmit = () => {
-    console.log("Final form data:", formData);
   };
 
   const items: TabsProps["items"] = [
@@ -60,16 +56,12 @@ const CreateOutboundPage = () => {
 
   return (
     <div>
-      <StyledTabs activeKey={currentStep} items={items} onChange={onChange} />
-      {currentStep === "2" && (
-        <CtaButton
-          type="primary"
-          onClick={handleSubmit}
-          style={{ marginTop: 16 }}
-        >
-          Hoàn tất
-        </CtaButton>
-      )}
+      <StyledTabs
+        activeKey={currentStep}
+        items={items}
+        onChange={onChange}
+        type="card"
+      />
     </div>
   );
 };
@@ -77,6 +69,9 @@ const CreateOutboundPage = () => {
 export default CreateOutboundPage;
 
 const StyledTabs = styled(Tabs)`
+  max-width: 100%;
+  margin: 0 auto;
+
   & .ant-tabs-tab:hover {
     color: var(--color-secondary-600) !important;
   }
@@ -101,12 +96,5 @@ const StyledTabs = styled(Tabs)`
 
   & .ant-tabs-ink-bar {
     background-color: var(--color-secondary-600);
-  }
-`;
-
-const CtaButton = styled(Button)`
-  background-color: var(--color-secondary-600);
-  &:hover {
-    background-color: var(--color-secondary-500) !important;
   }
 `;

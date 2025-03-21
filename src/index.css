@@ -128,7 +128,24 @@ code {
     monospace;
 }
 
-.ant-select-dropdown {
+/* .ant-select-dropdown {
   width: 60vw !important;
   max-height: 40vh !important;
+} */
+
+.ant-modal-wrap.ant-modal-fullscreen {
+  .ant-modal {
+    right: 0px;
+    top: 0px;
+    margin: 0px;
+    position: absolute;
+    height: 100vh;
+    max-height: none;
+    padding: 0px;
+    width: 50vw !important;
+  }
+  .ant-modal-content {
+    height: 100vh;
+    overflow-y: scroll;
+  }
 }

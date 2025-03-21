@@ -11,6 +11,9 @@ import {
   Flex,
   Divider,
   RefSelectProps,
+  Card,
+  Alert,
+  FormProps,
 } from "antd";
 import styled from "styled-components";
 import {
@@ -96,17 +99,19 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
   }, [debouncedSearchTerm]);
 
   return (
-    <div>
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        initialValues={initialFormData}
-      >
-        <Space direction="vertical" style={{ width: "100%" }}>
-          <Divider orientation="left" style={{ borderColor: "black" }}>
+    <StyledForm
+      form={form}
+      layout="vertical"
+      onFinish={onFinish}
+      initialValues={initialFormData}
+      requiredMark={"optional"}
+    >
+      <Space direction="vertical" style={{ width: "100%" }}>
+        {/* Thông tin người nhận */}
+        <Card>
+          <StyledDivider orientation="center">
             Thông tin người nhận
-          </Divider>
+          </StyledDivider>
           <Form.Item
             name="customerId"
             label="Khách Hàng Đã Chọn"
@@ -115,7 +120,6 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
             <StyledSelect
               ref={selectRef}
               placeholder="Chọn khách hàng"
-              style={{ width: 300 }}
               onSearch={(data) => setSearchTerm(data)}
               mode="tags"
               showSearch
@@ -148,7 +152,14 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
             />
           </Form.Item>
 
-          <Flex justify="space-between" style={{ width: "100%" }}>
+          <Alert
+            message="Có thể chỉnh sửa tên khách hàng, số điện thoại và địa điểm để phù hợp với yêu cầu của giao dịch."
+            type="info"
+            showIcon
+            style={{ marginBottom: "var(--line-width-thin)" }}
+          />
+
+          <Flex style={{ gap: "var(--line-width-thin)" }}>
             <Form.Item
               name="customerName"
               label="Tên Khách Hàng"
@@ -158,16 +169,10 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
                   message: "Vui lòng chọn hoặc nhập tên khách hàng!",
                 },
               ]}
+              style={{ flex: "1" }}
+              tooltip="Tên người chịu trách nhiệm nhận hàng"
             >
               <StyleInput placeholder="Nhập tên khách hàng" />
-            </Form.Item>
-
-            <Form.Item
-              name="address"
-              label="Địa điểm"
-              rules={[{ required: true, message: "Vui lòng nhập địa điểm!" }]}
-            >
-              <StyleInput placeholder="Nhập địa điểm" />
             </Form.Item>
 
             <Form.Item
@@ -176,21 +181,46 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
               rules={[
                 { required: true, message: "Vui lòng nhập số điện thoại" },
               ]}
+              style={{ flex: "1" }}
+              tooltip="Điện thoại người nhận hàng"
             >
               <StyleInput placeholder="Nhập số điện thoại" />
             </Form.Item>
           </Flex>
-          <Divider orientation="left" style={{ borderColor: "black" }}>
+          <Form.Item
+            name="address"
+            label="Địa điểm"
+            rules={[{ required: true, message: "Vui lòng nhập địa điểm!" }]}
+            tooltip="Địa điểm giao hàng"
+          >
+            <StyleInput placeholder="Nhập địa điểm" />
+          </Form.Item>
+        </Card>
+
+        {/* Thông tin vận chuyển */}
+        <Card>
+          <StyledDivider orientation="center">
             Thông tin vận chuyển
-          </Divider>
-          <Form.Item name="trackingNumber" label="Mã vận đơn">
+          </StyledDivider>
+          <Form.Item
+            name="trackingNumber"
+            label="Mã vận đơn"
+            tooltip="Mã vận đơn đối với Tiktok | Shopee
+            Bỏ trống nếu không cần
+            "
+          >
             <StyleInput placeholder="Nhập Mã vận đơn" />
           </Form.Item>
+        </Card>
 
-          <Divider orientation="left" style={{ borderColor: "black" }}>
-            Thông tin phiếu
-          </Divider>
-          <Form.Item name="outboundOrderCode" label="Mã Phiếu">
+        {/* Thông tin phiếu */}
+        <Card>
+          <StyledDivider orientation="center">Thông tin phiếu</StyledDivider>
+          <Form.Item
+            name="outboundOrderCode"
+            label="Mã Phiếu"
+            tooltip="Bỏ trống sẽ tự tạo mã phiếu xuất"
+          >
             <StyleInput placeholder="Nhập mã phiếu" />
           </Form.Item>
           <Form.Item name="note" label="Ghi chú">
@@ -199,14 +229,16 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
               autoSize={{ minRows: 2, maxRows: 6 }}
             />
           </Form.Item>
-        </Space>
+        </Card>
+      </Space>
+      <Flex justify="end" style={{ marginTop: "var(--line-width-medium)" }}>
         <Form.Item>
           <CtaButton type="primary" htmlType="submit">
             Tiếp theo
           </CtaButton>
         </Form.Item>
-      </Form>
-    </div>
+      </Flex>
+    </StyledForm>
   );
 };
 
@@ -215,6 +247,7 @@ export default CustomerInformationStep;
 const StyledSelect = styled(Select)`
   .ant-select-selector {
     height: 2rem !important;
+    width: 100%;
     display: flex;
     align-items: center;
   }
@@ -223,12 +256,10 @@ const StyledSelect = styled(Select)`
     padding: 0 !important;
   }
 
-  margin-bottom: var(--line-width-medium);
+  margin-bottom: var(--line-width-thin);
 `;
 
-const StyleInput = styled(Input)`
-  width: 24rem;
-`;
+const StyleInput = styled(Input)``;
 
 const StyledTextArea = styled(Input.TextArea)`
   resize: vertical;
@@ -239,4 +270,15 @@ const CtaButton = styled(Button)`
   &:hover {
     background-color: var(--color-secondary-500) !important;
   }
+`;
+
+const StyledForm = styled(Form)<FormProps<CustomerInformationStepFormProps>>`
+  width: 85%;
+  margin: 0 auto;
+`;
+
+const StyledDivider = styled(Divider)`
+  border-color: var(--color-placeholder) !important;
+  color: var(--color-secondary-600) !important;
+  font-weight: var(--font-weight-semibold) !important;
 `;

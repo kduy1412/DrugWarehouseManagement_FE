@@ -3,7 +3,6 @@ import {
   OutboundGetRequestParams,
   OutboundPostRequest,
 } from "../../types/outbound";
-import { cleanFilterParams } from "../../utils/cleanNullOrEmpty";
 
 export const createOutbound = (outboundData: OutboundPostRequest) =>
   apiClient("/api/Outbound", {
@@ -22,8 +21,7 @@ export const updateOutbound = (updatedData: any) =>
 export const searchOutbound = (
   query: OutboundGetRequestParams = { Page: 1, PageSize: 10 }
 ) => {
-  const cleanParam = cleanFilterParams(query);
-  const queryString = new URLSearchParams(cleanParam).toString();
+  const queryString = new URLSearchParams(query).toString();
   return apiClient(`/api/Outbound?${queryString}`, {
     method: "GET",
   });

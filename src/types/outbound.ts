@@ -13,11 +13,11 @@ export type OutboundPostRequest = {
   note: string;
   outboundDetails: OutboundDetailRequest[];
 };
+
 export type OutboundDetailRequest = {
   lotId: number;
   quantity: number;
   unitPrice: number;
-  unitType: string;
 };
 
 //GET
@@ -62,7 +62,7 @@ export interface OutboundDetail {
   unitPrice: number;
   totalPrice: number;
   unitType: string;
-  productName: null;
+  productName: string | null;
   expiryDate: Date;
 }
 

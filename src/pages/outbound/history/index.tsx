@@ -1,4 +1,12 @@
-import { Pagination, PaginationProps, Table, TableProps, Tag } from "antd";
+import {
+  Flex,
+  Pagination,
+  PaginationProps,
+  Spin,
+  Table,
+  TableProps,
+  Tag,
+} from "antd";
 import React, { useState } from "react";
 import {
   OutboundGetRequestParams,
@@ -27,7 +35,7 @@ const OutBoundHistory = () => {
   /** Hooks */
   const [initParams, setInitParams] =
     useState<OutboundGetRequestParams>(initialData);
-  const { data } = useGetOutBoundQuery(initParams);
+  const { data, isLoading } = useGetOutBoundQuery(initParams);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<OutboundGetView | null>(
@@ -191,9 +199,6 @@ const OutBoundHistory = () => {
           <StyledPagination
             showSizeChanger
             align="end"
-            style={{
-              marginTop: "var(--line-width-light)",
-            }}
             defaultCurrent={1}
             total={data.totalCount}
             pageSize={data.pageSize}
@@ -202,6 +207,11 @@ const OutBoundHistory = () => {
             onShowSizeChange={handleOnShowSizeChange}
           />
         </>
+      )}
+      {isLoading && (
+        <Flex justify="center" align="center" style={{ height: "100%" }}>
+          <Spin />
+        </Flex>
       )}
     </>
   );

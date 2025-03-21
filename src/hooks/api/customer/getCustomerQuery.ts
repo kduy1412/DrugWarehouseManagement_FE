@@ -4,10 +4,12 @@ import {
   CustomerGetResponse,
 } from "../../../types/customer";
 import { searchCustomer } from "../../../api/endpoints/customer";
+import { cleanFilterParams } from "../../../utils/cleanNullOrEmpty";
 
 export const useGetCustomerQuery = (params: CustomerGetRequestParams) => {
+  const cleanedParams = cleanFilterParams(params) as CustomerGetRequestParams;
   return useQuery<CustomerGetResponse, Error, CustomerGetResponse>({
-    queryKey: ["outbound", params],
-    queryFn: () => searchCustomer(params),
+    queryKey: ["customer", cleanedParams],
+    queryFn: () => searchCustomer(cleanedParams),
   });
 };
