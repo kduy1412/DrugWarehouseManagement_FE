@@ -1,8 +1,8 @@
 import {
-  Button,
-  Modal,
+  Flex,
   Pagination,
   PaginationProps,
+  Spin,
   Table,
   TableProps,
   Tag,
@@ -11,28 +11,36 @@ import React, { useState } from "react";
 import {
   OutboundGetRequestParams,
   OutboundGetView,
-  OutboundStatus,
   OutboundStatusColors,
 } from "../../../types/outbound";
 import { useGetOutBoundQuery } from "../../../hooks/api/outbound/getOutboundQuery";
 import { formatDateTime } from "../../../utils/timeHelper";
-import { getEnumKeyNameByValue } from "../../../utils/getEnumKeyNameByValue";
 
 import styled from "styled-components";
 import ActionDropdown from "./DropdownActionOptions";
+import DetailsModal from "./DetailsModal";
+import EditModal from "./EditModal";
+import { parseOutboundStatusToVietnamese } from "../../../utils/translateOutboundStatus";
+import FilterComponent from "./FilterComponent";
 
 /**Types */
 type DataType = OutboundGetView;
 
+const initialData = {
+  Page: 1,
+  PageSize: 10,
+};
+
 const OutBoundHistory = () => {
   /** Hooks */
-  const [initParams, setInitParams] = useState<OutboundGetRequestParams>({
-    Page: 1,
-    PageSize: 10,
-  });
-  const { data } = useGetOutBoundQuery(initParams);
+  const [initParams, setInitParams] =
+    useState<OutboundGetRequestParams>(initialData);
+  const { data, isLoading } = useGetOutBoundQuery(initParams);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<OutboundGetView | null>(
+    null
+  );
 
   /** Column Def */
   const columns: TableProps<DataType>["columns"] = [
@@ -105,9 +113,7 @@ const OutBoundHistory = () => {
       render: (_, { status }) => {
         const color = OutboundStatusColors[status - 1];
         return (
-          <Tag color={color}>
-            {getEnumKeyNameByValue(OutboundStatus, status)}
-          </Tag>
+          <Tag color={color}>{parseOutboundStatusToVietnamese(status)}</Tag>
         );
       },
     },
@@ -116,10 +122,12 @@ const OutBoundHistory = () => {
       render: (_, item) => {
         const handleOnClickDetail = () => {
           setIsDetailModalOpen(true);
+          setSelectedItem(item);
         };
 
         const handleOnClickEdit = () => {
           setIsEditModalOpen(true);
+          setSelectedItem(item);
         };
 
         const handleOnClickDelete = () => {
@@ -134,49 +142,23 @@ const OutBoundHistory = () => {
               onDelete={handleOnClickDelete}
             />
 
-            {/* Details Modal */}
-            <Modal
-              title="Chi tiết"
-              open={isDetailModalOpen}
-              onCancel={() => setIsDetailModalOpen(false)}
-              footer={[
-                <CloseButton
-                  key="close"
-                  onClick={() => setIsDetailModalOpen(false)}
-                >
-                  Đóng
-                </CloseButton>,
-              ]}
-            >
-              <pre>{JSON.stringify(item, null, 2)}</pre>
-            </Modal>
+            {selectedItem && (
+              <>
+                {/* Details Modal */}
+                <DetailsModal
+                  isModalOpen={isDetailModalOpen}
+                  item={selectedItem}
+                  setIsModalOpen={setIsDetailModalOpen}
+                />
 
-            {/* Edit Modal */}
-            <Modal
-              title="Chỉnh Sửa"
-              open={isEditModalOpen}
-              onCancel={() => setIsEditModalOpen(false)}
-              footer={[
-                <CloseButton
-                  key="cancel"
-                  onClick={() => setIsEditModalOpen(false)}
-                >
-                  Hủy
-                </CloseButton>,
-                <CtaButton
-                  key="save"
-                  type="primary"
-                  onClick={() => {
-                    console.log("Save: " + JSON.stringify(item));
-                    setIsEditModalOpen(false);
-                  }}
-                >
-                  Lưu
-                </CtaButton>,
-              ]}
-            >
-              <p>Edit form for: {JSON.stringify(item)}</p>
-            </Modal>
+                {/* Edit Modal */}
+                <EditModal
+                  isModalOpen={isEditModalOpen}
+                  item={selectedItem}
+                  setIsModalOpen={setIsEditModalOpen}
+                />
+              </>
+            )}
           </>
         );
       },
@@ -202,47 +184,42 @@ const OutBoundHistory = () => {
   };
 
   return (
-    data && (
-      <>
-        <Table<DataType>
-          pagination={false}
-          dataSource={data.items}
-          columns={columns}
-        />
-        <StyledPagination
-          showSizeChanger
-          align="end"
-          style={{
-            marginTop: "var(--line-width-light)",
-          }}
-          defaultCurrent={1}
-          total={data.totalCount}
-          pageSize={data.pageSize}
-          current={initParams.Page}
-          onChange={handleOnChange}
-          onShowSizeChange={handleOnShowSizeChange}
-        />
-      </>
-    )
+    <>
+      <FilterComponent
+        initialQueryParams={initialData}
+        setQuery={setInitParams}
+      />
+      {data && (
+        <>
+          <Table<DataType>
+            pagination={false}
+            dataSource={data.items}
+            columns={columns}
+          />
+          <StyledPagination
+            showSizeChanger
+            align="end"
+            defaultCurrent={1}
+            total={data.totalCount}
+            pageSize={data.pageSize}
+            current={initParams.Page}
+            onChange={handleOnChange}
+            onShowSizeChange={handleOnShowSizeChange}
+          />
+        </>
+      )}
+      {isLoading && (
+        <Flex justify="center" align="center" style={{ height: "100%" }}>
+          <Spin />
+        </Flex>
+      )}
+    </>
   );
 };
 
 export default OutBoundHistory;
 
 /** Styled Components */
-const CloseButton = styled(Button)`
-  &:hover {
-    border-color: var(--color-secondary-600) !important;
-    color: var(--color-secondary-600) !important;
-  }
-`;
-
-const CtaButton = styled(Button)`
-  background-color: var(--color-secondary-600);
-  &:hover {
-    background-color: var(--color-secondary-500) !important;
-  }
-`;
 
 const StyledPagination = styled(Pagination)`
   margin-top: var(--line-width-light);

@@ -12,6 +12,7 @@ body {
   --color-primary: hsl(143, 100%, 90%);
   --color-white: hsl(0, 0%, 96%);
   --color-placeholder: hsl(0, 0%, 53%);
+  --color-background: hsl(0, 0%, 90%);
 
   /* Color brand */
   --color-secondary-50: hsl(138, 84%, 95%);
@@ -94,14 +95,57 @@ body {
   --line-width-extra-thick: 7.5rem; /* 120px */
 
   /* Status Color */
+  --status-active: var(--color-success-400);
+  --status-inactive: #bfbfbf;
   --status-pending: var(--color-warning-600);
   --status-in-progress: #1890ff;
-  --status-cancelled: #bfbfbf;
   --status-completed: var(--color-success-400);
+  --status-cancelled: #bfbfbf;
   --status-returned: var(--color-danger-500);
+  --status-approved: var(--color-success-500);
+  --status-rejected: var(--color-danger-600);
+  --status-deleted: #8c8c8c;
+  --status-damaged: var(--color-danger-400);
+  --status-expired: #ff4d4f;
+  --status-missing: #f5222d;
+  --status-out-of-stock: #fa8c16;
+  --status-in-stock: var(--color-success-300);
+  --status-shipped: #13c2c2;
+  --status-delivered: var(--color-success-600);
+  --status-blacklisted: #1d1d1d;
+  --status-pending-approval: var(--color-warning-600);
+  --status-not-started: #d9d9d9;
+  --status-other: #d4b106;
+  --status-waiting-for-import: #fadb14;
+  --status-waiting-for-approval: var(--color-warning-500);
+  --status-waiting-for-accountant-approval: var(--status-waiting-for-approval);
+  --status-waiting-for-director-approval: var(--status-waiting-for-approval);
+  --status-waiting-for-sale-admin-approval: var(--status-waiting-for-approval);
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+/* .ant-select-dropdown {
+  width: 60vw !important;
+  max-height: 40vh !important;
+} */
+
+.ant-modal-wrap.ant-modal-fullscreen {
+  .ant-modal {
+    right: 0px;
+    top: 0px;
+    margin: 0px;
+    position: absolute;
+    height: 100vh;
+    max-height: none;
+    padding: 0px;
+    width: 50vw !important;
+  }
+  .ant-modal-content {
+    height: 100vh;
+    overflow-y: scroll;
+  }
 }
