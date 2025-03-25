@@ -11,11 +11,10 @@ const CreateOutboundPage = () => {
   const [currentStep, setCurrentStep] = useState("1");
   const [formData, setFormData] = useState<OutboundPostRequest>({
     customerId: null,
-    customerName: "",
-    address: "",
-    phoneNumber: "",
+    receiverName: "",
+    receiverAddress: "",
+    receiverPhone: "",
     outboundOrderCode: "",
-    trackingNumber: "",
     note: "",
     outboundDetails: [],
   });

@@ -4,12 +4,11 @@ import { PaginationModelResponse } from "./paginationModelResponse";
 
 //POST
 export type OutboundPostRequest = {
-  customerName: string;
-  customerId: number | null;
-  address: string;
-  phoneNumber: string;
+  receiverName: string;
+  customerId: number;
+  receiverAddress: string;
+  receiverPhone: string;
   outboundOrderCode?: string | null;
-  trackingNumber: string | null;
   note: string;
   outboundDetails: OutboundDetailRequest[];
 };
@@ -18,7 +17,14 @@ export type OutboundDetailRequest = {
   lotId: number;
   quantity: number;
   unitPrice: number;
+  discount: number;
 };
+
+//POST-RETURNED
+export type OutboundReturnRequest = Pick<
+  OutboundDetail,
+  "outboundDetailsId" | "quantity"
+>;
 
 //GET
 export interface OutboundGetResponse extends PaginationModelResponse {
@@ -48,7 +54,6 @@ export interface Outbound {
   address?: string | null;
   phoneNumber?: string | null;
   outboundOrderCode?: string | null;
-  trackingNumber?: string | null;
   outboundDate?: Date | null;
   status: OutboundStatus;
   outboundDetails: OutboundDetail[];
@@ -62,6 +67,7 @@ export interface OutboundDetail {
   unitPrice: number;
   totalPrice: number;
   unitType: string;
+  discount: number;
   productName: string | null;
   expiryDate: Date;
 }

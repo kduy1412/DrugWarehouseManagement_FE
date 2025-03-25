@@ -16,6 +16,7 @@ import ApproveRequest from "../pages/inbounds/approve-inbound";
 import images from "../assets";
 import OutBoundHistory from "../pages/outbound/history";
 import CreateOutboundPage from "../pages/outbound/create";
+import ReturnOutboundPage from "../pages/outbound/return";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -160,7 +161,7 @@ export const privateRoutes: MenuRoutes[] = [
           Roles.InventoryManager,
           Roles.SaleAdmin,
         ],
-        element: <OutboundPage />,
+        element: <ReturnOutboundPage />,
       },
     ],
     allowedroles: [

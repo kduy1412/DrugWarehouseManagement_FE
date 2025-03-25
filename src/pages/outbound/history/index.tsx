@@ -60,13 +60,13 @@ const OutBoundHistory = () => {
       title: "Tên Khách Hàng",
       dataIndex: "customerName",
       key: "customerName",
-      render: (_, { customerName }) => <p>{customerName}</p>,
+      render: (_, { customerName: customerName }) => <p>{customerName}</p>,
     },
     {
       title: "Địa Chỉ",
       dataIndex: "address",
       key: "address",
-      render: (_, { address }) => {
+      render: (_, { address: address }) => {
         if (address) {
           return <p>{address}</p>;
         }
@@ -77,7 +77,7 @@ const OutBoundHistory = () => {
       title: "Liên Hệ",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
-      render: (_, { phoneNumber }) => {
+      render: (_, { phoneNumber: phoneNumber }) => {
         if (phoneNumber) {
           return <p>{phoneNumber}</p>;
         }

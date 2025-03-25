@@ -54,7 +54,7 @@ const LayoutComponent = () => {
   const { user, role, logout } = useAuth();
 
   const handleMenuClick = ({ key }: { key: string }) => {
-    navigate(key);
+    navigate(key, { replace: true, flushSync: true });
   };
 
   const items: MenuProps["items"] = [

@@ -43,12 +43,11 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
   // Form and State Management
   const [form] = Form.useForm<CustomerInformationStepFormProps>();
   const [initialFormData] = useState<CustomerInformationStepFormProps>({
-    address: formData.address,
+    receiverAddress: formData.receiverAddress,
     customerId: formData.customerId,
-    customerName: formData.customerName,
+    receiverName: formData.receiverName,
     note: formData.note,
-    phoneNumber: formData.phoneNumber,
-    trackingNumber: formData.trackingNumber,
+    receiverPhone: formData.receiverPhone,
     outboundOrderCode: formData.outboundOrderCode,
   });
 
@@ -76,9 +75,9 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
   // Event Handlers
   const handleRowClick = (record: CustomerGetView) => {
     form.setFieldsValue({
-      customerName: record.customerName,
-      address: record.address,
-      phoneNumber: record.phoneNumber,
+      receiverName: record.customerName,
+      receiverAddress: record.address,
+      receiverPhone: record.phoneNumber,
       customerId: record.customerId,
     });
     setDropdownOpen(false);
@@ -161,7 +160,7 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
 
           <Flex style={{ gap: "var(--line-width-thin)" }}>
             <Form.Item
-              name="customerName"
+              name="receiverName"
               label="Tên Khách Hàng"
               rules={[
                 {
@@ -176,7 +175,7 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
             </Form.Item>
 
             <Form.Item
-              name="phoneNumber"
+              name="receiverPhone"
               label="Số Điện Thoại"
               rules={[
                 { required: true, message: "Vui lòng nhập số điện thoại" },
@@ -188,28 +187,12 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
             </Form.Item>
           </Flex>
           <Form.Item
-            name="address"
+            name="receiverAddress"
             label="Địa điểm"
             rules={[{ required: true, message: "Vui lòng nhập địa điểm!" }]}
             tooltip="Địa điểm giao hàng"
           >
             <StyleInput placeholder="Nhập địa điểm" />
-          </Form.Item>
-        </Card>
-
-        {/* Thông tin vận chuyển */}
-        <Card>
-          <StyledDivider orientation="center">
-            Thông tin vận chuyển
-          </StyledDivider>
-          <Form.Item
-            name="trackingNumber"
-            label="Mã vận đơn"
-            tooltip="Mã vận đơn đối với Tiktok | Shopee
-            Bỏ trống nếu không cần
-            "
-          >
-            <StyleInput placeholder="Nhập Mã vận đơn" />
           </Form.Item>
         </Card>
 

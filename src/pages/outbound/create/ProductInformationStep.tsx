@@ -24,6 +24,8 @@ import {
   OutboundPostRequest,
 } from "../../../types/outbound";
 import { DeleteOutlined } from "@ant-design/icons";
+import { useCreateOutboundMutation } from "../../../hooks/api/outbound/createOutboundMutation";
+import { useNavigate } from "react-router-dom";
 
 const initialQueryParams: LotGetRequestParams = {
   Page: 1,
@@ -57,9 +59,10 @@ const ProductInformationStep = ({
     ProductsSelectedProps[] | []
   >([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { mutate, isSuccess } = useCreateOutboundMutation();
+  const navigate = useNavigate();
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
@@ -106,6 +109,7 @@ const ProductInformationStep = ({
           unitPrice: 1,
           lotNumber: product.lotNumber,
           productName: product.productName,
+          discount: 0,
         })
       );
       setSelectedProduct((prev) => [...prev, ...productsMapping]);
@@ -236,6 +240,25 @@ const ProductInformationStep = ({
       ),
     },
     {
+      title: "Chiết Khấu",
+      dataIndex: "discount",
+      key: "discount",
+      render: (discount, _, index) => (
+        <InputNumber
+          min={0}
+          max={100}
+          value={discount ?? 0}
+          formatter={(value) => `${value}%`}
+          style={{ width: "100%", maxWidth: "12rem" }}
+          parser={(value) => {
+            const parsed = value ? parseFloat(value.replace(/[^\d.]/g, "")) : 0;
+            return Math.min(Math.max(parsed, 0), 100);
+          }}
+          onChange={(value) => handleChange(index, "discount", value)}
+        />
+      ),
+    },
+    {
       key: "action",
       render: (_, item) => (
         <DeleteOutlined
@@ -275,6 +298,7 @@ const ProductInformationStep = ({
 
   const handleSubmit = () => {
     console.log(formData);
+    mutate(formData);
   };
 
   useEffect(() => {
@@ -284,6 +308,7 @@ const ProductInformationStep = ({
           lotId: product.lotId,
           quantity: product.quantity,
           unitPrice: product.unitPrice,
+          discount: product.discount ?? 0,
         })
       );
 
@@ -296,6 +321,10 @@ const ProductInformationStep = ({
 
     updateFormData(mapToFormData());
   }, [selectedProduct, updateFormData]);
+
+  if (isSuccess) {
+    navigate("/outbound/history", { flushSync: true });
+  }
 
   return (
     <>
