@@ -17,6 +17,8 @@ import images from "../assets";
 import OutBoundHistory from "../pages/outbound/history";
 import CreateOutboundPage from "../pages/outbound/create";
 import ReturnOutboundPage from "../pages/outbound/return";
+import SampleExportPage from "../pages/outbound/sample-export";
+import TransferLotPage from "../pages/outbound/transfer";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -122,7 +124,7 @@ export const privateRoutes: MenuRoutes[] = [
           Roles.InventoryManager,
           Roles.SaleAdmin,
         ],
-        element: <OutboundPage />,
+        element: <SampleExportPage />,
       },
       {
         key: `/outbound/transfer`,
@@ -135,7 +137,7 @@ export const privateRoutes: MenuRoutes[] = [
           Roles.InventoryManager,
           Roles.SaleAdmin,
         ],
-        element: <OutboundPage />,
+        element: <TransferLotPage />,
       },
       {
         key: `/outbound/history`,

@@ -5,7 +5,7 @@ import { PaginationModelResponse } from "./paginationModelResponse";
 //POST
 export type OutboundPostRequest = {
   receiverName: string;
-  customerId: number;
+  customerId: number | null;
   receiverAddress: string;
   receiverPhone: string;
   outboundOrderCode?: string | null;
@@ -19,6 +19,32 @@ export type OutboundDetailRequest = {
   unitPrice: number;
   discount: number;
 };
+
+// POST-SAMPLE-EXPORT
+export type SampleExportDetailsRequest = Pick<
+  OutboundDetail,
+  "lotId" | "quantity" | "discount" | "unitPrice"
+>;
+
+export type SampleExportRequest = Omit<
+  OutboundPostRequest,
+  "outboundDetails"
+> & {
+  outboundDetails: SampleExportDetailsRequest[];
+};
+
+// POST-LOT-TRANSFER
+export interface LotTransferPostRequest {
+  lotTransferCode: string;
+  fromWareHouseId: number | null;
+  toWareHouseId: number | null;
+  lotTransferDetails: LotTransferDetail[];
+}
+
+export interface LotTransferDetail {
+  quantity: number;
+  lotId: number;
+}
 
 //POST-RETURNED
 export type OutboundReturnRequest = Pick<
