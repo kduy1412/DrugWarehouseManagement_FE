@@ -1,16 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   Form,
   Input,
-  Select,
   Button,
   Space,
-  Table,
-  TableProps,
-  Spin,
   Flex,
   Divider,
-  RefSelectProps,
   Card,
   Alert,
   FormProps,
@@ -19,19 +14,19 @@ import styled from "styled-components";
 import {
   CustomerGetRequestParams,
   CustomerGetView,
-} from "../../../types/customer";
-import { useGetCustomerQuery } from "../../../hooks/api/customer/getCustomerQuery";
-import { useDebounce } from "@uidotdev/usehooks";
-import { SampleExportRequest } from "../../../types/outbound";
+} from "../../../../types/customer";
+import { useGetCustomerQuery } from "../../../../hooks/api/customer/getCustomerQuery";
+import { OutboundPostRequest } from "../../../../types/outbound";
+import CustomerSelector from "../../../../components/customer/CustomerSelector";
 
 interface CustomerInformationStepProps {
-  formData: SampleExportRequest;
-  updateFormData: (data: Partial<SampleExportRequest>) => void;
+  formData: OutboundPostRequest;
+  updateFormData: (data: Partial<OutboundPostRequest>) => void;
   onNext: () => void;
 }
 
 type CustomerInformationStepFormProps = Omit<
-SampleExportRequest,
+  OutboundPostRequest,
   "outboundDetails"
 >;
 
@@ -51,51 +46,40 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
     outboundOrderCode: formData.outboundOrderCode,
   });
 
-  // Dropdown and Select Control
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const selectRef = useRef<RefSelectProps>(null);
-
   // Search and Data Fetching
-  const [searchTerm, setSearchTerm] = useState("");
-  const debouncedSearchTerm = useDebounce(searchTerm, 400);
   const [searchParams, setSearchParams] = useState<CustomerGetRequestParams>({
     page: 1,
     pageSize: 100,
   });
-  const { data } = useGetCustomerQuery(searchParams);
-
-  // Table Configuration
-  const columns: TableProps<CustomerGetView>["columns"] = [
-    { title: "Tên khách hàng", dataIndex: "customerName", key: "customerName" },
-    { title: "Địa điểm", dataIndex: "address", key: "address" },
-    { title: "Số điện thoại", dataIndex: "phoneNumber", key: "phoneNumber" },
-    { title: "Email", dataIndex: "email", key: "email" },
-  ];
+  const { data, isLoading } = useGetCustomerQuery(searchParams);
 
   // Event Handlers
-  const handleRowClick = (record: CustomerGetView) => {
+  const onSelectedCustomerChange = (customer: CustomerGetView | null) => {
     form.setFieldsValue({
-      receiverName: record.customerName,
-      receiverAddress: record.address,
-      receiverPhone: record.phoneNumber,
-      customerId: record.customerId,
+      customerId: customer?.customerId,
+      receiverName: customer?.customerName,
+      receiverAddress: customer?.address,
+      receiverPhone: customer?.phoneNumber,
     });
-    setDropdownOpen(false);
-    selectRef.current?.blur();
+    updateFormData({
+      customerId: customer?.customerId,
+      receiverName: customer?.customerName,
+      receiverAddress: customer?.address,
+      receiverPhone: customer?.phoneNumber,
+    });
+  };
+
+  const onSearchValueChange = (value: string) => {
+    setSearchParams((prev) => ({
+      ...prev,
+      Search: value,
+    }));
   };
 
   const onFinish = (values: CustomerInformationStepFormProps) => {
     updateFormData(values);
     onNext();
   };
-
-  // Effects
-  useEffect(() => {
-    setSearchParams((prev) => ({
-      ...prev,
-      name: debouncedSearchTerm,
-    }));
-  }, [debouncedSearchTerm]);
 
   return (
     <StyledForm
@@ -116,38 +100,12 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
             label="Khách Hàng Đã Chọn"
             rules={[{ required: true, message: "Vui lòng chọn khách hàng" }]}
           >
-            <StyledSelect
-              ref={selectRef}
-              placeholder="Chọn khách hàng"
-              onSearch={(data) => setSearchTerm(data)}
-              mode="tags"
-              showSearch
-              onFocus={() => {
-                setDropdownOpen(true);
-              }}
-              open={dropdownOpen}
-              dropdownRender={() =>
-                data ? (
-                  <Table
-                    columns={columns}
-                    dataSource={data.items}
-                    rowKey="email"
-                    pagination={false}
-                    size="small"
-                    onRow={(record) => ({
-                      onClick: () => handleRowClick(record),
-                    })}
-                  />
-                ) : (
-                  <Flex
-                    justify="center"
-                    align="center"
-                    style={{ minHeight: "30vh" }}
-                  >
-                    <Spin />
-                  </Flex>
-                )
-              }
+            <CustomerSelector
+              onSearchValueChange={onSearchValueChange}
+              onSelectedCustomerChange={onSelectedCustomerChange}
+              value={formData.customerId}
+              customers={data?.items}
+              loading={isLoading}
             />
           </Form.Item>
 
@@ -226,21 +184,6 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
 };
 
 export default CustomerInformationStep;
-
-const StyledSelect = styled(Select)`
-  .ant-select-selector {
-    height: 2rem !important;
-    width: 100%;
-    display: flex;
-    align-items: center;
-  }
-
-  .ant-select-dropdown {
-    padding: 0 !important;
-  }
-
-  margin-bottom: var(--line-width-thin);
-`;
 
 const StyleInput = styled(Input)``;
 

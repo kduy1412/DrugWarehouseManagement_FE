@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { LotGetRequestParams, LotGetView } from "../../../types/lot";
-import { useGetLotQuery } from "../../../hooks/api/lot/getLotQuery";
-import { formatDateTime } from "../../../utils/timeHelper";
+import { LotGetRequestParams, LotGetView } from "../../../../types/lot";
+import { useGetLotQuery } from "../../../../hooks/api/lot/getLotQuery";
+import { formatDateTime } from "../../../../utils/timeHelper";
 import {
   Button,
   Card,
   Divider,
+  Form,
+  FormProps,
   InputNumber,
   Modal,
   notification,
   Pagination,
   PaginationProps,
+  Space,
   Table,
   TableProps,
   Tag,
@@ -19,12 +22,14 @@ import styled from "styled-components";
 import FilterComponent from "./FilterComponents";
 import { TableRowSelection } from "antd/es/table/interface";
 import {
+  LotTransferDetail,
+  LotTransferPostRequest,
   OutboundDetail,
-  SampleExportDetailsRequest,
-  SampleExportRequest,
-} from "../../../types/outbound";
+} from "../../../../types/outbound";
 import { DeleteOutlined } from "@ant-design/icons";
-// import { useNavigate } from "react-router-dom";
+import { WarehouseGetRequestParams } from "../../../../types/warehouse";
+import { useGetWarehouseQuery } from "../../../../hooks/api/warehouse/getWarehouseQuery";
+import WarehouseSelector from "../../../../components/warehouse/WarehouseSelector";
 
 const initialQueryParams: LotGetRequestParams = {
   Page: 1,
@@ -34,38 +39,52 @@ const initialQueryParams: LotGetRequestParams = {
   Search: null,
 };
 
-type ProductsSelectedProps = SampleExportDetailsRequest &
+const initialFormData: FromWarehouseProps = {
+  fromWareHouseId: null,
+};
+
+type ProductsSelectedProps = LotTransferDetail &
   Pick<OutboundDetail, "lotNumber" | "productName">;
 
 interface ProductInformationStepProps {
-  formData: SampleExportRequest;
-  updateFormData: (data: Partial<SampleExportRequest>) => void;
+  formData: LotTransferPostRequest;
+  updateFormData: (data: Partial<LotTransferPostRequest>) => void;
 }
 type ProductInformationStepFormProps = Pick<
-  SampleExportRequest,
-  "outboundDetails"
+  LotTransferPostRequest,
+  "lotTransferDetails"
 >;
+type FromWarehouseProps = Pick<LotTransferPostRequest, "fromWareHouseId">;
 
 const ProductInformationStep = ({
   formData,
   updateFormData,
 }: ProductInformationStepProps) => {
+  const [form] = Form.useForm<FromWarehouseProps>();
+
   const [queryParams, setQueryParams] =
     useState<LotGetRequestParams>(initialQueryParams);
-  const { data } = useGetLotQuery(queryParams);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const { data: lotData, isLoading: isLotFetching } =
+    useGetLotQuery(queryParams);
+  const [selectedLotRowKeys, setSelectedLotRowKeys] = useState<React.Key[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<
-    ProductsSelectedProps[] | []
+    ProductsSelectedProps[]
   >([]);
+  const [searchParams, setSearchParams] = useState<WarehouseGetRequestParams>({
+    Page: 1,
+    PageSize: 100,
+  });
+  const { data: warehouseData, isLoading: isWarehouseFetching } =
+    useGetWarehouseQuery(searchParams);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const navigate = useNavigate();
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    setSelectedRowKeys(newSelectedRowKeys);
+  const onSelectLotChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedLotRowKeys(newSelectedRowKeys);
   };
 
   const onClickAddProduct = () => {
-    if (!data) {
+    /* Checks if lotData is falsy (e.g., undefined, null). */
+    if (!lotData) {
       notification.error({
         message: "Không tồn tại dữ liệu",
         description: "Dữ liệu hiện tại không khả dụng để tiến hành tạo mới",
@@ -73,8 +92,8 @@ const ProductInformationStep = ({
       return;
     }
 
-    const products = data.items.filter((lot) =>
-      selectedRowKeys.includes(lot.lotId)
+    const products = lotData.items.filter((lot) =>
+      selectedLotRowKeys.includes(lot.lotId)
     );
     if (products.length <= 0) {
       notification.error({
@@ -111,7 +130,7 @@ const ProductInformationStep = ({
         })
       );
       setSelectedProduct((prev) => [...prev, ...productsMapping]);
-      setSelectedRowKeys([]);
+      setSelectedLotRowKeys([]);
     };
 
     isExist();
@@ -124,12 +143,12 @@ const ProductInformationStep = ({
     setSelectedProduct(updatedProducts);
   };
 
-  const rowSelection: TableRowSelection<LotGetView> = {
-    selectedRowKeys,
-    onChange: onSelectChange,
+  const lotRowSelection: TableRowSelection<LotGetView> = {
+    selectedRowKeys: selectedLotRowKeys,
+    onChange: onSelectLotChange,
   };
 
-  const hasSelected = selectedRowKeys.length > 0;
+  const hasLotSelected = selectedLotRowKeys.length > 0;
 
   const lotColumns: TableProps<LotGetView>["columns"] = [
     {
@@ -195,7 +214,7 @@ const ProductInformationStep = ({
     },
   ];
 
-  const productColumn: TableProps<ProductsSelectedProps>["columns"] = [
+  const selectedProductColumn: TableProps<ProductsSelectedProps>["columns"] = [
     {
       title: "Mã Lô",
       dataIndex: "lotNumber",
@@ -216,7 +235,9 @@ const ProductInformationStep = ({
         <InputNumber
           min={1}
           value={quantity}
-          onChange={(value) => handleChange(index, "quantity", value)}
+          onChange={(value) =>
+            handleSelectedProductDataChange(index, "quantity", value)
+          }
         />
       ),
     },
@@ -248,7 +269,7 @@ const ProductInformationStep = ({
     }));
   };
 
-  const handleChange = (
+  const handleSelectedProductDataChange = (
     index: number,
     field: keyof ProductsSelectedProps,
     value: number | null
@@ -264,17 +285,15 @@ const ProductInformationStep = ({
 
   useEffect(() => {
     const mapToFormData = () => {
-      const outboundDetails: SampleExportDetailsRequest[] = selectedProduct.map(
+      const lotTransferDetails: LotTransferDetail[] = selectedProduct.map(
         (product) => ({
           lotId: product.lotId,
           quantity: product.quantity,
-          discount: 0,
-          unitPrice: 0,
         })
       );
 
       const data: ProductInformationStepFormProps = {
-        outboundDetails,
+        lotTransferDetails,
       };
 
       return data;
@@ -283,76 +302,117 @@ const ProductInformationStep = ({
     updateFormData(mapToFormData());
   }, [selectedProduct, updateFormData]);
 
-  // if (isSuccess) {
-  //   navigate("/outbound/history", { flushSync: true });
-  // }
+  const onSearchWarehouseValueChange = (value: string) => {
+    setSearchParams((prev) => ({
+      ...prev,
+      Search: value,
+    }));
+  };
+  const onSelectedWarehouseChange = (value: number | null) => {
+    form.setFieldsValue({
+      fromWareHouseId: value,
+    });
+    updateFormData({ fromWareHouseId: value });
+  };
 
   return (
-    <>
-      <StyledCard>
-        <ListProductButton onClick={() => setIsModalOpen(true)}>
-          {`Mặt hàng đã chọn (${selectedProduct.length})`}
-        </ListProductButton>
-        <FilterComponent
-          initialQueryParams={initialQueryParams}
-          setQuery={setQueryParams}
-        />
-        <CtaButton onClick={onClickAddProduct} disabled={!hasSelected}>
-          Thêm vào đơn
-        </CtaButton>
-      </StyledCard>
-      <StyledDivider orientation="left" orientationMargin={0}>
-        Danh sách hàng tồn kho
-      </StyledDivider>
-      <Table<LotGetView>
-        pagination={false}
-        dataSource={data?.items}
-        columns={lotColumns}
-        rowSelection={rowSelection}
-        rowKey={(record) => record.lotId}
-      />
-      {data && (
-        <StyledPagination
-          showSizeChanger
-          align="end"
-          style={{
-            marginTop: "var(--line-width-light)",
-          }}
-          defaultCurrent={1}
-          total={data?.totalCount}
-          pageSize={data?.pageSize}
-          current={queryParams.Page}
-          onChange={handleOnPageChange}
-          onShowSizeChange={handleOnPageSizeChange}
-        />
-      )}
-      <CtaButton
-        type="primary"
-        onClick={handleSubmit}
-        style={{ marginTop: 16 }}
+    <div>
+      <StyledForm
+        form={form}
+        layout="vertical"
+        initialValues={initialFormData}
+        requiredMark={"optional"}
       >
-        Hoàn tất
-      </CtaButton>
+        <Space direction="vertical" style={{ width: "100%" }}>
+          <Card>
+            <StyledDivider orientation="center">Kho khởi đầu</StyledDivider>
+            <Form.Item
+              name="fromWareHouseId"
+              label="Chọn kho nguồn"
+              rules={[{ required: true, message: "Vui lòng chọn kho nguồn" }]}
+            >
+              <WarehouseSelector
+                onSearchValueChange={onSearchWarehouseValueChange}
+                onSelectedWarehouseChange={onSelectedWarehouseChange}
+                value={formData.fromWareHouseId}
+                warehouses={warehouseData?.items}
+                loading={isWarehouseFetching}
+              />
+            </Form.Item>
+          </Card>
+        </Space>
+      </StyledForm>
 
-      <StyledModal
-        title={null}
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        footer={null} // Removes OK/Cancel buttons
-        wrapClassName="ant-modal-fullscreen"
-      >
-        <StyledDivider orientation="left" orientationMargin={0}>
-          Mặt hàng đã chọn
-        </StyledDivider>
-        <Table<ProductsSelectedProps>
-          columns={productColumn}
-          dataSource={selectedProduct}
-          rowKey="lotId"
-          pagination={false}
-          scroll={{ y: "calc(100vh - 14rem)" }}
-        />
-      </StyledModal>
-    </>
+      {formData.fromWareHouseId && (
+        <>
+          <StyledCard>
+            <ListProductButton onClick={() => setIsModalOpen(true)}>
+              {`Mặt hàng đã chọn (${selectedProduct.length})`}
+            </ListProductButton>
+            <FilterComponent
+              initialQueryParams={initialQueryParams}
+              setQuery={setQueryParams}
+            />
+            <CtaButton onClick={onClickAddProduct} disabled={!hasLotSelected}>
+              Thêm vào đơn
+            </CtaButton>
+          </StyledCard>
+          <StyledDivider orientation="left" orientationMargin={0}>
+            Danh sách hàng tồn kho
+          </StyledDivider>
+          {/* Lot tables */}
+          <Table<LotGetView>
+            pagination={false}
+            dataSource={lotData?.items}
+            columns={lotColumns}
+            rowSelection={lotRowSelection}
+            rowKey={(record) => record.lotId}
+            loading={isLotFetching}
+          />
+          {lotData && (
+            <StyledPagination
+              showSizeChanger
+              align="end"
+              style={{
+                marginTop: "var(--line-width-light)",
+              }}
+              defaultCurrent={1}
+              total={lotData?.totalCount}
+              pageSize={lotData?.pageSize}
+              current={queryParams.Page}
+              onChange={handleOnPageChange}
+              onShowSizeChange={handleOnPageSizeChange}
+            />
+          )}
+          <CtaButton
+            type="primary"
+            onClick={handleSubmit}
+            style={{ marginTop: 16 }}
+          >
+            Hoàn tất
+          </CtaButton>
+          {/* Selected Product */}
+          <StyledModal
+            title={null}
+            open={isModalOpen}
+            onCancel={() => setIsModalOpen(false)}
+            footer={null}
+            wrapClassName="ant-modal-fullscreen"
+          >
+            <StyledDivider orientation="left" orientationMargin={0}>
+              Mặt hàng đã chọn
+            </StyledDivider>
+            <Table<ProductsSelectedProps>
+              columns={selectedProductColumn}
+              dataSource={selectedProduct}
+              rowKey="lotId"
+              pagination={false}
+              scroll={{ y: "calc(100vh - 14rem)" }}
+            />
+          </StyledModal>
+        </>
+      )}
+    </div>
   );
 };
 
@@ -391,6 +451,12 @@ const StyledDivider = styled(Divider)`
   border-color: var(--color-placeholder) !important;
   color: var(--color-secondary-600) !important;
   font-weight: var(--font-weight-semibold) !important;
+`;
+
+const StyledForm = styled(Form)<FormProps<FromWarehouseProps>>`
+  width: 100%;
+  margin: 0 auto;
+  margin-bottom: var(--line-width-bold);
 `;
 
 const StyledModal = styled(Modal)``;

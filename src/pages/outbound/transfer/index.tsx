@@ -2,9 +2,9 @@ import { Tabs, TabsProps } from "antd";
 import React, { useState } from "react";
 import { Pill } from "@phosphor-icons/react";
 import styled from "styled-components";
-import ProductInformationStep from "./ProductInformationStep";
+import ProductInformationStep from "./components/ProductInformationStep";
 import { LotTransferPostRequest } from "../../../types/outbound";
-import WarehouseInformationStep from "./WarehouseInformationStep";
+import WarehouseInformationStep from "./components/WarehouseInformationStep";
 import images from "../../../assets";
 
 const TransferLotPage = () => {
@@ -27,7 +27,7 @@ const TransferLotPage = () => {
   const items: TabsProps["items"] = [
     {
       key: "1",
-      label: "Thông tin kho",
+      label: "Chọn điểm đến",
       icon: React.createElement(images.warehouse),
       children: (
         <WarehouseInformationStep

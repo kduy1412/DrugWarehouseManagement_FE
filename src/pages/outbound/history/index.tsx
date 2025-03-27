@@ -17,11 +17,11 @@ import { useGetOutBoundQuery } from "../../../hooks/api/outbound/getOutboundQuer
 import { formatDateTime } from "../../../utils/timeHelper";
 
 import styled from "styled-components";
-import ActionDropdown from "./DropdownActionOptions";
-import DetailsModal from "./DetailsModal";
-import EditModal from "./EditModal";
+import ActionDropdown from "./components/DropdownActionOptions";
+import DetailsModal from "./components/DetailsModal";
+import EditModal from "./components/EditModal";
 import { parseOutboundStatusToVietnamese } from "../../../utils/translateOutboundStatus";
-import FilterComponent from "./FilterComponent";
+import FilterComponent from "./components/FilterComponent";
 
 /**Types */
 type DataType = OutboundGetView;

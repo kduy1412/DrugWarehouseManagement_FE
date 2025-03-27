@@ -1,16 +1,19 @@
 import { Button, DatePicker, Input, Space } from "antd";
 import React, { useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
+import {
+  OutboundFilterParams,
+  OutboundGetRequestParams,
+} from "../../../../types/outbound";
 import dayjs, { Dayjs } from "dayjs";
-import { cleanFilterParams } from "../../../utils/cleanNullOrEmpty";
-import { LotGetQueryParams, LotGetRequestParams } from "../../../types/lot";
+import { cleanFilterParams } from "../../../../utils/cleanNullOrEmpty";
 
 interface ComponentProps {
-  setQuery: React.Dispatch<React.SetStateAction<LotGetRequestParams>>;
-  initialQueryParams: LotGetRequestParams;
+  setQuery: React.Dispatch<React.SetStateAction<OutboundGetRequestParams>>;
+  initialQueryParams: OutboundGetRequestParams;
 }
 
-const initialFilterParams: LotGetQueryParams = {
+const initialFilterParams: OutboundFilterParams = {
   Search: "",
   DateFrom: null,
   DateTo: null,
@@ -18,7 +21,7 @@ const initialFilterParams: LotGetQueryParams = {
 
 const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
   const [filterParam, setFilterParam] =
-    useState<LotGetQueryParams>(initialFilterParams);
+    useState<OutboundFilterParams>(initialFilterParams);
 
   const setDateFrom = (date: Dayjs | null) => {
     setFilterParam((prev) => ({
@@ -43,7 +46,6 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
 
   const handleSearch = () => {
     const cleanParams = cleanFilterParams(filterParam);
-
     setQuery((prev) => ({
       ...prev,
       ...cleanParams,

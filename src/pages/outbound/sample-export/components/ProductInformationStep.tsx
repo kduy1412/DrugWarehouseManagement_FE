@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { LotGetRequestParams, LotGetView } from "../../../types/lot";
-import { useGetLotQuery } from "../../../hooks/api/lot/getLotQuery";
-import { formatDateTime } from "../../../utils/timeHelper";
 import {
   Button,
   Card,
@@ -18,14 +15,15 @@ import {
 import styled from "styled-components";
 import FilterComponent from "./FilterComponents";
 import { TableRowSelection } from "antd/es/table/interface";
+import { DeleteOutlined } from "@ant-design/icons";
+import { LotGetRequestParams, LotGetView } from "../../../../types/lot";
 import {
   OutboundDetail,
-  OutboundDetailRequest,
-  OutboundPostRequest,
-} from "../../../types/outbound";
-import { DeleteOutlined } from "@ant-design/icons";
-import { useCreateOutboundMutation } from "../../../hooks/api/outbound/createOutboundMutation";
-import { useNavigate } from "react-router-dom";
+  SampleExportDetailsRequest,
+  SampleExportRequest,
+} from "../../../../types/outbound";
+import { useGetLotQuery } from "../../../../hooks/api/lot/getLotQuery";
+import { formatDateTime } from "../../../../utils/timeHelper";
 
 const initialQueryParams: LotGetRequestParams = {
   Page: 1,
@@ -35,15 +33,15 @@ const initialQueryParams: LotGetRequestParams = {
   Search: null,
 };
 
-type ProductsSelectedProps = OutboundDetailRequest &
+type ProductsSelectedProps = SampleExportDetailsRequest &
   Pick<OutboundDetail, "lotNumber" | "productName">;
 
 interface ProductInformationStepProps {
-  formData: OutboundPostRequest;
-  updateFormData: (data: Partial<OutboundPostRequest>) => void;
+  formData: SampleExportRequest;
+  updateFormData: (data: Partial<SampleExportRequest>) => void;
 }
 type ProductInformationStepFormProps = Pick<
-  OutboundPostRequest,
+  SampleExportRequest,
   "outboundDetails"
 >;
 
@@ -59,8 +57,7 @@ const ProductInformationStep = ({
     ProductsSelectedProps[] | []
   >([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { mutate, isSuccess } = useCreateOutboundMutation();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -223,42 +220,6 @@ const ProductInformationStep = ({
       ),
     },
     {
-      title: "Đơn Giá",
-      dataIndex: "unitPrice",
-      key: "unitPrice",
-      render: (unitPrice, record, index) => (
-        <InputNumber
-          min={0}
-          value={unitPrice}
-          formatter={(value) =>
-            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-          }
-          style={{ width: "100%", maxWidth: "12rem" }}
-          parser={(value) => (value ? parseInt(value.replace(/\D/g, "")) : 0)}
-          onChange={(value) => handleChange(index, "unitPrice", value)}
-        />
-      ),
-    },
-    {
-      title: "Chiết Khấu",
-      dataIndex: "discount",
-      key: "discount",
-      render: (discount, _, index) => (
-        <InputNumber
-          min={0}
-          max={100}
-          value={discount ?? 0}
-          formatter={(value) => `${value}%`}
-          style={{ width: "100%", maxWidth: "12rem" }}
-          parser={(value) => {
-            const parsed = value ? parseFloat(value.replace(/[^\d.]/g, "")) : 0;
-            return Math.min(Math.max(parsed, 0), 100);
-          }}
-          onChange={(value) => handleChange(index, "discount", value)}
-        />
-      ),
-    },
-    {
       key: "action",
       render: (_, item) => (
         <DeleteOutlined
@@ -298,17 +259,16 @@ const ProductInformationStep = ({
 
   const handleSubmit = () => {
     console.log(formData);
-    mutate(formData);
   };
 
   useEffect(() => {
     const mapToFormData = () => {
-      const outboundDetails: OutboundDetailRequest[] = selectedProduct.map(
+      const outboundDetails: SampleExportDetailsRequest[] = selectedProduct.map(
         (product) => ({
           lotId: product.lotId,
           quantity: product.quantity,
-          unitPrice: product.unitPrice,
-          discount: product.discount ?? 0,
+          discount: 0,
+          unitPrice: 0,
         })
       );
 
@@ -322,9 +282,9 @@ const ProductInformationStep = ({
     updateFormData(mapToFormData());
   }, [selectedProduct, updateFormData]);
 
-  if (isSuccess) {
-    navigate("/outbound/history", { flushSync: true });
-  }
+  // if (isSuccess) {
+  //   navigate("/outbound/history", { flushSync: true });
+  // }
 
   return (
     <>

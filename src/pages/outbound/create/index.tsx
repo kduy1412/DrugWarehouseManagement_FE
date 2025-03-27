@@ -3,8 +3,8 @@ import { useState } from "react";
 import { UserAddOutlined } from "@ant-design/icons";
 import { Pill } from "@phosphor-icons/react";
 import styled from "styled-components";
-import CustomerInformationStep from "./CustomerInformationStep";
-import ProductInformationStep from "./ProductInformationStep";
+import CustomerInformationStep from "./components/CustomerInformationStep";
+import ProductInformationStep from "./components/ProductInformationStep";
 import { OutboundPostRequest } from "../../../types/outbound";
 
 const CreateOutboundPage = () => {

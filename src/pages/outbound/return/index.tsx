@@ -21,10 +21,10 @@ import {
 } from "antd";
 import { formatDateTime } from "../../../utils/timeHelper";
 import { parseOutboundStatusToVietnamese } from "../../../utils/translateOutboundStatus";
-import FilterComponent from "./FilterComponent";
 import styled from "styled-components";
 import { TableRowSelection } from "antd/es/table/interface";
 import { DeleteOutlined, UndoOutlined } from "@ant-design/icons";
+import FilterComponent from "./components/FilterComponent";
 
 /**Types */
 type DataType = OutboundGetView;
@@ -235,7 +235,7 @@ const ReturnOutboundPage = () => {
         <InputNumber
           min={0}
           value={quantity}
-          max={record.quantity}
+          max={selectedData[index].quantity}
           onChange={(value) => onQuantityChange(index, value || 0)}
           style={{ width: "100%", maxWidth: "100px" }}
         />
@@ -300,10 +300,6 @@ const ReturnOutboundPage = () => {
   };
 
   const handleOnClickButtonReturn = () => {
-    const selectedData = outboundDetailsData.filter((item) =>
-      selectedOutboundDetailsRowKeys.includes(item.outboundDetailsId)
-    );
-
     setSelectedOutboundDetailsReturnData(selectedData);
   };
 
@@ -315,7 +311,6 @@ const ReturnOutboundPage = () => {
       })
     );
     console.log(data);
-    // Submit Data
   };
 
   //   Mapping outboundDetails Data from outboundData
@@ -323,7 +318,9 @@ const ReturnOutboundPage = () => {
     selectedOutboundRowKeys.includes(item.outboundId)
   );
   const outboundDetailsData = selectedItem?.outboundDetails || [];
-
+  const selectedData = outboundDetailsData.filter((item) =>
+    selectedOutboundDetailsRowKeys.includes(item.outboundDetailsId)
+  );
   return (
     <>
       {currentStep === 1 && (

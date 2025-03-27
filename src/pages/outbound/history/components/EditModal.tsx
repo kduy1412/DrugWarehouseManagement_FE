@@ -1,7 +1,7 @@
 import { Button, Modal } from "antd";
 import React from "react";
 import styled from "styled-components";
-import { OutboundGetView } from "../../../types/outbound";
+import { OutboundGetView } from "../../../../types/outbound";
 
 interface ComponentProps {
   isModalOpen: boolean;

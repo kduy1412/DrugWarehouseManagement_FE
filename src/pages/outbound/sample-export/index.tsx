@@ -3,9 +3,9 @@ import { useState } from "react";
 import { UserAddOutlined } from "@ant-design/icons";
 import { Pill } from "@phosphor-icons/react";
 import styled from "styled-components";
-import ProductInformationStep from "./ProductInformationStep";
 import { SampleExportRequest } from "../../../types/outbound";
-import CustomerInformationStep from "./CustomerInformationStep";
+import CustomerInformationStep from "./components/CustomerInformationStep";
+import ProductInformationStep from "./components/ProductInformationStep";
 
 const SampleExportPage = () => {
   const [currentStep, setCurrentStep] = useState("1");

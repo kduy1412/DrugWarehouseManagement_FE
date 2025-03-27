@@ -1,23 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import { LotGetRequestParams, LotGetView } from "../../../types/lot";
-import { useGetLotQuery } from "../../../hooks/api/lot/getLotQuery";
-import { formatDateTime } from "../../../utils/timeHelper";
+import React, { useEffect, useState } from "react";
+import { LotGetRequestParams, LotGetView } from "../../../../types/lot";
+import { useGetLotQuery } from "../../../../hooks/api/lot/getLotQuery";
+import { formatDateTime } from "../../../../utils/timeHelper";
 import {
   Button,
   Card,
   Divider,
-  Flex,
-  Form,
-  FormProps,
   InputNumber,
   Modal,
   notification,
   Pagination,
   PaginationProps,
-  RefSelectProps,
-  Select,
-  Space,
-  Spin,
   Table,
   TableProps,
   Tag,
@@ -26,18 +19,13 @@ import styled from "styled-components";
 import FilterComponent from "./FilterComponents";
 import { TableRowSelection } from "antd/es/table/interface";
 import {
-  LotTransferDetail,
-  LotTransferPostRequest,
   OutboundDetail,
-} from "../../../types/outbound";
+  OutboundDetailRequest,
+  OutboundPostRequest,
+} from "../../../../types/outbound";
 import { DeleteOutlined } from "@ant-design/icons";
-import { useDebounce } from "@uidotdev/usehooks";
-import {
-  WarehouseGetRequestParams,
-  WarehouseGetView,
-} from "../../../types/warehouse";
-import { useGetWarehouseQuery } from "../../../hooks/api/warehouse/getWarehouseQuery";
-// import { useNavigate } from "react-router-dom";
+import { useCreateOutboundMutation } from "../../../../hooks/api/outbound/createOutboundMutation";
+import { useNavigate } from "react-router-dom";
 
 const initialQueryParams: LotGetRequestParams = {
   Page: 1,
@@ -47,29 +35,22 @@ const initialQueryParams: LotGetRequestParams = {
   Search: null,
 };
 
-const initialFormData: FromWarehouseProps = {
-  fromWareHouseId: null,
-};
-
-type ProductsSelectedProps = LotTransferDetail &
+type ProductsSelectedProps = OutboundDetailRequest &
   Pick<OutboundDetail, "lotNumber" | "productName">;
 
 interface ProductInformationStepProps {
-  formData: LotTransferPostRequest;
-  updateFormData: (data: Partial<LotTransferPostRequest>) => void;
+  formData: OutboundPostRequest;
+  updateFormData: (data: Partial<OutboundPostRequest>) => void;
 }
 type ProductInformationStepFormProps = Pick<
-  LotTransferPostRequest,
-  "lotTransferDetails"
+  OutboundPostRequest,
+  "outboundDetails"
 >;
-type FromWarehouseProps = Pick<LotTransferPostRequest, "fromWareHouseId">;
 
 const ProductInformationStep = ({
   formData,
   updateFormData,
 }: ProductInformationStepProps) => {
-  const [form] = Form.useForm<FromWarehouseProps>();
-
   const [queryParams, setQueryParams] =
     useState<LotGetRequestParams>(initialQueryParams);
   const { data } = useGetLotQuery(queryParams);
@@ -77,19 +58,9 @@ const ProductInformationStep = ({
   const [selectedProduct, setSelectedProduct] = useState<
     ProductsSelectedProps[] | []
   >([]);
-  const selectRef = useRef<RefSelectProps>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const debouncedSearchTerm = useDebounce(searchTerm, 400);
-  const [searchParams, setSearchParams] = useState<WarehouseGetRequestParams>({
-    Page: 1,
-    PageSize: 100,
-  });
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  const { data: warehouseData } = useGetWarehouseQuery(searchParams);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const navigate = useNavigate();
+  const { mutate, isSuccess } = useCreateOutboundMutation();
+  const navigate = useNavigate();
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -161,24 +132,6 @@ const ProductInformationStep = ({
   };
 
   const hasSelected = selectedRowKeys.length > 0;
-
-  const columns: TableProps<WarehouseGetView>["columns"] = [
-    {
-      title: "Mã Kho",
-      dataIndex: "warehouseId",
-      key: "warehouseId",
-    },
-    {
-      title: "Tên Kho",
-      dataIndex: "warehouseName",
-      key: "warehouseName",
-    },
-    {
-      title: "Địa Chỉ",
-      dataIndex: "address",
-      key: "address",
-    },
-  ];
 
   const lotColumns: TableProps<LotGetView>["columns"] = [
     {
@@ -270,6 +223,42 @@ const ProductInformationStep = ({
       ),
     },
     {
+      title: "Đơn Giá",
+      dataIndex: "unitPrice",
+      key: "unitPrice",
+      render: (unitPrice, record, index) => (
+        <InputNumber
+          min={0}
+          value={unitPrice}
+          formatter={(value) =>
+            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          }
+          style={{ width: "100%", maxWidth: "12rem" }}
+          parser={(value) => (value ? parseInt(value.replace(/\D/g, "")) : 0)}
+          onChange={(value) => handleChange(index, "unitPrice", value)}
+        />
+      ),
+    },
+    {
+      title: "Chiết Khấu",
+      dataIndex: "discount",
+      key: "discount",
+      render: (discount, _, index) => (
+        <InputNumber
+          min={0}
+          max={100}
+          value={discount ?? 0}
+          formatter={(value) => `${value}%`}
+          style={{ width: "100%", maxWidth: "12rem" }}
+          parser={(value) => {
+            const parsed = value ? parseFloat(value.replace(/[^\d.]/g, "")) : 0;
+            return Math.min(Math.max(parsed, 0), 100);
+          }}
+          onChange={(value) => handleChange(index, "discount", value)}
+        />
+      ),
+    },
+    {
       key: "action",
       render: (_, item) => (
         <DeleteOutlined
@@ -309,19 +298,22 @@ const ProductInformationStep = ({
 
   const handleSubmit = () => {
     console.log(formData);
+    mutate(formData);
   };
 
   useEffect(() => {
     const mapToFormData = () => {
-      const lotTransferDetails: LotTransferDetail[] = selectedProduct.map(
+      const outboundDetails: OutboundDetailRequest[] = selectedProduct.map(
         (product) => ({
           lotId: product.lotId,
           quantity: product.quantity,
+          unitPrice: product.unitPrice,
+          discount: product.discount ?? 0,
         })
       );
 
       const data: ProductInformationStepFormProps = {
-        lotTransferDetails,
+        outboundDetails,
       };
 
       return data;
@@ -330,150 +322,76 @@ const ProductInformationStep = ({
     updateFormData(mapToFormData());
   }, [selectedProduct, updateFormData]);
 
-  const handleRowClick = (record: WarehouseGetView) => {
-    form.setFieldsValue({
-      fromWareHouseId: record.warehouseId,
-    });
-    updateFormData({ fromWareHouseId: record.warehouseId });
-    setDropdownOpen(false);
-    selectRef.current?.blur();
-  };
-
-  // Effects
-  useEffect(() => {
-    setSearchParams((prev) => ({
-      ...prev,
-      Search: debouncedSearchTerm,
-    }));
-  }, [debouncedSearchTerm]);
-
-  // if (isSuccess) {
-  //   navigate("/outbound/history", { flushSync: true });
-  // }
+  if (isSuccess) {
+    navigate("/outbound/history", { flushSync: true });
+  }
 
   return (
-    <div>
-      <StyledForm
-        form={form}
-        layout="vertical"
-        initialValues={initialFormData}
-        requiredMark={"optional"}
-      >
-        <Space direction="vertical" style={{ width: "100%" }}>
-          <Card>
-            <StyledDivider orientation="center">Chuyển Từ Kho</StyledDivider>
-            <Form.Item
-              name="fromWareHouseId"
-              label="Vị trí kho hàng muốn chuyển"
-              rules={[{ required: true, message: "Vui lòng chọn kho" }]}
-            >
-              <StyledSelect
-                ref={selectRef}
-                placeholder="Chọn vị trí của hàng cần chuyển"
-                onSearch={(data) => setSearchTerm(data)}
-                mode="tags"
-                showSearch
-                value={[formData.fromWareHouseId]}
-                onFocus={() => {
-                  setDropdownOpen(true);
-                }}
-                open={dropdownOpen}
-                dropdownRender={() =>
-                  warehouseData ? (
-                    <Table
-                      columns={columns}
-                      dataSource={warehouseData.items}
-                      rowKey="email"
-                      pagination={false}
-                      size="small"
-                      onRow={(record) => ({
-                        onClick: () => handleRowClick(record),
-                      })}
-                    />
-                  ) : (
-                    <Flex
-                      justify="center"
-                      align="center"
-                      style={{ minHeight: "30vh" }}
-                    >
-                      <Spin />
-                    </Flex>
-                  )
-                }
-              />
-            </Form.Item>
-          </Card>
-        </Space>
-      </StyledForm>
-
-      {formData.fromWareHouseId && (
-        <>
-          <StyledCard>
-            <ListProductButton onClick={() => setIsModalOpen(true)}>
-              {`Mặt hàng đã chọn (${selectedProduct.length})`}
-            </ListProductButton>
-            <FilterComponent
-              initialQueryParams={initialQueryParams}
-              setQuery={setQueryParams}
-            />
-            <CtaButton onClick={onClickAddProduct} disabled={!hasSelected}>
-              Thêm vào đơn
-            </CtaButton>
-          </StyledCard>
-          <StyledDivider orientation="left" orientationMargin={0}>
-            Danh sách hàng tồn kho
-          </StyledDivider>
-          <Table<LotGetView>
-            pagination={false}
-            dataSource={data?.items}
-            columns={lotColumns}
-            rowSelection={rowSelection}
-            rowKey={(record) => record.lotId}
-          />
-          {data && (
-            <StyledPagination
-              showSizeChanger
-              align="end"
-              style={{
-                marginTop: "var(--line-width-light)",
-              }}
-              defaultCurrent={1}
-              total={data?.totalCount}
-              pageSize={data?.pageSize}
-              current={queryParams.Page}
-              onChange={handleOnPageChange}
-              onShowSizeChange={handleOnPageSizeChange}
-            />
-          )}
-          <CtaButton
-            type="primary"
-            onClick={handleSubmit}
-            style={{ marginTop: 16 }}
-          >
-            Hoàn tất
-          </CtaButton>
-
-          <StyledModal
-            title={null}
-            open={isModalOpen}
-            onCancel={() => setIsModalOpen(false)}
-            footer={null} // Removes OK/Cancel buttons
-            wrapClassName="ant-modal-fullscreen"
-          >
-            <StyledDivider orientation="left" orientationMargin={0}>
-              Mặt hàng đã chọn
-            </StyledDivider>
-            <Table<ProductsSelectedProps>
-              columns={productColumn}
-              dataSource={selectedProduct}
-              rowKey="lotId"
-              pagination={false}
-              scroll={{ y: "calc(100vh - 14rem)" }}
-            />
-          </StyledModal>
-        </>
+    <>
+      <StyledCard>
+        <ListProductButton onClick={() => setIsModalOpen(true)}>
+          {`Mặt hàng đã chọn (${selectedProduct.length})`}
+        </ListProductButton>
+        <FilterComponent
+          initialQueryParams={initialQueryParams}
+          setQuery={setQueryParams}
+        />
+        <CtaButton onClick={onClickAddProduct} disabled={!hasSelected}>
+          Thêm vào đơn
+        </CtaButton>
+      </StyledCard>
+      <StyledDivider orientation="left" orientationMargin={0}>
+        Danh sách hàng tồn kho
+      </StyledDivider>
+      <Table<LotGetView>
+        pagination={false}
+        dataSource={data?.items}
+        columns={lotColumns}
+        rowSelection={rowSelection}
+        rowKey={(record) => record.lotId}
+      />
+      {data && (
+        <StyledPagination
+          showSizeChanger
+          align="end"
+          style={{
+            marginTop: "var(--line-width-light)",
+          }}
+          defaultCurrent={1}
+          total={data?.totalCount}
+          pageSize={data?.pageSize}
+          current={queryParams.Page}
+          onChange={handleOnPageChange}
+          onShowSizeChange={handleOnPageSizeChange}
+        />
       )}
-    </div>
+      <CtaButton
+        type="primary"
+        onClick={handleSubmit}
+        style={{ marginTop: 16 }}
+      >
+        Hoàn tất
+      </CtaButton>
+
+      <StyledModal
+        title={null}
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null} // Removes OK/Cancel buttons
+        wrapClassName="ant-modal-fullscreen"
+      >
+        <StyledDivider orientation="left" orientationMargin={0}>
+          Mặt hàng đã chọn
+        </StyledDivider>
+        <Table<ProductsSelectedProps>
+          columns={productColumn}
+          dataSource={selectedProduct}
+          rowKey="lotId"
+          pagination={false}
+          scroll={{ y: "calc(100vh - 14rem)" }}
+        />
+      </StyledModal>
+    </>
   );
 };
 
@@ -512,27 +430,6 @@ const StyledDivider = styled(Divider)`
   border-color: var(--color-placeholder) !important;
   color: var(--color-secondary-600) !important;
   font-weight: var(--font-weight-semibold) !important;
-`;
-
-const StyledSelect = styled(Select)`
-  .ant-select-selector {
-    height: 2rem !important;
-    width: 100%;
-    display: flex;
-    align-items: center;
-  }
-
-  .ant-select-dropdown {
-    padding: 0 !important;
-  }
-
-  margin-bottom: var(--line-width-thin);
-`;
-
-const StyledForm = styled(Form)<FormProps<FromWarehouseProps>>`
-  width: 100%;
-  margin: 0 auto;
-  margin-bottom: var(--line-width-bold);
 `;
 
 const StyledModal = styled(Modal)``;

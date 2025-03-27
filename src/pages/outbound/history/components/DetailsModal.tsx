@@ -14,10 +14,10 @@ import {
   OutboundDetail,
   OutboundGetView,
   OutboundStatusColors,
-} from "../../../types/outbound";
-import { formatDateTime } from "../../../utils/timeHelper";
+} from "../../../../types/outbound";
+import { formatDateTime } from "../../../../utils/timeHelper";
 import { RefTable } from "antd/es/table/interface";
-import { parseOutboundStatusToVietnamese } from "../../../utils/translateOutboundStatus";
+import { parseOutboundStatusToVietnamese } from "../../../../utils/translateOutboundStatus";
 
 interface ComponentProps {
   isModalOpen: boolean;

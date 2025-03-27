@@ -2,8 +2,8 @@ import { Button, DatePicker, Input, Space } from "antd";
 import React, { useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
-import { cleanFilterParams } from "../../../utils/cleanNullOrEmpty";
-import { LotGetQueryParams, LotGetRequestParams } from "../../../types/lot";
+import { cleanFilterParams } from "../../../../utils/cleanNullOrEmpty";
+import { LotGetQueryParams, LotGetRequestParams } from "../../../../types/lot";
 
 interface ComponentProps {
   setQuery: React.Dispatch<React.SetStateAction<LotGetRequestParams>>;
