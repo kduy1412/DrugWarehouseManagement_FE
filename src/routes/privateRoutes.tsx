@@ -10,15 +10,10 @@ import SupplierPage from "../pages/supplier";
 import ProductsPage from "../pages/product";
 import WarehousePage from "../pages/warehouse";
 import HomePage from "../pages/HomePage";
-import InboundRequestListPage from "../pages/inbounds/request-list";
-import CreateInboundRequest from "../pages/inbounds/create-inbound";
-import ApproveRequest from "../pages/inbounds/approve-inbound";
+import CreateInboundRequest from "../pages/inbounds/create inbound request";
 import images from "../assets";
 import OutBoundHistory from "../pages/outbound/history";
 import CreateOutboundPage from "../pages/outbound/create";
-import ReturnOutboundPage from "../pages/outbound/return";
-import SampleExportPage from "../pages/outbound/sample-export";
-import TransferLotPage from "../pages/outbound/transfer";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -40,13 +35,13 @@ export const privateRoutes: MenuRoutes[] = [
     icon: React.createElement(images.inbound),
     label: `Nhập Hàng`,
     url: `/inbound`,
-    element: <InboundRequestListPage />,
+    element: <InboundPage />,
     children: [
       {
-        key: `/inbound/create`,
+        key: `/inbound/create-inbound-request`,
 
-        label: `Tạo Yêu Cầu Nhập Hàng`,
-        url: `/inbound/create`,
+        label: `Create Inbound Request`,
+        url: `/inbound/create-inbound-request`,
         element: <CreateInboundRequest />,
         allowedroles: [
           Roles.Admin,
@@ -57,11 +52,11 @@ export const privateRoutes: MenuRoutes[] = [
         ],
       },
       {
-        key: `/inbound/approve`,
+        key: `/inbound/history-inbound-request`,
 
-        label: `Danh sach yêu cầu duyệt`,
-        url: `/inbound/approve`,
-        element: <ApproveRequest />,
+        label: `History Inbound Request`,
+        url: `/inbound/history-inbound-request`,
+        element: <InboundRequestList/>,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
@@ -71,10 +66,36 @@ export const privateRoutes: MenuRoutes[] = [
         ],
       },
       {
-        key: `/inbound/add-to-warehouse`,
-        label: `Thêm vào kho`,
-        url: `/inbound/add-to-warehouse`,
-        element: <ApproveRequest />,
+        key: `/inbound/approval-inbound-request-by-accountant`,
+        label: `Approval By Accountant`,
+        url: `/inbound/approval-inbound-request-by-accountant`,
+        element: <ApprovalInboundRequestList/>,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+      },
+      {
+        key: `/inbound/approval-inbound-request-by-ceo`,
+        label: `Approval By CEO`,
+        url: `/inbound/approval-inbound-request-by-ceo`,
+        element: <ApprovalInboundRequestListByCEO/>,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+      },
+      {
+        key: `/inbound/create-inbound`,
+        label: `Create Inbound`,
+        url: `/inbound/create-inbound`,
+        element: <CreateInbound/>,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
