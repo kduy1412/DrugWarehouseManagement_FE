@@ -15,5 +15,10 @@
       { "argsIgnorePattern": "^_" }
     ]
   },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
   "ignorePatterns": ["node_modules/", "dist/", "*.min.js"]
 }

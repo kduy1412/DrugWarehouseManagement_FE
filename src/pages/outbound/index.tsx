@@ -4,7 +4,7 @@ import { Outlet, useLocation } from "react-router-dom";
 
 const OutboundPage = () => {
   const location = useLocation();
-  if (location.pathname === "/") {
+  if (location.pathname === "/outbound") {
     return <OutBoundHistory />;
   }
   return <Outlet />;

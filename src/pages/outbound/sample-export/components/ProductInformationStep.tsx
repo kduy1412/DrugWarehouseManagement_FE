@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { LotGetRequestParams, LotGetView } from "../../../types/lot";
-import { useGetLotQuery } from "../../../hooks/api/lot/getLotQuery";
-import { formatDateTime } from "../../../utils/timeHelper";
 import {
   Button,
   Card,
@@ -18,12 +15,17 @@ import {
 import styled from "styled-components";
 import FilterComponent from "./FilterComponents";
 import { TableRowSelection } from "antd/es/table/interface";
+import { DeleteOutlined } from "@ant-design/icons";
+import { LotGetRequestParams, LotGetView } from "../../../../types/lot";
 import {
   OutboundDetail,
-  OutboundDetailRequest,
-  OutboundPostRequest,
-} from "../../../types/outbound";
-import { DeleteOutlined } from "@ant-design/icons";
+  SampleExportDetailsRequest,
+  SampleExportRequest,
+} from "../../../../types/outbound";
+import { useGetLotQuery } from "../../../../hooks/api/lot/getLotQuery";
+import { formatDateTime } from "../../../../utils/timeHelper";
+import { validateObjectProperties } from "../../../../utils/validateObjectProperties";
+import { useCreateSampleExportMutation } from "../../../../hooks/api/outbound/createSampleExportMutation";
 
 const initialQueryParams: LotGetRequestParams = {
   Page: 1,
@@ -33,15 +35,22 @@ const initialQueryParams: LotGetRequestParams = {
   Search: null,
 };
 
-type ProductsSelectedProps = OutboundDetailRequest &
+const validationMessage: Partial<Record<keyof SampleExportRequest, string>> = {
+  receiverName: "Tên người nhận không được để trống",
+  receiverAddress: "Địa chỉ người nhận không được để trống",
+  receiverPhone: "Số điện thoại người nhận không được để trống",
+  outboundDetails: "Chi tiết đơn hàng gửi đi không được để trống",
+};
+
+type ProductsSelectedProps = SampleExportDetailsRequest &
   Pick<OutboundDetail, "lotNumber" | "productName">;
 
 interface ProductInformationStepProps {
-  formData: OutboundPostRequest;
-  updateFormData: (data: Partial<OutboundPostRequest>) => void;
+  formData: SampleExportRequest;
+  updateFormData: (data: Partial<SampleExportRequest>) => void;
 }
 type ProductInformationStepFormProps = Pick<
-  OutboundPostRequest,
+  SampleExportRequest,
   "outboundDetails"
 >;
 
@@ -52,6 +61,7 @@ const ProductInformationStep = ({
   const [queryParams, setQueryParams] =
     useState<LotGetRequestParams>(initialQueryParams);
   const { data } = useGetLotQuery(queryParams);
+  const { mutate } = useCreateSampleExportMutation();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<
     ProductsSelectedProps[] | []
@@ -59,7 +69,6 @@ const ProductInformationStep = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
@@ -106,6 +115,7 @@ const ProductInformationStep = ({
           unitPrice: 1,
           lotNumber: product.lotNumber,
           productName: product.productName,
+          discount: 0,
         })
       );
       setSelectedProduct((prev) => [...prev, ...productsMapping]);
@@ -219,23 +229,6 @@ const ProductInformationStep = ({
       ),
     },
     {
-      title: "Đơn Giá",
-      dataIndex: "unitPrice",
-      key: "unitPrice",
-      render: (unitPrice, record, index) => (
-        <InputNumber
-          min={0}
-          value={unitPrice}
-          formatter={(value) =>
-            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-          }
-          style={{ width: "100%", maxWidth: "12rem" }}
-          parser={(value) => (value ? parseInt(value.replace(/\D/g, "")) : 0)}
-          onChange={(value) => handleChange(index, "unitPrice", value)}
-        />
-      ),
-    },
-    {
       key: "action",
       render: (_, item) => (
         <DeleteOutlined
@@ -275,15 +268,23 @@ const ProductInformationStep = ({
 
   const handleSubmit = () => {
     console.log(formData);
+    const isValidationSuccess = validateObjectProperties<SampleExportRequest>(
+      formData,
+      validationMessage
+    );
+    if (isValidationSuccess) {
+      mutate(formData);
+    }
   };
 
   useEffect(() => {
     const mapToFormData = () => {
-      const outboundDetails: OutboundDetailRequest[] = selectedProduct.map(
+      const outboundDetails: SampleExportDetailsRequest[] = selectedProduct.map(
         (product) => ({
           lotId: product.lotId,
           quantity: product.quantity,
-          unitPrice: product.unitPrice,
+          discount: 0,
+          unitPrice: 0,
         })
       );
 
@@ -340,6 +341,7 @@ const ProductInformationStep = ({
         type="primary"
         onClick={handleSubmit}
         style={{ marginTop: 16 }}
+        disabled={selectedProduct.length <= 0}
       >
         Hoàn tất
       </CtaButton>

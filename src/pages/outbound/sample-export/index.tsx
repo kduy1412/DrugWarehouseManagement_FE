@@ -3,13 +3,13 @@ import { useCallback, useState } from "react";
 import { UserAddOutlined } from "@ant-design/icons";
 import { Pill } from "@phosphor-icons/react";
 import styled from "styled-components";
+import { SampleExportRequest } from "../../../types/outbound";
 import CustomerInformationStep from "./components/CustomerInformationStep";
 import ProductInformationStep from "./components/ProductInformationStep";
-import { OutboundPostRequest } from "../../../types/outbound";
 
-const CreateOutboundPage = () => {
+const SampleExportPage = () => {
   const [currentStep, setCurrentStep] = useState("1");
-  const [formData, setFormData] = useState<OutboundPostRequest>({
+  const [formData, setFormData] = useState<SampleExportRequest>({
     customerId: null,
     receiverName: "",
     receiverAddress: "",
@@ -24,7 +24,7 @@ const CreateOutboundPage = () => {
   };
 
   const handleFormUpdate = useCallback(
-    (stepData: Partial<OutboundPostRequest>) => {
+    (stepData: Partial<SampleExportRequest>) => {
       setFormData((prev) => ({ ...prev, ...stepData }));
     },
     []
@@ -63,7 +63,7 @@ const CreateOutboundPage = () => {
   );
 };
 
-export default CreateOutboundPage;
+export default SampleExportPage;
 
 const StyledTabs = styled(Tabs)`
   max-width: 100%;

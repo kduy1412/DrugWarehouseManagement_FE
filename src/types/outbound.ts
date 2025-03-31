@@ -4,13 +4,12 @@ import { PaginationModelResponse } from "./paginationModelResponse";
 
 //POST
 export type OutboundPostRequest = {
-  customerName: string;
-  customerId: number | null;
-  address: string;
-  phoneNumber: string;
+  receiverName: string;
+  customerId?: number | null;
+  receiverAddress: string;
+  receiverPhone: string;
   outboundOrderCode?: string | null;
-  trackingNumber: string | null;
-  note: string;
+  note?: string | null;
   outboundDetails: OutboundDetailRequest[];
 };
 
@@ -18,7 +17,56 @@ export type OutboundDetailRequest = {
   lotId: number;
   quantity: number;
   unitPrice: number;
+  discount: number;
 };
+
+//PUT
+export interface OutboundPutRequest {
+  customerName?: string | null;
+  address?: string | null;
+  phoneNumber?: string | null;
+  outboundOrderCode?: string | null;
+  trackingNumber?: string | null;
+  note?: string | null;
+  status?: string | null;
+}
+
+// POST-SAMPLE-EXPORT
+export type SampleExportDetailsRequest = Pick<
+  OutboundDetail,
+  "lotId" | "quantity" | "discount" | "unitPrice"
+>;
+
+export type SampleExportRequest = Omit<
+  OutboundPostRequest,
+  "outboundDetails"
+> & {
+  outboundDetails: SampleExportDetailsRequest[];
+};
+
+// POST-LOT-TRANSFER
+export interface LotTransferPostRequest {
+  lotTransferCode: string;
+  fromWareHouseId: number | null;
+  toWareHouseId: number | null;
+  lotTransferDetails: LotTransferDetail[];
+}
+
+export interface LotTransferDetail {
+  quantity: number;
+  lotId: number;
+}
+
+//POST-RETURNED
+export type OutboundReturnRequest = {
+  outboundId: number;
+  details: OutboundReturnDetailsRequest[];
+};
+
+export type OutboundReturnDetailsRequest = Pick<
+  OutboundDetail,
+  "outboundDetailsId" | "quantity"
+> & { note: string | null };
 
 //GET
 export interface OutboundGetResponse extends PaginationModelResponse {
@@ -45,10 +93,9 @@ export interface Outbound {
   outboundId: number;
   outboundCode: string;
   customerName: string;
-  address?: string | null;
-  phoneNumber?: string | null;
+  address: string;
+  phoneNumber: string;
   outboundOrderCode?: string | null;
-  trackingNumber?: string | null;
   outboundDate?: Date | null;
   status: OutboundStatus;
   outboundDetails: OutboundDetail[];
@@ -62,6 +109,7 @@ export interface OutboundDetail {
   unitPrice: number;
   totalPrice: number;
   unitType: string;
+  discount: number;
   productName: string | null;
   expiryDate: Date;
 }

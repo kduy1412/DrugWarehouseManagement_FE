@@ -1,22 +1,19 @@
 import { Card, Tabs, TabsProps } from "antd";
-import { useCallback, useState } from "react";
-import { UserAddOutlined } from "@ant-design/icons";
+import React, { useCallback, useState } from "react";
 import { Pill } from "@phosphor-icons/react";
 import styled from "styled-components";
-import CustomerInformationStep from "./components/CustomerInformationStep";
 import ProductInformationStep from "./components/ProductInformationStep";
-import { OutboundPostRequest } from "../../../types/outbound";
+import { LotTransferPostRequest } from "../../../types/outbound";
+import WarehouseInformationStep from "./components/WarehouseInformationStep";
+import images from "../../../assets";
 
-const CreateOutboundPage = () => {
+const TransferLotPage = () => {
   const [currentStep, setCurrentStep] = useState("1");
-  const [formData, setFormData] = useState<OutboundPostRequest>({
-    customerId: null,
-    receiverName: "",
-    receiverAddress: "",
-    receiverPhone: "",
-    outboundOrderCode: "",
-    note: "",
-    outboundDetails: [],
+  const [formData, setFormData] = useState<LotTransferPostRequest>({
+    lotTransferCode: "",
+    fromWareHouseId: null,
+    toWareHouseId: null,
+    lotTransferDetails: [],
   });
 
   const onChange = (key: string) => {
@@ -24,7 +21,7 @@ const CreateOutboundPage = () => {
   };
 
   const handleFormUpdate = useCallback(
-    (stepData: Partial<OutboundPostRequest>) => {
+    (stepData: Partial<LotTransferPostRequest>) => {
       setFormData((prev) => ({ ...prev, ...stepData }));
     },
     []
@@ -33,10 +30,10 @@ const CreateOutboundPage = () => {
   const items: TabsProps["items"] = [
     {
       key: "1",
-      label: "Thông Tin Khách Hàng",
-      icon: <UserAddOutlined />,
+      label: "Chọn điểm đến",
+      icon: React.createElement(images.warehouse),
       children: (
-        <CustomerInformationStep
+        <WarehouseInformationStep
           formData={formData}
           updateFormData={handleFormUpdate}
           onNext={() => setCurrentStep("2")}
@@ -63,7 +60,7 @@ const CreateOutboundPage = () => {
   );
 };
 
-export default CreateOutboundPage;
+export default TransferLotPage;
 
 const StyledTabs = styled(Tabs)`
   max-width: 100%;
@@ -79,6 +76,9 @@ const StyledTabs = styled(Tabs)`
 
   & .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
     color: var(--color-secondary-600) !important;
+    svg path {
+      fill: var(--color-secondary-600) !important;
+    }
   }
 
   & .ant-tabs-tab-btn {

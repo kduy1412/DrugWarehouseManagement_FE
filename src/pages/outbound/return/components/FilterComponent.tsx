@@ -4,9 +4,9 @@ import { SearchOutlined } from "@ant-design/icons";
 import {
   OutboundFilterParams,
   OutboundGetRequestParams,
-} from "../../../types/outbound";
+} from "../../../../types/outbound";
 import dayjs, { Dayjs } from "dayjs";
-import { cleanFilterParams } from "../../../utils/cleanNullOrEmpty";
+import { cleanFilterParams } from "../../../../utils/cleanNullOrEmpty";
 
 interface ComponentProps {
   setQuery: React.Dispatch<React.SetStateAction<OutboundGetRequestParams>>;

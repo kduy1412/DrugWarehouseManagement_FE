@@ -14,10 +14,11 @@ import {
   OutboundDetail,
   OutboundGetView,
   OutboundStatusColors,
-} from "../../../types/outbound";
-import { formatDateTime } from "../../../utils/timeHelper";
+} from "../../../../types/outbound";
+import { formatDateTime } from "../../../../utils/timeHelper";
 import { RefTable } from "antd/es/table/interface";
-import { parseOutboundStatusToVietnamese } from "../../../utils/translateOutboundStatus";
+import { parseOutboundStatusToVietnamese } from "../../../../utils/translateOutboundStatus";
+import { parseToVietNameseCurrency } from "../../../../utils/parseToVietNameseCurrency";
 
 interface ComponentProps {
   isModalOpen: boolean;
@@ -44,7 +45,11 @@ const DetailsModal = ({
     {
       key: "outboundOrderCode",
       label: "Mã vận đơn",
-      children: <span>{item.outboundOrderCode}</span>,
+      children: item.outboundOrderCode ? (
+        <span>{item.outboundOrderCode}</span>
+      ) : (
+        <Tag color="warning">Chưa xác định</Tag>
+      ),
     },
     {
       key: "outboundDate",
@@ -100,21 +105,19 @@ const DetailsModal = ({
       title: "Số Lượng",
       dataIndex: "quantity",
       key: "quantity",
-      render: (quantity: number, record: OutboundDetail) => (
-        <p>{`${quantity} ${record.unitType}`}</p>
-      ),
+      render: (quantity: number) => <p>{`${quantity}`}</p>,
     },
     {
       title: "Đơn Giá",
       dataIndex: "unitPrice",
       key: "unitPrice",
-      render: (price: number) => `$${price}`,
+      render: (price: number) => `${parseToVietNameseCurrency(price)}`,
     },
     {
       title: "Thành Tiền",
       dataIndex: "totalPrice",
       key: "totalPrice",
-      render: (price: number) => `$${price}`,
+      render: (price: number) => `${parseToVietNameseCurrency(price)}`,
     },
     { title: "Loại", dataIndex: "unitType", key: "unitType" },
     { title: "Tên Mặt Hàng", dataIndex: "productName", key: "productName" },

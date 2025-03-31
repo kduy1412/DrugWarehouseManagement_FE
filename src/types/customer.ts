@@ -1,3 +1,4 @@
+import { PaginationModelRequest } from "./paginationModelRequest";
 import { PaginationModelResponse } from "./paginationModelResponse";
 
 //GET
@@ -17,17 +18,20 @@ export interface Customer {
 }
 
 //GET-PARAMS
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export interface CustomerGetRequestParams
+  extends PaginationModelRequest,
+    CustomerFilterParams,
+    Record<string, any> {}
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface CustomerGetRequestParams extends Record<string, any> {
-  page: number;
-  pageSize: number;
-  search?: string | null;
-  dateFrom?: string | null;
-  dateTo?: string | null;
-  customerId?: string | null;
-  name?: string | null;
-  phoneNumber?: string | null;
+export interface CustomerFilterParams {
+  Search?: string | null;
+  DateFrom?: string | null;
+  DateTo?: string | null;
+  PhoneNumber?: string | null;
+  Name?: string | null;
+  CustomerId?: string | null;
 }
 
 //VIEW
