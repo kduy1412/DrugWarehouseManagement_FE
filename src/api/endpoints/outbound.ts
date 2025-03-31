@@ -2,6 +2,9 @@ import apiClient from "..";
 import {
   OutboundGetRequestParams,
   OutboundPostRequest,
+  OutboundPutRequest,
+  OutboundReturnRequest,
+  SampleExportRequest,
 } from "../../types/outbound";
 
 export const createOutbound = (outboundData: OutboundPostRequest) =>
@@ -10,13 +13,17 @@ export const createOutbound = (outboundData: OutboundPostRequest) =>
     body: JSON.stringify(outboundData),
   });
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export const updateOutbound = (updatedData: any) =>
-  apiClient("/api/Outbound", {
-    method: "PUT",
-    body: JSON.stringify(updatedData),
+export const createSampleExport = (data: SampleExportRequest) =>
+  apiClient("/api/Outbound/sample-export", {
+    method: "POST",
+    body: JSON.stringify(data),
   });
-/* eslint-enable @typescript-eslint/no-explicit-any */
+
+export const updateOutbound = (outboundId: number, data: OutboundPutRequest) =>
+  apiClient(`/api/Outbound?id=${outboundId}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
 
 export const searchOutbound = (
   query: OutboundGetRequestParams = { Page: 1, PageSize: 10 }
@@ -35,4 +42,10 @@ export const getOutboundById = (id: string) =>
 export const getOutboundExportsById = (id: string) =>
   apiClient(`/api/Outbound/exports/${id}`, {
     method: "GET",
+  });
+
+export const createReturnOutbound = (data: OutboundReturnRequest) =>
+  apiClient("/api/ReturnOutbound/create", {
+    method: "POST",
+    body: JSON.stringify(data),
   });

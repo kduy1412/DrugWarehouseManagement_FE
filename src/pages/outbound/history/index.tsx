@@ -17,11 +17,11 @@ import { useGetOutBoundQuery } from "../../../hooks/api/outbound/getOutboundQuer
 import { formatDateTime } from "../../../utils/timeHelper";
 
 import styled from "styled-components";
-import ActionDropdown from "./DropdownActionOptions";
-import DetailsModal from "./DetailsModal";
-import EditModal from "./EditModal";
+import ActionDropdown from "./components/DropdownActionOptions";
+import DetailsModal from "./components/DetailsModal";
+import EditModal from "./components/EditModal";
 import { parseOutboundStatusToVietnamese } from "../../../utils/translateOutboundStatus";
-import FilterComponent from "./FilterComponent";
+import FilterComponent from "./components/FilterComponent";
 
 /**Types */
 type DataType = OutboundGetView;
@@ -60,13 +60,13 @@ const OutBoundHistory = () => {
       title: "Tên Khách Hàng",
       dataIndex: "customerName",
       key: "customerName",
-      render: (_, { customerName }) => <p>{customerName}</p>,
+      render: (_, { customerName: customerName }) => <p>{customerName}</p>,
     },
     {
       title: "Địa Chỉ",
       dataIndex: "address",
       key: "address",
-      render: (_, { address }) => {
+      render: (_, { address: address }) => {
         if (address) {
           return <p>{address}</p>;
         }
@@ -77,7 +77,7 @@ const OutBoundHistory = () => {
       title: "Liên Hệ",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
-      render: (_, { phoneNumber }) => {
+      render: (_, { phoneNumber: phoneNumber }) => {
         if (phoneNumber) {
           return <p>{phoneNumber}</p>;
         }
