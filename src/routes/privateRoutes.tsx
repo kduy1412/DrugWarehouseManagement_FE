@@ -14,6 +14,14 @@ import CreateInboundRequest from "../pages/inbounds/create inbound request";
 import images from "../assets";
 import OutBoundHistory from "../pages/outbound/history";
 import CreateOutboundPage from "../pages/outbound/create";
+import InboundRequestList from "../components/inbound/InboundRequestList";
+import InboundPage from "../pages/inbounds";
+import ApprovalInboundRequestList from "../pages/inbounds/approval by accountant";
+import ApprovalInboundRequestListByCEO from "../pages/inbounds/approval by ceo";
+import CreateInbound from "../pages/inbounds/create inbound";
+import ReturnOutboundPage from "../pages/outbound/return";
+import SampleExportPage from "../pages/outbound/sample-export";
+import TransferLotPage from "../pages/outbound/transfer";
 
 export const privateRoutes: MenuRoutes[] = [
   {
