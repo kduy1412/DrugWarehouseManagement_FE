@@ -14,7 +14,15 @@ import CreateInboundRequest from "../pages/inbounds/create inbound request";
 import images from "../assets";
 import OutBoundHistory from "../pages/outbound/history";
 import CreateOutboundPage from "../pages/outbound/create";
-
+import InboundPage from "../pages/inbounds";
+import ApprovalInboundRequestList from "../pages/inbounds/approval by accountant";
+import ApprovalInboundRequestListByCEO from "../pages/inbounds/approval by ceo";
+import SampleExportPage from "../pages/outbound/sample-export";
+import TransferLotPage from "../pages/outbound/transfer";
+import ReturnOutboundPage from "../pages/outbound/return";
+import InboundRequestList from "../pages/inbounds/list inbound request";
+import CreateInboundOrderList from "../pages/inbounds/create inbound order";
+import HistoryInboundOrder from "../pages/inbounds/list inbound order";
 export const privateRoutes: MenuRoutes[] = [
   {
     key: `/home`,
@@ -56,7 +64,7 @@ export const privateRoutes: MenuRoutes[] = [
 
         label: `History Inbound Request`,
         url: `/inbound/history-inbound-request`,
-        element: <InboundRequestList/>,
+        element:<InboundRequestList/>,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
@@ -93,9 +101,22 @@ export const privateRoutes: MenuRoutes[] = [
       },
       {
         key: `/inbound/create-inbound`,
-        label: `Create Inbound`,
+        label: `Create Inbound Order`,
         url: `/inbound/create-inbound`,
-        element: <CreateInbound/>,
+        element: <CreateInboundOrderList/>,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+      },
+      {
+        key: `/inbound/history-inbound-order`,
+        label: `History Inbound Order`,
+        url: `/inbound/history-inbound-order`,
+        element: <HistoryInboundOrder/>,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
