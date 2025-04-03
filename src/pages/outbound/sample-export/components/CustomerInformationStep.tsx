@@ -12,7 +12,7 @@ import {
 import styled from "styled-components";
 import {
   CustomerGetRequestParams,
-  CustomerGetView,
+  CustomerSelectorGetView,
 } from "../../../../types/customer";
 import { useGetCustomerQuery } from "../../../../hooks/api/customer/getCustomerQuery";
 import { SampleExportRequest } from "../../../../types/outbound";
@@ -58,7 +58,9 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
     onNext();
   };
 
-  const onSelectedCustomerChange = (customer: CustomerGetView | null) => {
+  const onSelectedCustomerChange = (
+    customer: CustomerSelectorGetView | null
+  ) => {
     form.setFieldsValue({
       customerId: customer?.customerId,
       receiverName: customer?.customerName,
