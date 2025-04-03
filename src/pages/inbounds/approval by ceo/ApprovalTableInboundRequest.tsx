@@ -10,6 +10,15 @@ interface DataType {
   totalprice: number;
 }
 
+interface ApprovalTableProps {
+  listInboundRequest: {
+    productId: number;
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+  }[];
+}
+
 const columns: TableProps<DataType>['columns'] = [
   {
     title: 'Tên',
@@ -34,16 +43,33 @@ const columns: TableProps<DataType>['columns'] = [
   },
 ];
 
-const data: DataType[] = [
-  {
-    key: '1',
-    name: 'A',
-    quantity: 32,
-    unitprice: 1000,
-    totalprice: 1000,
-  },
-];
+// const data: DataType[] = [
+//   {
+//     key: '1',
+//     name: 'A',
+//     quantity: 32,
+//     unitprice: 1000,
+//     totalprice: 1000,
+//   },
+//     {
+//     key: '2',
+//     name: '12',
+//     quantity: 12,
+//     unitprice: 1000,
+//     totalprice: 1000,
+//   },
+// ];
 
-const ApprovalTableInboundRequest: React.FC = () => <Table<DataType> columns={columns} dataSource={data} />;
+const ApprovalTableInboundRequest: React.FC<ApprovalTableProps> = ({ listInboundRequest }) => {
+  // Chuyển đổi dữ liệu từ API thành dạng phù hợp
+  const data: DataType[] = listInboundRequest.map((item, index) => ({
+    key: index.toString(),
+    name: `Sản phẩm ${item.productId}`, // Bạn có thể thay đổi cách lấy tên sản phẩm từ API khác nếu có
+    quantity: item.quantity,
+    unitprice: item.unitPrice,
+    totalprice: item.totalPrice,
+  }));
 
+  return <Table<DataType> columns={columns} dataSource={data} />;
+};
 export default ApprovalTableInboundRequest;
