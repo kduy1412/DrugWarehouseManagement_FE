@@ -1,23 +1,67 @@
-import React, { useState } from "react";
-import { Table, Space, Dropdown, Modal, Button } from "antd";
-import type { TableColumnsType, MenuProps } from "antd";
+import React, { useState, useEffect } from "react";
+import { Table, Space, Dropdown, Modal, Button, Popconfirm  } from "antd";
+import type { TableColumnsType, MenuProps  } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import ApprovalTableInboundRequest from "./ApprovalTableInboundRequest";
+import { useGetInboundRequestQuery } from "../../../hooks/api/inboundRequest/getInboundRequestQuery";
+import { useUpdateInboundRequestMutation } from "../../../hooks/api/inboundRequest/updateInboundRequestMutation";
+import { InboundRequestDetail } from "../../../types/inboundRequest";
 
 interface DataType {
-  key: React.Key;
+  key: number;
   maphieu: string;
-  ngaytao: string;
-  nguoitao: string;
-  tongtien: string;
+  ghichu: string;
   trangthai: string;
+  sanpham: InboundRequestDetail[];
 }
+
+  const initialData = {
+  Page: 1,
+  PageSize: 100
+  ,
+};
+
+// const confirm: PopconfirmProps['onConfirm'] = (e) => {
+//   console.log(e);
+//   message.success('Click on Yes');
+// };
+
+// const cancel: PopconfirmProps['onCancel'] = (e) => {
+//   console.log(e);
+//   message.error('Click on No');
+// };
 
 const ApprovalInboundRequestList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"edit" | "detail">("detail");
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
+  const { data, refetch  } = useGetInboundRequestQuery(initialData);
+  const { mutate, isSuccess } = useUpdateInboundRequestMutation();
 
+
+ const handleAccountantApproval = (inboundId: number) => {
+  console.log("trước if: ", isSuccess);
+
+  mutate(
+    {
+      data: {
+        inboundId: inboundId,
+        inboundOrderStatus: 'WaitingForDirectorApproval'
+      },
+    },
+    {
+      onSuccess: () => {
+        setIsModalOpen(false);
+        refetch();
+      }
+    }
+  );
+};
+
+  useEffect(() => {
+      console.log("Dữ liệu API Inbound Approval trả về:", data?.items);
+  }, [data]);
+  
   const handleOpenModal = (record: DataType, type: "edit" | "detail") => {
     setSelectedRecord(record);
     setModalType(type);
@@ -42,9 +86,7 @@ const ApprovalInboundRequestList: React.FC = () => {
 
   const columns: TableColumnsType<DataType> = [
     { title: "Mã phiếu", dataIndex: "maphieu" },
-    { title: "Ngày tạo", dataIndex: "ngaytao" },
-    { title: "Người tạo", dataIndex: "nguoitao" },
-    { title: "Tổng tiền", dataIndex: "tongtien" },
+    { title: "Ghi chú", dataIndex: "ghichu" },
     { title: "Trạng thái", dataIndex: "trangthai" },
     {
       title: "Action",
@@ -61,41 +103,25 @@ const ApprovalInboundRequestList: React.FC = () => {
     },
   ];
 
-  const data: DataType[] = [
-    {
-      key: "1",
-      maphieu: "PH001",
-      ngaytao: "2024-03-01",
-      nguoitao: "Nguyễn Văn A",
-      tongtien: "10,000,000 VND",
-      trangthai: "Đã nhập kho",
-    },
-    {
-      key: "2",
-      maphieu: "PH002",
-      ngaytao: "2024-03-02",
-      nguoitao: "Trần Thị B",
-      tongtien: "5,000,000 VND",
-      trangthai: "Chờ duyệt",
-    },
-    {
-      key: "3",
-      maphieu: "PH003",
-      ngaytao: "2024-03-03",
-      nguoitao: "Lê Văn C",
-      tongtien: "15,000,000 VND",
-      trangthai: "Đang xử lý",
-    },
-  ];
+const transformedData: DataType[] = Array.isArray(data?.items)
+  ? data.items.map((item) => ({
+      key: item.inboundRequestId,
+      maphieu: item.inboundRequestCode,
+      ghichu: item.note || "Không có ghi chú",
+      trangthai: item.status.toString(),
+      sanpham: item.inboundRequestDetails || []
+    }))
+  : [];
+
 
   return (
     <>
       <Table<DataType>
         columns={columns}
-        dataSource={data}
+        dataSource={transformedData}
         size="middle"
         pagination={{ pageSize: 50 }}
-        scroll={{ y: 55 * 5 }}
+        //scroll={{ y: 55 * 5 }}
       />
 
       {/* Modal for Edit or Detail */}
@@ -105,15 +131,34 @@ const ApprovalInboundRequestList: React.FC = () => {
         footer={[
           modalType === "detail" ? (
             <>
-            <Button key="cancel" >
+            <Button key="cancel" danger>
                 Huỷ yêu cầu
               </Button>
-            <Button key="allowEdit" >
+            <Button key="allowEdit">
                 Yêu cầu chỉnh sửa
               </Button>
-              <Button key="confirm" >
+              <Popconfirm
+              title="Thông báo"
+              description="Bạn có chắc phê duyệt phiếu đặt hàng này?"
+                onConfirm={() => {
+                if (selectedRecord?.key !== undefined) {
+                handleAccountantApproval(selectedRecord.key);
+                   }
+                  }}   
+              okText="Yes"
+                cancelText="Cancel"
+                
+              >
+              <Button key="confirm" type="primary"
+                // onClick={() => {
+                // if (selectedRecord?.key !== undefined) {
+                // handleAccountantApproval(selectedRecord.key);
+                //    }
+                //   }}
+                >
                 Duyệt
-              </Button>
+                </Button>
+                </Popconfirm>
             </>
           ) : null,
           <Button key="cancel" onClick={handleCancel}>
@@ -127,19 +172,14 @@ const ApprovalInboundRequestList: React.FC = () => {
               <strong>Mã phiếu:</strong> {selectedRecord.maphieu}
             </p>
             <p>
-              <strong>Ngày nhập:</strong> {selectedRecord.ngaytao}
-            </p>
-            <p>
-              <strong>Người tạo:</strong> {selectedRecord.nguoitao}
-            </p>
-            <p>
-              <strong>Tổng tiền:</strong> {selectedRecord.tongtien}
+              <strong>Mã phiếu:</strong> {selectedRecord.ghichu}
             </p>
             <p>
               <strong>Trạng thái:</strong> {selectedRecord.trangthai}
             </p>
-            <ApprovalTableInboundRequest/>
-          </div>
+    {selectedRecord.sanpham && (
+      <ApprovalTableInboundRequest listInboundRequest={selectedRecord.sanpham} />
+    )}          </div>
         )}
 
       </Modal>
