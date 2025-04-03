@@ -9,64 +9,54 @@ import {
 } from "antd";
 import React, { useState } from "react";
 import {
-  OutboundGetRequestParams,
-  OutboundGetView,
-  OutboundStatusColors,
-} from "../../../types/outbound";
-import { useGetOutBoundQuery } from "../../../hooks/api/outbound/getOutboundQuery";
-import { formatDateTime } from "../../../utils/timeHelper";
-
-import styled from "styled-components";
+  Customer,
+  CustomerGetRequestParams,
+  CustomerGetView,
+  CustomerStatusColors,
+} from "../../../types/customer";
+import { parseCustomerStatusToVietnamese } from "../../../utils/translateCustomerStatus";
 import ActionDropdown from "./components/DropdownActionOptions";
 import DetailsModal from "./components/DetailsModal";
 import EditModal from "./components/EditModal";
-import { parseOutboundStatusToVietnamese } from "../../../utils/translateOutboundStatus";
+import styled from "styled-components";
 import FilterComponent from "./components/FilterComponent";
+import { useGetCustomerQuery } from "../../../hooks/api/customer/getCustomerQuery";
 
-/**Types */
-type DataType = OutboundGetView;
-
-const initialData = {
+const initialData: CustomerGetRequestParams = {
   Page: 1,
   PageSize: 10,
 };
 
-const OutBoundHistory = () => {
-  /** Hooks */
-  const [initParams, setInitParams] =
-    useState<OutboundGetRequestParams>(initialData);
-  const { data, isLoading } = useGetOutBoundQuery(initParams);
+const CustomerListPage = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<OutboundGetView | null>(
-    null
-  );
+  const [selectedItem, setSelectedItem] = useState<Customer | null>(null);
+  const [initParams, setInitParams] = useState<CustomerGetRequestParams>({
+    Page: 1,
+    PageSize: 10,
+  });
+  /** Data Fetching */
+  const { data, isLoading } = useGetCustomerQuery(initParams);
 
   /** Column Def */
-  const columns: TableProps<DataType>["columns"] = [
+  const columns: TableProps<CustomerGetView>["columns"] = [
     {
       title: "#",
-      dataIndex: "outboundId",
-      key: "outboundId",
-      render: (index, _) => <strong>{index}</strong>,
-    },
-    {
-      title: "Mã Phiếu",
-      dataIndex: "outboundCode",
-      key: "outboundCode",
-      render: (_, { outboundCode }) => <p>{outboundCode}</p>,
+      dataIndex: "customerId",
+      key: "customerId",
+      render: (customerId) => <strong>{customerId}</strong>,
     },
     {
       title: "Tên Khách Hàng",
       dataIndex: "customerName",
       key: "customerName",
-      render: (_, { customerName: customerName }) => <p>{customerName}</p>,
+      render: (_, { customerName }) => <p>{customerName}</p>,
     },
     {
       title: "Địa Chỉ",
       dataIndex: "address",
       key: "address",
-      render: (_, { address: address }) => {
+      render: (_, { address }) => {
         if (address) {
           return <p>{address}</p>;
         }
@@ -77,7 +67,7 @@ const OutBoundHistory = () => {
       title: "Liên Hệ",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
-      render: (_, { phoneNumber: phoneNumber }) => {
+      render: (_, { phoneNumber }) => {
         if (phoneNumber) {
           return <p>{phoneNumber}</p>;
         }
@@ -85,35 +75,32 @@ const OutBoundHistory = () => {
       },
     },
     {
-      title: "Ngày Xuất Kho",
-      dataIndex: "outboundDate",
-      key: "outboundDate",
-      render: (_, { outboundDate }) => {
-        if (outboundDate) {
-          return <p>{formatDateTime(new Date(outboundDate))}</p>;
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+      render: (_, { email }) => {
+        if (email) {
+          return <p>{email}</p>;
         }
         return <Tag color="warning">Chưa xác định</Tag>;
       },
     },
     {
-      title: "Mã Vận Đơn",
-      dataIndex: "outboundOrderCode",
-      key: "outboundOrderCode",
-      render: (_, { outboundOrderCode }) => {
-        if (outboundOrderCode) {
-          return <p>{outboundOrderCode}</p>;
-        }
-        return <Tag color="warning">Chưa xác định</Tag>;
-      },
+      title: "Khách Hàng Thân Thiết",
+      dataIndex: "isLoyal",
+      key: "isLoyal",
+      render: (_, { isLoyal }) => (
+        <Tag color={isLoyal ? "green" : "red"}>{isLoyal ? "Có" : "Không"}</Tag>
+      ),
     },
     {
       title: "Trạng Thái",
       dataIndex: "status",
       key: "status",
       render: (_, { status }) => {
-        const color = OutboundStatusColors[status - 1];
+        const color = CustomerStatusColors[status - 1];
         return (
-          <Tag color={color}>{parseOutboundStatusToVietnamese(status)}</Tag>
+          <Tag color={color}>{parseCustomerStatusToVietnamese(status)}</Tag>
         );
       },
     },
@@ -165,7 +152,6 @@ const OutBoundHistory = () => {
       },
     },
   ];
-
   /** Helpers */
   const handleOnChange: PaginationProps["onChange"] = (page) => {
     setInitParams((prev) => ({
@@ -183,7 +169,6 @@ const OutBoundHistory = () => {
       PageSize: pageSize,
     }));
   };
-
   return (
     <>
       <FilterComponent
@@ -192,7 +177,7 @@ const OutBoundHistory = () => {
       />
       {data && (
         <>
-          <Table<DataType>
+          <Table<CustomerGetView>
             pagination={false}
             dataSource={data.items}
             columns={columns}
@@ -218,9 +203,7 @@ const OutBoundHistory = () => {
   );
 };
 
-export default OutBoundHistory;
-
-/** Styled Components */
+export default CustomerListPage;
 
 const StyledPagination = styled(Pagination)`
   margin-top: var(--line-width-light);

@@ -5,6 +5,19 @@ import { PaginationModelResponse } from "./paginationModelResponse";
 export interface CustomerGetResponse extends PaginationModelResponse {
   items: Customer[];
 }
+//POST
+export type CustomerPostRequest = Omit<
+  Customer,
+  "customerId" | "isLoyal" | "status"
+>;
+
+//PUT
+export interface CustomerPutRequest {
+  customerName?: string | null;
+  address?: string | null;
+  phoneNumber?: string | null;
+  email?: string | null;
+}
 
 //MODEL
 export interface Customer {
@@ -29,10 +42,21 @@ export interface CustomerFilterParams {
   Search?: string | null;
   DateFrom?: string | null;
   DateTo?: string | null;
-  PhoneNumber?: string | null;
-  Name?: string | null;
-  CustomerId?: string | null;
 }
 
 //VIEW
-export type CustomerGetView = Omit<Customer, "isLoyal" | "status">;
+export type CustomerSelectorGetView = Omit<Customer, "isLoyal" | "status">;
+
+//VIEW-LIST
+export type CustomerGetView = Customer;
+
+//STATUS
+export enum CustomerStatus {
+  Active = 1,
+  Inactive = 2,
+}
+
+export const CustomerStatusColors = [
+  "var(--status-active)",
+  "var(--status-inactive)",
+];
