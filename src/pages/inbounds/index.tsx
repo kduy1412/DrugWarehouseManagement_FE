@@ -1,6 +1,7 @@
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import InboundRequestList from "../../components/inbound/InboundRequestList";
+import InboundRequestList from "./list inbound request";
+
 
 const InboundPage = () => {
   const location = useLocation();

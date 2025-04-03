@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Table,  Modal, Button } from "antd";
+import { Table, Modal, Button } from "antd";
+
 interface DataType {
   key: React.Key;
   maphieu: string;
@@ -9,20 +10,18 @@ interface DataType {
   trangthai: string;
 }
 
-const InboundRequestList: React.FC = () => {
+const HistoryInboundOrder: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<"edit" | "detail">("detail");
-  const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
-
-  const handleOpenModal = (record: DataType, type: "edit" | "detail") => {
-    setSelectedRecord(record);
-    setModalType(type);
-    setIsModalOpen(true);
+  const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null); // Track the selected record
+  
+  const handleOpenModal = (record: DataType) => {
+    setSelectedRecord(record);  // Set the selected record to show its details
+    setIsModalOpen(true);  // Open the modal
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
-    setSelectedRecord(null);
+    setIsModalOpen(false);  // Close the modal
+    setSelectedRecord(null);  // Reset the selected record
   };
 
   // Table columns
@@ -36,8 +35,8 @@ const InboundRequestList: React.FC = () => {
       title: "Action",
       key: "action",
       render: (_: string, record: DataType) => (
-        <Button type="link" onClick={() => handleOpenModal(record, "detail")}>
-          Chi tiết
+        <Button type="link" onClick={() => handleOpenModal(record)}>
+          Chi tiet
         </Button>
       ),
     },
@@ -82,18 +81,12 @@ const InboundRequestList: React.FC = () => {
         scroll={{ y: 55 * 5 }}
       />
 
-      {/* Modal for Edit or Detail */}
+      {/* Modal for Create Inbound */}
       <Modal
-        title={modalType === "edit" ? "Chỉnh sửa phiếu nhập" : "Chi tiết phiếu nhập"}
+        title="Chi tiết Inbound Order"
         open={isModalOpen}
         onCancel={handleCancel}
-        footer={[
-          modalType === "detail" ? (
-            <>
-            
-            </>
-          ) : null,
-        ]}
+        footer={null} // No footer buttons
       >
         {selectedRecord && (
           <div>
@@ -101,7 +94,7 @@ const InboundRequestList: React.FC = () => {
               <strong>Mã phiếu:</strong> {selectedRecord.maphieu}
             </p>
             <p>
-              <strong>Ngày nhập:</strong> {selectedRecord.ngaytao}
+              <strong>Ngày tạo:</strong> {selectedRecord.ngaytao}
             </p>
             <p>
               <strong>Người tạo:</strong> {selectedRecord.nguoitao}
@@ -119,4 +112,4 @@ const InboundRequestList: React.FC = () => {
   );
 };
 
-export default InboundRequestList;
+export default HistoryInboundOrder;

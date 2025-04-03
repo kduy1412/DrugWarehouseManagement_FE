@@ -8,7 +8,7 @@ export const login = (credentials: Credentials) =>
   });
 
 export const refreshToken = (refreshToken: string) =>
-  apiClient("/api/Account/refresh", {
+  apiClient("/api/Account/refreshToken", {
     method: "POST",
     body: JSON.stringify({ refreshToken }),
   });

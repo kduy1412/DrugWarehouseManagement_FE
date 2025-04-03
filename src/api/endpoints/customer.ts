@@ -1,5 +1,9 @@
 import apiClient from "..";
-import { CustomerGetRequestParams } from "../../types/customer";
+import {
+  CustomerGetRequestParams,
+  CustomerPostRequest,
+  CustomerPutRequest,
+} from "../../types/customer";
 
 export const searchCustomer = (
   query: CustomerGetRequestParams = { Page: 1, PageSize: 10 }
@@ -10,3 +14,15 @@ export const searchCustomer = (
     method: "GET",
   });
 };
+
+export const createCustomer = (data: CustomerPostRequest) =>
+  apiClient("/api/Customer", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+
+export const updateCustomer = (customerId: number, data: CustomerPutRequest) =>
+  apiClient(`/api/Customer/${customerId}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });

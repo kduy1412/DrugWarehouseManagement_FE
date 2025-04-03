@@ -42,12 +42,13 @@ const apiClient = async (endpoint: string, options: RequestInit = {}) => {
 
     try {
       const refreshResponse = await refreshToken(refreshData.refreshToken);
+      console.log(refreshResponse);
       queryClient.setQueryData(AUTH_QUERY_KEY, (oldData: AuthResponse) => ({
         ...oldData,
-        accessToken: refreshResponse.accessToken,
+        accessToken: refreshResponse.token,
       }));
 
-      config.headers.Authorization = `Bearer ${refreshResponse.accessToken}`;
+      config.headers.Authorization = `Bearer ${refreshResponse.token}`;
       response = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}${endpoint}`,
         config

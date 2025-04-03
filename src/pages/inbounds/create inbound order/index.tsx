@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Table,  Modal, Button } from "antd";
+import { Table, Modal, Button } from "antd";
+import CreateInbound from "./CreateInboundOrder"; // Import CreateInbound component
+
 interface DataType {
   key: React.Key;
   maphieu: string;
@@ -9,20 +11,18 @@ interface DataType {
   trangthai: string;
 }
 
-const InboundRequestList: React.FC = () => {
+const CreateInboundOrderList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<"edit" | "detail">("detail");
-  const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null); // State to store the selected record
 
-  const handleOpenModal = (record: DataType, type: "edit" | "detail") => {
-    setSelectedRecord(record);
-    setModalType(type);
-    setIsModalOpen(true);
+  const handleOpenModal = (record: DataType) => {
+    setSelectedRecord(record); // Set the selected record
+    setIsModalOpen(true); // Open the modal
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
-    setSelectedRecord(null);
+    setIsModalOpen(false); // Close the modal
+    setSelectedRecord(null); // Reset the selected record
   };
 
   // Table columns
@@ -36,8 +36,8 @@ const InboundRequestList: React.FC = () => {
       title: "Action",
       key: "action",
       render: (_: string, record: DataType) => (
-        <Button type="link" onClick={() => handleOpenModal(record, "detail")}>
-          Chi tiết
+        <Button type="link" onClick={() => handleOpenModal(record)}>
+          Tạo Inbound
         </Button>
       ),
     },
@@ -82,41 +82,19 @@ const InboundRequestList: React.FC = () => {
         scroll={{ y: 55 * 5 }}
       />
 
-      {/* Modal for Edit or Detail */}
+      {/* Modal for Create Inbound */}
       <Modal
-        title={modalType === "edit" ? "Chỉnh sửa phiếu nhập" : "Chi tiết phiếu nhập"}
+        title="Tạo Inbound Order"
         open={isModalOpen}
         onCancel={handleCancel}
-        footer={[
-          modalType === "detail" ? (
-            <>
-            
-            </>
-          ) : null,
-        ]}
+        footer={null} // No footer buttons
       >
-        {selectedRecord && (
-          <div>
-            <p>
-              <strong>Mã phiếu:</strong> {selectedRecord.maphieu}
-            </p>
-            <p>
-              <strong>Ngày nhập:</strong> {selectedRecord.ngaytao}
-            </p>
-            <p>
-              <strong>Người tạo:</strong> {selectedRecord.nguoitao}
-            </p>
-            <p>
-              <strong>Tổng tiền:</strong> {selectedRecord.tongtien}
-            </p>
-            <p>
-              <strong>Trạng thái:</strong> {selectedRecord.trangthai}
-            </p>
-          </div>
-        )}
+        <div>
+          {selectedRecord && <CreateInbound record={selectedRecord} />}
+        </div>
       </Modal>
     </>
   );
 };
 
-export default InboundRequestList;
+export default CreateInboundOrderList;

@@ -14,14 +14,17 @@ import CreateInboundRequest from "../pages/inbounds/create inbound request";
 import images from "../assets";
 import OutBoundHistory from "../pages/outbound/history";
 import CreateOutboundPage from "../pages/outbound/create";
-import InboundRequestList from "../components/inbound/InboundRequestList";
 import InboundPage from "../pages/inbounds";
+import InboundRequestList from "../pages/inbounds/list inbound request";
 import ApprovalInboundRequestList from "../pages/inbounds/approval by accountant";
 import ApprovalInboundRequestListByCEO from "../pages/inbounds/approval by ceo";
-import CreateInbound from "../pages/inbounds/create inbound";
-import ReturnOutboundPage from "../pages/outbound/return";
+import CreateInboundOrderList from "../pages/inbounds/create inbound order";
+import HistoryInboundOrder from "../pages/inbounds/list inbound order";
 import SampleExportPage from "../pages/outbound/sample-export";
 import TransferLotPage from "../pages/outbound/transfer";
+import ReturnOutboundPage from "../pages/outbound/return";
+import CustomerListPage from "../pages/customer/list";
+import CreateCustomerPage from "../pages/customer/create";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -64,7 +67,7 @@ export const privateRoutes: MenuRoutes[] = [
 
         label: `History Inbound Request`,
         url: `/inbound/history-inbound-request`,
-        element: <InboundRequestList/>,
+        element: <InboundRequestList />,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
@@ -77,7 +80,7 @@ export const privateRoutes: MenuRoutes[] = [
         key: `/inbound/approval-inbound-request-by-accountant`,
         label: `Approval By Accountant`,
         url: `/inbound/approval-inbound-request-by-accountant`,
-        element: <ApprovalInboundRequestList/>,
+        element: <ApprovalInboundRequestList />,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
@@ -90,7 +93,7 @@ export const privateRoutes: MenuRoutes[] = [
         key: `/inbound/approval-inbound-request-by-ceo`,
         label: `Approval By CEO`,
         url: `/inbound/approval-inbound-request-by-ceo`,
-        element: <ApprovalInboundRequestListByCEO/>,
+        element: <ApprovalInboundRequestListByCEO />,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
@@ -101,9 +104,22 @@ export const privateRoutes: MenuRoutes[] = [
       },
       {
         key: `/inbound/create-inbound`,
-        label: `Create Inbound`,
+        label: `Create Inbound Order`,
         url: `/inbound/create-inbound`,
-        element: <CreateInbound/>,
+        element: <CreateInboundOrderList />,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+      },
+      {
+        key: `/inbound/history-inbound-order`,
+        label: `History Inbound Order`,
+        url: `/inbound/history-inbound-order`,
+        element: <HistoryInboundOrder />,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
@@ -233,7 +249,6 @@ export const privateRoutes: MenuRoutes[] = [
   },
   {
     key: `/account-management`,
-    icon: React.createElement(images.accountManage),
     label: `Quản Lý Tài Khoản`,
     url: `/account-management`,
     allowedroles: [
@@ -256,6 +271,34 @@ export const privateRoutes: MenuRoutes[] = [
       Roles.Director,
       Roles.InventoryManager,
       Roles.SaleAdmin,
+    ],
+    children: [
+      {
+        key: `/customers/list`,
+        label: `Danh Sách Khách Hàng`,
+        url: `/customers/list`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <CustomerListPage />,
+      },
+      {
+        key: `/customers/create`,
+        label: `Thêm Khách Hàng Mới`,
+        url: `/customers/create`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <CreateCustomerPage />,
+      },
     ],
     element: <CustomerPage />,
   },

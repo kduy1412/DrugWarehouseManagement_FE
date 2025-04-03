@@ -2,13 +2,13 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { RefSelectProps, Select, Spin, Table, TableProps, Empty } from "antd";
 import { useRef, useState, useEffect } from "react";
 import styled from "styled-components";
-import { CustomerGetView } from "../../types/customer";
+import { CustomerSelectorGetView } from "../../types/customer";
 
 interface CustomerSelectorProps {
   value: number | null | undefined;
-  onSelectedCustomerChange: (customer: CustomerGetView | null) => void;
+  onSelectedCustomerChange: (customer: CustomerSelectorGetView | null) => void;
   onSearchValueChange: (value: string) => void;
-  customers: CustomerGetView[] | undefined;
+  customers: CustomerSelectorGetView[] | undefined;
   loading?: boolean;
   placeholder?: string;
 }
@@ -30,14 +30,14 @@ const CustomerSelector = ({
     onSearchValueChange(debouncedSearchTerm);
   }, [debouncedSearchTerm, onSearchValueChange]);
 
-  const handleRowClick = (record: CustomerGetView) => {
+  const handleRowClick = (record: CustomerSelectorGetView) => {
     onSelectedCustomerChange(record);
     setDropdownOpen(false);
     setSearchTerm("");
     selectRef.current?.blur();
   };
 
-  const columns: TableProps<CustomerGetView>["columns"] = [
+  const columns: TableProps<CustomerSelectorGetView>["columns"] = [
     { title: "Tên khách hàng", dataIndex: "customerName", key: "customerName" },
     { title: "Địa điểm", dataIndex: "address", key: "address" },
     { title: "Số điện thoại", dataIndex: "phoneNumber", key: "phoneNumber" },
