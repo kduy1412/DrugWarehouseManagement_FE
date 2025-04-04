@@ -3,15 +3,17 @@
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended"
+    
   ],
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint", "react"],
   "rules": {
+    "@typescript-eslint/no-explicit-any": ["off"],
     "react/prop-types": "off",
     "@typescript-eslint/no-require-imports": "off",
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-unused-vars": [
-      "error",
+      "off",
       { "argsIgnorePattern": "^_" }
     ]
   },

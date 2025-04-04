@@ -25,6 +25,8 @@ import TransferLotPage from "../pages/outbound/transfer";
 import ReturnOutboundPage from "../pages/outbound/return";
 import CustomerListPage from "../pages/customer/list";
 import CreateCustomerPage from "../pages/customer/create";
+import CreateInboundReport from "../pages/inbounds/create inbound report";
+import HistoryInboundReport from "../pages/inbounds/list inbound report";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -120,6 +122,32 @@ export const privateRoutes: MenuRoutes[] = [
         label: `History Inbound Order`,
         url: `/inbound/history-inbound-order`,
         element: <HistoryInboundOrder />,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+      },
+      {
+        key: `/inbound/create-inbound-report`,
+        label: `Create Inbound Report`,
+        url: `/inbound/create-inbound-report`,
+        element: <CreateInboundReport />,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+      },
+      {
+        key: `/inbound/history-inbound-report`,
+        label: `History Inbound Report`,
+        url: `/inbound/history-inbound-report`,
+        element: <HistoryInboundReport />,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
