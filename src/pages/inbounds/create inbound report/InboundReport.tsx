@@ -125,6 +125,7 @@ const InboundReport: React.FC = () => {
     {
       title: 'Nhập số thực',
       dataIndex: 'sothuc',
+      
       editable: true,
     },
     {
