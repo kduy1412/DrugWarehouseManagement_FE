@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Table,  Modal, Button } from "antd";
+import InboundRequest from "./InboundRequest";
 interface DataType {
   key: React.Key;
   maphieu: string;
@@ -112,6 +113,8 @@ const InboundRequestList: React.FC = () => {
             <p>
               <strong>Trạng thái:</strong> {selectedRecord.trangthai}
             </p>
+            <InboundRequest/>
+            <Button>Update</Button>
           </div>
         )}
       </Modal>
