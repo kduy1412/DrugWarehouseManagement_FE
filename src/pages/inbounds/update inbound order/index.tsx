@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Modal, Button } from "antd";
+import { Table, Modal, Button, Select } from "antd";
 
 interface DataType {
     key: React.Key;
@@ -127,6 +127,7 @@ const UpdateInbound: React.FC = () => {
                                 A
                             </Select.Option>
                         </Select>
+                        <Button>Update</Button>
                     </div>
                 )}
             </Modal>
