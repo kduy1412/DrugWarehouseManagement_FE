@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Table, Modal, Button, Select } from "antd";
+import InboundReport from "../list inbound report/InboundReport";
 
 interface DataType {
     key: React.Key;
@@ -119,6 +120,7 @@ const UpdateInbound: React.FC = () => {
                             <Select.Option>Cancel
                             </Select.Option>
                         </Select>
+                        <InboundReport/>
                         <p>
                             <strong>Vị trí kho:</strong>
                         </p>
