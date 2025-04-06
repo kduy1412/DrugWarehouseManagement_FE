@@ -91,21 +91,38 @@ const UpdateInbound: React.FC = () => {
             >
                 {selectedRecord && (
                     <div>
-                        <p>
-                            <strong>Mã phiếu:</strong> {selectedRecord.maphieu}
-                        </p>
-                        <p>
-                            <strong>Ngày tạo:</strong> {selectedRecord.ngaytao}
-                        </p>
-                        <p>
-                            <strong>Người tạo:</strong> {selectedRecord.nguoitao}
-                        </p>
-                        <p>
-                            <strong>Tổng tiền:</strong> {selectedRecord.tongtien}
-                        </p>
-                        <p>
-                            <strong>Trạng thái:</strong> {selectedRecord.trangthai}
-                        </p>
+                        <h2>Thông tin NCC</h2>
+            <p>
+              <strong>Tên NCC:</strong>
+            </p>
+            <p>
+              <strong>Quốc gia:</strong>
+            </p>
+            <p>
+              <strong>MST:</strong>
+            </p>
+            <p>
+              <strong>SĐT:</strong>
+            </p>
+            <p>
+              <strong>Trạng thái:</strong>
+            </p>
+            <h2>Thông tin phiếu nhập hàng</h2>
+            <p>
+              <strong>Mã phiếu:</strong> 
+            </p>
+            <p>
+              <strong>Ngày tạo:</strong> 
+            </p>
+            <p>
+              <strong>Người tạo:</strong> 
+            </p>
+            <p>
+              <strong>Tổng tiền:</strong> 
+            </p>
+            <p>
+              <strong>Trạng thái:</strong> 
+              </p>
                         <p>
                             <strong>Status:</strong>
                         </p>
