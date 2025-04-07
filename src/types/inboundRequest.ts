@@ -5,6 +5,7 @@ import { PaginationModelResponse } from "./paginationModelResponse";
 //POST
 export type InboundRequestPostRequest = {
   note?: string | null;
+  price: number;
   inboundRequestDetails: InboundRequestDetailRequest[];
 };
 
@@ -89,6 +90,7 @@ export interface InboundRequest {
 
 export interface InboundRequestDetail {
   productId: number;
+  productName: string;
   quantity: number;
   unitPrice: number;
   totalPrice: number;

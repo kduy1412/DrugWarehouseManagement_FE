@@ -158,6 +158,7 @@ const CreateInboundRequest: React.FC = () => {
   const [productOptions, setProductOptions] = useState<{ label: string; value: number }[]>([]);
   const { mutate, isSuccess } = useCreateInboundRequestMutation();
   const [modalConfirmInboundRequest, setModalConfirmInboundRequest] = useState(false);
+  const [noteConfirm, setNoteConfirm] = useState('');
 
   const [count, setCount] = useState(2);
   useEffect(() => {
@@ -267,7 +268,8 @@ const CreateInboundRequest: React.FC = () => {
       //   mutate(dataSource);
       // }
 mutate({
-  note: "Set cứng",
+  note: noteConfirm || '',
+  price: 1,
   inboundRequestDetails: dataSource.map((item) => ({
     productId: item.productId,
     quantity: Number(item.quantity),
@@ -325,6 +327,9 @@ const components = {
         onCancel={() => setModalConfirmInboundRequest(false)}
       >
         <p>Xác nhận tạo phiếu đặt hàng?</p>
+        <Input.TextArea rows={3} placeholder="Ghi chú (nếu có)" 
+        value={noteConfirm}
+        onChange={(e) => setNoteConfirm(e.target.value)}/>
       </Modal>
     </div>
   );

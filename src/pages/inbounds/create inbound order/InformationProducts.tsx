@@ -1,88 +1,128 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Table, Typography, Button, Modal, Input, Radio, Select, DatePicker } from "antd";
 import moment from 'moment';
-
-// Define types for your row data
-interface Product {
-  key: string;
-  name: string;
-  price: number;
-}
+import { InboundRequestDetail } from "../../../types/inboundRequest";
 
 interface Batch {
   key: string;
-  batchId: string;
-  product: string;
+  lotNumber: string;
+  productId: number;
+  productName: string;
+  manufacturingDate: string;
+  expiryDate: string;
   quantity: number;
+  unitPrice: number;
+  totalPrice: number;
 }
 
-const InformationProduct: React.FC = () => {
+
+interface ProductProps {
+  productList: InboundRequestDetail[];
+  onBatchChange?: (batches: Batch[]) => void;
+
+}
+
+const InformationProduct: React.FC<ProductProps> = ({ productList, onBatchChange }) => {
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  // Separate states for the modal form fields
   const [batchId, setBatchId] = useState("");
-  const [productionDate, setProductionDate] = useState<moment.Moment | null>(null); // Changed to moment
-  const [expiryDate, setExpiryDate] = useState<moment.Moment | null>(null); // Changed to moment
-  const [selectedWarehouse, setSelectedWarehouse] = useState<string>("");
+  const [productionDate, setProductionDate] = useState<moment.Moment | null>(null);
+  const [expiryDate, setExpiryDate] = useState<moment.Moment | null>(null);
 
-  const [selectedRowKey, setSelectedRowKey] = useState<string | null>(null); // Track selected row
+  const [selectedProductIndex, setSelectedProductIndex] = useState<string | null>(null);
+  const [batches, setBatches] = useState<Batch[]>([]);
+  const [availableProducts, setAvailableProducts] = useState<InboundRequestDetail[]>(productList);
 
-  // Example mock data for products and batches
-  const productData: Product[] = [
-    { key: "1", name: "Product 1", price: 100 },
-    { key: "2", name: "Product 2", price: 150 },
-  ];
+  // Update available products whenever productList changes
+  useEffect(() => {
+    setAvailableProducts(productList);
+  }, [productList]);
 
-  const warehouses = [
-    { id: 'warehouse1', name: 'Nhà kho 1' },
-    { id: 'warehouse2', name: 'Nhà kho 2' },
-    { id: 'warehouse3', name: 'Nhà kho 3' }
-  ];
+useEffect(() => {
+  console.log("Lô hàng: ", batches);
+  onBatchChange?.(batches); // truyền ra ngoài
+}, [batches]);
 
-  const batchData: Batch[] = [
-    { key: "1", batchId: "B001", product: "Product 1", quantity: 10 },
-    { key: "2", batchId: "B002", product: "Product 2", quantity: 20 },
-  ];
+  // Add index key to avoid productId duplication
+  const transformedProductList = availableProducts.map((item, index) => ({
+    ...item,
+    key: index.toString(),
+  }));
 
   const productColumns = [
-    { title: "Tên sản phẩm", dataIndex: "name", key: "name" },
-    { title: "Giá", dataIndex: "price", key: "price" },
+    {
+      title: "Chọn",
+      key: "select",
+      render: (_: any, record: any) => (
+        <Radio
+          checked={selectedProductIndex === record.key}
+          onChange={() => setSelectedProductIndex(record.key)}
+        />
+      )
+    },
+    { title: "Tên sản phẩm", dataIndex: "productName", key: "productName" },
+    { title: "Giá", dataIndex: "unitPrice", key: "unitPrice" },
   ];
 
   const batchColumns = [
-    {
-      title: "Chọn",
-      render: (_: string, record: Batch) => (
-        <Radio
-          checked={selectedRowKey === record.key}
-          onChange={() => setSelectedRowKey(record.key)}
-        />
-      ),
-      key: "select",
-    },
-    { title: "Tên sản phẩm", dataIndex: "batchId", key: "batchId" },
+    { title: "Mã lô", dataIndex: "lotNumber", key: "lotNumber" },
+    { title: "Tên sản phẩm", dataIndex: "productName", key: "productName" },
     { title: "Số Lượng", dataIndex: "quantity", key: "quantity" },
+    { title: "Tổng tiền", dataIndex: "totalPrice", key: "totalPrice" },
+
   ];
 
   const handleCreateBatch = () => {
-    setIsModalVisible(true); // Show modal when button is clicked
+    if (!selectedProductIndex) {
+      return alert("Vui lòng chọn sản phẩm trước khi tạo lô hàng.");
+    }
+    setIsModalVisible(true);
   };
 
   const handleCancel = () => {
-    setIsModalVisible(false); // Hide modal and reset form
-    form.resetFields(); // Reset form fields
+    setIsModalVisible(false);
+    form.resetFields();
     setBatchId("");
     setProductionDate(null);
     setExpiryDate(null);
-    setSelectedWarehouse("");
   };
 
   const handleOk = () => {
-    // Here you can add logic to handle creating a new batch
-    console.log("New batch created:", { batchId, productionDate, expiryDate, selectedWarehouse });
-    setIsModalVisible(false); // Close the modal after creation
-    form.resetFields(); // Reset form fields after submission
+    if (!selectedProductIndex) return;
+
+    const selectedProduct = transformedProductList.find(item => item.key === selectedProductIndex);
+    if (!selectedProduct) return;
+
+    const newBatch: Batch = {
+      key: `${Date.now()}`,
+      lotNumber: batchId,
+      productId: selectedProduct.productId,
+      productName: selectedProduct.productName,
+      manufacturingDate: productionDate?.format("YYYY-MM-DD") || "",
+      expiryDate: expiryDate?.format("YYYY-MM-DD") || "",
+      quantity: selectedProduct.quantity || 0,
+      unitPrice: selectedProduct.unitPrice || 0,
+      totalPrice: selectedProduct.totalPrice,
+    };
+
+    // Cập nhật danh sách lô hàng
+    setBatches((prevBatches) => [...prevBatches, newBatch]);
+
+    // Xóa sản phẩm đã chọn khỏi danh sách availableProducts
+    setAvailableProducts((prevProducts) =>
+      prevProducts.filter((_, index) => index.toString() !== selectedProductIndex)
+    );
+
+    // Reset trạng thái
+    setSelectedProductIndex(null); // clear selection
+    setBatchId("");
+    setProductionDate(null);
+    setExpiryDate(null);
+
+    // Đóng modal
+    setIsModalVisible(false);
+    form.resetFields();
   };
 
   return (
@@ -91,15 +131,19 @@ const InformationProduct: React.FC = () => {
       <Button type="dashed" style={{ marginBottom: 10 }} onClick={handleCreateBatch}>
         Tạo lô Hàng
       </Button>
-      <Table dataSource={batchData} columns={batchColumns} pagination={false} rowKey="key" />
+      <Table
+        dataSource={transformedProductList}
+        columns={productColumns}
+        pagination={false}
+        rowKey="key"
+      />
 
       <Typography.Title level={4}>Danh sách lô hàng</Typography.Title>
-      <Table dataSource={productData} columns={productColumns} pagination={false} rowKey="key" />
+      <Table dataSource={batches} columns={batchColumns} pagination={false} rowKey="key" />
 
-      {/* Modal for creating a new batch */}
       <Modal
         title="Tạo Lô Hàng Mới"
-        visible={isModalVisible}
+        open={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
         okText="Tạo"
@@ -123,6 +167,7 @@ const InformationProduct: React.FC = () => {
               style={{ width: '100%' }}
             />
           </Form.Item>
+
           <Form.Item label="HSD (Hạn sử dụng)" required style={{ display: 'inline-block', width: '48%', marginLeft: '4%' }}>
             <DatePicker
               value={expiryDate}
@@ -131,20 +176,6 @@ const InformationProduct: React.FC = () => {
               placeholder="Chọn hạn sử dụng"
               style={{ width: '100%' }}
             />
-          </Form.Item>
-
-          <Form.Item label="Chọn nhà kho" required>
-            <Select
-              value={selectedWarehouse}
-              onChange={(value) => setSelectedWarehouse(value)}
-              placeholder="Chọn nhà kho"
-            >
-              {warehouses.map((warehouse) => (
-                <Select.Option key={warehouse.id} value={warehouse.id}>
-                  {warehouse.name}
-                </Select.Option>
-              ))}
-            </Select>
           </Form.Item>
         </Form>
       </Modal>

@@ -13,6 +13,7 @@ interface DataType {
 interface ApprovalTableProps {
   listInboundRequest: {
     productId: number;
+    productName: string;
     quantity: number;
     unitPrice: number;
     totalPrice: number;
@@ -64,7 +65,7 @@ const ApprovalTableInboundRequest: React.FC<ApprovalTableProps> = ({ listInbound
   // Chuyển đổi dữ liệu từ API thành dạng phù hợp
   const data: DataType[] = listInboundRequest.map((item, index) => ({
     key: index.toString(),
-    name: `Sản phẩm ${item.productId}`, // Bạn có thể thay đổi cách lấy tên sản phẩm từ API khác nếu có
+    name: item.productName, // Bạn có thể thay đổi cách lấy tên sản phẩm từ API khác nếu có
     quantity: item.quantity,
     unitprice: item.unitPrice,
     totalprice: item.totalPrice,
