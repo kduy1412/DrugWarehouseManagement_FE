@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Modal, Button } from "antd";
+import { Table, Modal, Button, Input } from "antd";
 import InboundReport from './InboundReport'
 import UploadReport from "./UploadFile";
 
@@ -13,9 +13,12 @@ interface DataType {
 }
 
 const CreateInboundReport: React.FC = () => {
+  const { TextArea } = Input;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null); // Track the selected record
-
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    console.log('Change:', e.target.value);
+  };
   const handleOpenModal = (record: DataType) => {
     setSelectedRecord(record);  // Set the selected record to show its details
     setIsModalOpen(true);  // Open the modal
@@ -127,6 +130,13 @@ const CreateInboundReport: React.FC = () => {
             </p>
             <h2>Chi tiết lô hàng</h2>
             <InboundReport />
+            <TextArea
+              showCount
+              maxLength={100}
+              onChange={onChange}
+              placeholder="Ghi chú"
+              style={{ height: 120, resize: 'none' }}
+            />
             <h2>Tài liệu</h2>
             <UploadReport />
             <Button type="primary" style={{ width: '100%' }} block>

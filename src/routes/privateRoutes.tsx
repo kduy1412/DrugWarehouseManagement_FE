@@ -27,6 +27,7 @@ import CustomerListPage from "../pages/customer/list";
 import CreateCustomerPage from "../pages/customer/create";
 import CreateInboundReport from "../pages/inbounds/create inbound report";
 import HistoryInboundReport from "../pages/inbounds/list inbound report";
+import UpdateInbound from "../pages/inbounds/update inbound order";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -148,6 +149,19 @@ export const privateRoutes: MenuRoutes[] = [
         label: `History Inbound Report`,
         url: `/inbound/history-inbound-report`,
         element: <HistoryInboundReport />,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+      },
+      {
+        key: `/inbound/update-inbound`,
+        label: `Update Inbound`,
+        url: `/inbound/update-inbound`,
+        element: <UpdateInbound />,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
