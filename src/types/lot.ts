@@ -15,6 +15,7 @@ export interface Lot {
   providerName: string | null;
   expiryDate: Date;
   manufacturingDate: Date;
+  quantity: number;
 }
 
 //GET-PARAMS

@@ -9,7 +9,11 @@ const CreateCustomerPage: React.FC = () => {
   const { mutate, isPending } = useCreateCustomerMutation();
 
   const handleFinish = (values: CustomerPostRequest) => {
-    mutate(values);
+    mutate(values, {
+      onSuccess: () => {
+        form.resetFields();
+      },
+    });
   };
 
   return (
@@ -71,6 +75,20 @@ const CreateCustomerPage: React.FC = () => {
           ]}
         >
           <Input placeholder="Nhập email" />
+        </Form.Item>
+
+        <Form.Item
+          name="documentNumber"
+          label="Mã chứng từ hoạt động"
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng nhập mã chứng của khách hàng",
+            },
+            { max: 100, message: "Mã không được vượt quá 100 ký tự" },
+          ]}
+        >
+          <Input placeholder="Nhập mã chứng từ" />
         </Form.Item>
 
         <Form.Item>
