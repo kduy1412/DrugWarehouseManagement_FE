@@ -4,10 +4,10 @@ import type { TabsProps } from 'antd';
 import { AppstoreOutlined, SettingOutlined } from '@ant-design/icons';
 import InformationProduct from './InformationProducts';
 import { CustomerGetRequestParams, CustomerGetResponse } from '../../../types/customer';
-import { useGetCustomerQuery } from '../../../hooks/api/customer/getCustomerQuery';
 import { InboundRequestDetail } from '../../../types/inboundRequest';
 import { useGetWarehouseQuery } from '../../../hooks/api/warehouse/getWarehouseQuery';
 import { useCreateInboundMutation } from '../../../hooks/api/inbound/createInboundMutation';
+import { useGetProviderQuery } from '../../../hooks/api/provider/getProviderQuery';
 
 // Declare the interface outside of the component
 interface CreateInboundProps {
@@ -44,7 +44,7 @@ const CreateInbound: React.FC<CreateInboundProps> = ({ record }) => {
   const { mutate, isSuccess } = useCreateInboundMutation();
   
   //call API
-  const { data } = useGetCustomerQuery(initialData);
+  const { data } = useGetProviderQuery(initialData);
   const dataWarehouse = useGetWarehouseQuery(initialData)
 
   const onTabChange = (key: string) => {
@@ -112,16 +112,16 @@ const handleSubmit = async () => {
                 (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
               }
             >
-              {data?.items.map((customer) => (
-                <Select.Option key={customer.customerId} value={customer.customerId}>
-                  {customer.customerName}
+              {data?.items.map((provider) => (
+                <Select.Option key={provider.providerId} value={provider.providerId}>
+                  {provider.providerName}
                 </Select.Option>
               ))}
             </Select>
           </Form.Item>
 
-          <Form.Item name="providerOrderCode" label="MST" rules={[{ required: true, message: "Vui lòng nhập mã số thuế" }]}>
-            <Input placeholder="Nhập mã số thuế" />
+          <Form.Item name="providerOrderCode" label="Mã đơn hàng nhà cung cấp" rules={[{ required: true, message: "Vui lòng nhập mã số thuế" }]} >
+            <Input placeholder="Nhập mã đơn hàng nhà cung cấp" />
           </Form.Item>
 
           {/* <Form.Item name="inboundRequestId" label="Mã phiếu" rules={[{ required: true, message: "Vui lòng nhập mã đặt hàng" }]}>

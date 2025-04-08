@@ -7,6 +7,8 @@ import { useGetInboundRequestQuery } from "../../../hooks/api/inboundRequest/get
 interface DataType {
   key: number;
   maphieu: string;
+  ngaytao: string;
+  tongtien: number;
   ghichu: string;
   trangthai: string;
   sanpham: InboundRequestDetail[];
@@ -33,7 +35,9 @@ const CreateInboundOrderList: React.FC = () => {
   };
 
   const { data } = useGetInboundRequestQuery(initialData);
-  
+      React.useEffect(() => {
+          console.log("Dữ liệu API Create inbound trả về:", data?.items);
+      }, [data]);
 
   // Table columns
   const columns = [
@@ -60,6 +64,8 @@ const CreateInboundOrderList: React.FC = () => {
       .map((item) => ({
         key: item.inboundRequestId,
         maphieu: item.inboundRequestCode,
+        ngaytao: item.createDate,
+        tongtien: item.price,
         ghichu: item.note || "Không có ghi chú",
         trangthai: item.status.toString(),
         sanpham: item.inboundRequestDetails || []

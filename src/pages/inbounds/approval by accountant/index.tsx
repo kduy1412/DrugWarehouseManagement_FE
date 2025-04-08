@@ -9,6 +9,8 @@ import { InboundRequestDetail } from "../../../types/inboundRequest";
 
 interface DataType {
   key: number;
+  ngaytao: string;
+  tongtien: number;
   maphieu: string;
   ghichu: string;
   trangthai: string;
@@ -39,14 +41,12 @@ const ApprovalInboundRequestList: React.FC = () => {
   const { mutate, isSuccess } = useUpdateInboundRequestMutation();
 
 
- const handleAccountantApproval = (inboundId: number) => {
-  console.log("trước if: ", isSuccess);
-
+ const handleAccountantChangeStatus = (inboundId: number, status: string) => {
   mutate(
     {
       data: {
         inboundId: inboundId,
-        inboundOrderStatus: 'WaitingForDirectorApproval'
+        inboundOrderStatus: status
       },
     },
     {
@@ -61,6 +61,10 @@ const ApprovalInboundRequestList: React.FC = () => {
   useEffect(() => {
       console.log("Dữ liệu API Inbound Approval trả về:", data?.items);
   }, [data]);
+
+  useEffect(() => {
+    refetch();
+  }, []);
   
   const handleOpenModal = (record: DataType, type: "edit" | "detail") => {
     setSelectedRecord(record);
@@ -86,6 +90,8 @@ const ApprovalInboundRequestList: React.FC = () => {
 
   const columns: TableColumnsType<DataType> = [
     { title: "Mã phiếu", dataIndex: "maphieu" },
+    { title: "Ngày tạo", dataIndex: "ngaytao" },
+    { title: "Tổng tiền", dataIndex: "tongtien" },
     { title: "Ghi chú", dataIndex: "ghichu" },
     { title: "Trạng thái", dataIndex: "trangthai" },
     {
@@ -104,9 +110,13 @@ const ApprovalInboundRequestList: React.FC = () => {
   ];
 
 const transformedData: DataType[] = Array.isArray(data?.items)
-  ? data.items.map((item) => ({
+  ? data.items
+    .filter((item) => item.status.toString() === "WaitingForAccountantApproval")
+    .map((item) => ({
       key: item.inboundRequestId,
       maphieu: item.inboundRequestCode,
+      ngaytao: item.createDate,
+      tongtien: item.price,
       ghichu: item.note || "Không có ghi chú",
       trangthai: item.status.toString(),
       sanpham: item.inboundRequestDetails || []
@@ -131,18 +141,28 @@ const transformedData: DataType[] = Array.isArray(data?.items)
         footer={[
           modalType === "detail" ? (
             <>
+             <Popconfirm
+              title="Thông báo"
+              description="Bạn có chắc hủy phiếu đặt hàng này?"
+                onConfirm={() => {
+                if (selectedRecord?.key !== undefined) {
+                  handleAccountantChangeStatus(selectedRecord.key, "Cancelled");
+                   }
+                  }}   
+              okText="Yes"
+                cancelText="Cancel"
+                
+              >
             <Button key="cancel" danger>
                 Huỷ yêu cầu
-              </Button>
-            <Button key="allowEdit">
-                Yêu cầu chỉnh sửa
-              </Button>
+                </Button>
+                </Popconfirm>
               <Popconfirm
               title="Thông báo"
               description="Bạn có chắc phê duyệt phiếu đặt hàng này?"
                 onConfirm={() => {
                 if (selectedRecord?.key !== undefined) {
-                handleAccountantApproval(selectedRecord.key);
+                  handleAccountantChangeStatus(selectedRecord.key, "WaitingForDirectorApproval");
                    }
                   }}   
               okText="Yes"

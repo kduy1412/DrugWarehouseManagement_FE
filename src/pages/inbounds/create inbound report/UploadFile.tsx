@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { DndContext, PointerSensor, useSensor } from '@dnd-kit/core';
@@ -12,6 +12,10 @@ import { CSS } from '@dnd-kit/utilities';
 import { Button, Upload } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
 
+interface UploadReportProps {
+  onFileListChange?: (files: UploadFile[]) => void;
+}
+
 interface DraggableUploadListItemProps {
   originNode: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
   file: UploadFile<any>;
@@ -23,7 +27,7 @@ const DraggableUploadListItem = ({ originNode, file }: DraggableUploadListItemPr
   });
 
   const style: React.CSSProperties = {
-    transform: CSS.Translate.toString(transform),
+    transform: CSS.Transform.toString(transform),
     transition,
     cursor: 'move',
   };
@@ -32,49 +36,17 @@ const DraggableUploadListItem = ({ originNode, file }: DraggableUploadListItemPr
     <div
       ref={setNodeRef}
       style={style}
-      // prevent preview event when drag end
       className={isDragging ? 'is-dragging' : ''}
       {...attributes}
       {...listeners}
     >
-      {/* hide error tooltip when dragging */}
       {file.status === 'error' && isDragging ? originNode.props.children : originNode}
     </div>
   );
 };
 
-const UploadReport: React.FC = () => {
-  const [fileList, setFileList] = useState<UploadFile[]>([
-    {
-      uid: '-1',
-      name: 'image1.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-2',
-      name: 'image2.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-3',
-      name: 'image3.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-4',
-      name: 'image4.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-5',
-      name: 'image.png',
-      status: 'error',
-    },
-  ]);
+const UploadReport: React.FC<UploadReportProps> = ({ onFileListChange }) => {
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const sensor = useSensor(PointerSensor, {
     activationConstraint: { distance: 10 },
@@ -94,11 +66,16 @@ const UploadReport: React.FC = () => {
     setFileList(newFileList);
   };
 
+  useEffect(() => {
+    onFileListChange?.(fileList);
+  }, [fileList]);
+
   return (
     <DndContext sensors={[sensor]} onDragEnd={onDragEnd}>
       <SortableContext items={fileList.map((i) => i.uid)} strategy={verticalListSortingStrategy}>
         <Upload
-          action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+          multiple
+          beforeUpload={() => false} // Prevent auto upload
           fileList={fileList}
           onChange={onChange}
           itemRender={(originNode, file) => (

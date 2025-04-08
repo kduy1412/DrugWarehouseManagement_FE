@@ -1,5 +1,5 @@
 import apiClient from "..";
-import { InboundPostRequest } from "../../types/inbound";
+import { InboundGetRequestParams, InboundPostRequest } from "../../types/inbound";
 
 
 export const createInbound = (inboundData: InboundPostRequest) =>
@@ -20,14 +20,14 @@ export const createInbound = (inboundData: InboundPostRequest) =>
 //     body: JSON.stringify(data),
 //   });
 
-// export const searchOutbound = (
-//   query: OutboundGetRequestParams = { Page: 1, PageSize: 10 }
-// ) => {
-//   const queryString = new URLSearchParams(query).toString();
-//   return apiClient(`/api/Outbound?${queryString}`, {
-//     method: "GET",
-//   });
-// };
+export const searchInbound = (
+  query: InboundGetRequestParams = { Page: 1, PageSize: 10 }
+) => {
+  const queryString = new URLSearchParams(query).toString();
+  return apiClient(`/api/Inbound?${queryString}`, {
+    method: "GET",
+  });
+};
 
 // export const getOutboundById = (id: string) =>
 //   apiClient(`/api/Outbound/${id}`, {

@@ -1,37 +1,39 @@
 import React from 'react';
 import {  Table} from 'antd';
 import { title } from 'process';
+import { InboundDetail } from '../../../types/inbound';
+import moment from 'moment';
 
-const InboundReport: React.FC = () => {
+interface InboundReportProps {
+  record: {
+    lo: InboundDetail[];
+  };
+}
+
+const InboundReport: React.FC<InboundReportProps> = ({record}) => {
 
 
-  const dataSource = [
-    {
-      key: '1',
-      name: 'Mike',
-      age: 32,
-      address: '10 Downing Street',
-    },
-    {
-      key: '2',
-      name: 'John',
-      age: 42,
-      address: '10 Downing Street',
-    },
-  ];
 
-  const columns = [
-    {title:"Mã lô"},
-    {title:"Tên SP"},
-    {title:"NSX"},
-    {title:"HSD"},
-    {title:"Số lượng"},
-    {title:"Giá thành"},
-    {title:"Tổng tiền"},
-  ];
+const columns = [
+  { title: "Mã lô", dataIndex: "lotNumber" },
+  { title: "Tên SP", dataIndex: "productName" },
+  {
+    title: "NSX",
+    dataIndex: "manufacturingDate",
+    render: (date: string) => moment(date).format("DD/MM/YYYY"),
+  },
+  {
+    title: "HSD",
+    dataIndex: "expiryDate",
+    render: (date: string) => moment(date).format("DD/MM/YYYY"),
+  },
+  { title: "Số lượng", dataIndex: "quantity" },
+  { title: "Giá thành", dataIndex: "unitPrice" },
+  { title: "Tổng tiền", dataIndex: "totalPrice" },
+];
 
   return (
-    <Table dataSource={dataSource} columns={columns} />
+    <Table dataSource={record.lo} columns={columns} rowKey={"inboundId"}/>
   );
 };
 

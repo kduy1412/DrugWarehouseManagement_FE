@@ -1,23 +1,52 @@
 import React, { useState } from "react";
-import { Table, Modal, Button, Input } from "antd";
+import { Table, Modal, Button, Input, UploadFile, notification } from "antd";
 import InboundReport from './InboundReport'
 import UploadReport from "./UploadFile";
+import { useGetInboundQuery } from "../../../hooks/api/inbound/getInboundQuery";
+import { InboundDetail, InboundStatus } from "../../../types/inbound";
+import { AuthResponse } from "../../../types/auth";
+import { AUTH_QUERY_KEY } from "../../../types/constants";
+import { queryClient } from "../../../lib/queryClient";
 
 interface DataType {
-  key: React.Key;
+  key: number;
   maphieu: string;
   ngaytao: string;
   nguoitao: string;
-  tongtien: string;
-  trangthai: string;
+  tongtien: number;
+  ncc: string;
+  nhakho: string;
+  trangthaincc: number;
+  trangthai: InboundStatus;
+  mst: string;
+  lo: InboundDetail[];
 }
+const initialData = {
+  Page: 1,
+  PageSize: 100
+  ,
+};
+
+
 
 const CreateInboundReport: React.FC = () => {
   const { TextArea } = Input;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadFile[]>([]);
+  const [problemDescription, setProblemDescription] = useState("");
+
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null); // Track the selected record
-  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    console.log('Change:', e.target.value);
+  const { data, refetch } = useGetInboundQuery(initialData);
+  const authData = queryClient.getQueryData<AuthResponse>(AUTH_QUERY_KEY);
+  const accessToken = authData?.token;
+  React.useEffect(() => {
+    console.log("Dữ liệu file upload Create trả về:", uploadedFiles);
+  }, [uploadedFiles]);
+  React.useEffect(() => {
+    console.log("AccessToken:", accessToken);
+  }, [accessToken]);
+  const onChangeNote = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setProblemDescription(e.target.value);
   };
   const handleOpenModal = (record: DataType) => {
     setSelectedRecord(record);  // Set the selected record to show its details
@@ -27,6 +56,51 @@ const CreateInboundReport: React.FC = () => {
   const handleCancel = () => {
     setIsModalOpen(false);  // Close the modal
     setSelectedRecord(null);  // Reset the selected record
+    setProblemDescription("");
+    setUploadedFiles([])
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedRecord) return;
+
+    const formData = new FormData();
+    formData.append("InboundId", selectedRecord.key.toString());
+    formData.append("ProblemDescription", problemDescription);
+
+    uploadedFiles.forEach((file) => {
+      if (file.originFileObj) {
+        formData.append("Images", file.originFileObj);
+      }
+    });
+
+    try {
+      const response = await fetch("http://poserdungeon.myddns.me:5001/api/InboundReport", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken || ""}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Upload thành công:", result);
+        notification.success({
+          message: "Tạo phiếu nhập thành công!",
+        });
+        handleCancel();
+      } else {
+        const error = await response.json();
+        console.error("Lỗi:", error);
+        notification.error({
+          message: "Tạo report thất bại!",
+          description: error.message,
+        });
+      }
+    } catch (error) {
+      console.error("Lỗi fetch:", error);
+      // Modal.error({ title: "Tạo report thất bại!", content: error.message });
+    }
   };
 
   // Table columns
@@ -41,49 +115,39 @@ const CreateInboundReport: React.FC = () => {
       key: "action",
       render: (_: string, record: DataType) => (
         <Button type="link" onClick={() => handleOpenModal(record)}>
-          Tao Report
+          Tạo Report
         </Button>
       ),
     },
   ];
 
-  // Sample data
-  const data: DataType[] = [
-    {
-      key: "1",
-      maphieu: "PH001",
-      ngaytao: "2024-03-01",
-      nguoitao: "Nguyễn Văn A",
-      tongtien: "10,000,000 VND",
-      trangthai: "Đã nhập kho",
-    },
-    {
-      key: "2",
-      maphieu: "PH002",
-      ngaytao: "2024-03-02",
-      nguoitao: "Trần Thị B",
-      tongtien: "5,000,000 VND",
-      trangthai: "Chờ duyệt",
-    },
-    {
-      key: "3",
-      maphieu: "PH003",
-      ngaytao: "2024-03-03",
-      nguoitao: "Lê Văn C",
-      tongtien: "15,000,000 VND",
-      trangthai: "Đang xử lý",
-    },
-  ];
+  const transformedData: DataType[] = Array.isArray(data?.items)
+    ? data.items.map((item) => ({
+      key: item.inboundId,
+      ngaytao: item.inboundDate,
+      maphieu: item.inboundCode,
+      nguoitao: item.createBy,
+      tongtien: Array.isArray(item.inboundDetails) ? item.inboundDetails.reduce((total, currentValue) => {
+        return Number(total) + currentValue.totalPrice;
+      }, 0) : 0,
+      trangthaincc: item.status,
+      trangthai: item.status,
+      ncc: item.providerName,
+      nhakho: item.warehouseName,
+      mst: item.providerOrderCode,
+      lo: item.inboundDetails
+    }))
+    : [];
 
   return (
     <>
       {/* Table Component */}
       <Table<DataType>
         columns={columns}
-        dataSource={data}
+        dataSource={transformedData}
         size="middle"
         pagination={{ pageSize: 50 }}
-        scroll={{ y: 55 * 5 }}
+      // scroll={{ y: 55 * 5 }}
       />
 
       {/* Modal for Create Inbound */}
@@ -93,24 +157,22 @@ const CreateInboundReport: React.FC = () => {
         onCancel={handleCancel}
         footer={null} // No footer buttons
         width={800}
+        onClose={handleCancel}
       >
         {selectedRecord && (
           <div>
-            <h2>Thông tin NCC</h2>
+            <h2>Thông tin nhà cung cấp</h2>
             <p>
-              <strong>Tên NCC:</strong>
+              <strong>Tên NCC: </strong> {selectedRecord.ncc}
             </p>
             <p>
-              <strong>Quốc gia:</strong>
+              <strong>Quốc gia:</strong> {selectedRecord.key} (đây là inboundId)
             </p>
             <p>
-              <strong>MST:</strong>
+              <strong>MST:</strong> {selectedRecord.mst}
             </p>
             <p>
               <strong>SĐT:</strong>
-            </p>
-            <p>
-              <strong>Trạng thái:</strong>
             </p>
             <h2>Thông tin phiếu nhập hàng</h2>
             <p>
@@ -126,22 +188,29 @@ const CreateInboundReport: React.FC = () => {
               <strong>Tổng tiền:</strong> {selectedRecord.tongtien}
             </p>
             <p>
+              <strong>Nhà kho:</strong> {selectedRecord.nhakho}
+            </p>
+            <p>
               <strong>Trạng thái:</strong> {selectedRecord.trangthai}
             </p>
             <h2>Chi tiết lô hàng</h2>
-            <InboundReport />
+            <InboundReport record={selectedRecord} />
+            <h2>Báo cáo vấn đề</h2>
             <TextArea
+              required
               showCount
               maxLength={100}
-              onChange={onChange}
-              placeholder="Ghi chú"
+              onChange={onChangeNote}
+              placeholder="Nhập báo cáo vấn đề"
               style={{ height: 120, resize: 'none' }}
             />
             <h2>Tài liệu</h2>
-            <UploadReport />
-            <Button type="primary" style={{ width: '100%' }} block>
-              Tạo
-            </Button>
+            <UploadReport onFileListChange={setUploadedFiles} />
+            <div style={{ display: 'flex', alignItems: 'flex-end', flexDirection: 'column' }}>
+              <Button type="primary" style={{ width: '50%', marginTop: 20 }} onClick={handleSubmit} block>
+                Tạo
+              </Button>
+            </div>
           </div>
         )}
       </Modal>

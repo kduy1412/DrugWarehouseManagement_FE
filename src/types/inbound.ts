@@ -60,15 +60,15 @@ export interface LotTransferDetail {
 }
 
 //POST-RETURNED
-export type InboundReturnRequest = {
-  inboundId: number;
-  details: InboundReturnDetailsRequest[];
-};
+// export type InboundReturnRequest = {
+//   inboundId: number;
+//   details: InboundReturnDetailsRequest[];
+// };
 
-export type InboundReturnDetailsRequest = Pick<
-  InboundDetail,
-  "inboundDetailsId" | "quantity"
-> & { note: string | null };
+// export type InboundReturnDetailsRequest = Pick<
+//   InboundDetail,
+//   "inboundDetailsId" | "quantity"
+// > & { note: string | null };
 
 //GET
 export interface InboundGetResponse extends PaginationModelResponse {
@@ -94,19 +94,17 @@ export type InboundFilterParams = {
 export interface Inbound {
   inboundId: number;
   inboundCode: string;
-  customerName: string;
-  address: string;
-  phoneNumber: string;
+  providerOrderCode: string;
+  providerName: string;
+  createBy: string;
   note: string;
-  inboundOrderCode?: string | null;
-  inboundDate?: Date | null;
+  inboundDate: string;
   status: InboundStatus;
   inboundDetails: InboundDetail[];
+  warehouseName: string;
 }
 
 export interface InboundDetail {
-  inboundDetailsId: number;
-  lotId: number;
   lotNumber: string;
   quantity: number;
   unitPrice: number;
@@ -114,15 +112,15 @@ export interface InboundDetail {
   productName: string | null;
   expiryDate: Date;
   manufacturingDate: Date;
+  openingStock: string;
 }
 
 //Status
 export enum InboundStatus {
   Pending = 1,
   InProgress = 2,
-  Cancelled = 3,
-  Completed = 4,
-  Returned = 5,
+  Cancelled = 4,
+  Completed = 3,
 }
 
 export const InboundStatusColors = [

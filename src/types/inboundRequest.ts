@@ -83,6 +83,8 @@ export type InboundRequestFilterParams = {
 export interface InboundRequest {
   inboundRequestId: number;
   inboundRequestCode: string;
+  createDate: string;
+  price: number;
   note: string;
   status: InboundRequestStatus;
   inboundRequestDetails: InboundRequestDetail[];
