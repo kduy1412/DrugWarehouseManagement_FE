@@ -185,7 +185,7 @@ const handleSubmit = async () => {
         <Button onClick={nextTab} disabled={activeTab === items.length.toString()}>
           Next
         </Button>
-        <Button onClick={handleSubmit} type="primary">
+        <Button onClick={handleSubmit} type="primary" >
           Tạo
         </Button>
       </Space>

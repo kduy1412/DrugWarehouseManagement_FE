@@ -58,21 +58,17 @@ export const privateRoutes: MenuRoutes[] = [
       {
         key: `/inbound/create-inbound-request`,
 
-        label: `Create Inbound Request`,
+        label: `Tạo phiếu đặt hàng`,
         url: `/inbound/create-inbound-request`,
         element: <CreateInboundRequest />,
         allowedroles: [
-          Roles.Admin,
-          Roles.Accountant,
-          Roles.Director,
-          Roles.InventoryManager,
           Roles.SaleAdmin,
         ],
       },
       {
         key: `/inbound/history-inbound-request`,
 
-        label: `History Inbound Request`,
+        label: `Danh sách phiếu đặt hàng `,
         url: `/inbound/history-inbound-request`,
         element: <InboundRequestList />,
         allowedroles: [
@@ -85,46 +81,34 @@ export const privateRoutes: MenuRoutes[] = [
       },
       {
         key: `/inbound/approval-inbound-request-by-accountant`,
-        label: `Approval By Accountant`,
+        label: `Đơn chờ duyệt`,
         url: `/inbound/approval-inbound-request-by-accountant`,
         element: <ApprovalInboundRequestList />,
         allowedroles: [
-          Roles.Admin,
           Roles.Accountant,
-          Roles.Director,
-          Roles.InventoryManager,
-          Roles.SaleAdmin,
         ],
       },
       {
         key: `/inbound/approval-inbound-request-by-ceo`,
-        label: `Approval By CEO`,
+        label: `Đơn chờ duyệt`,
         url: `/inbound/approval-inbound-request-by-ceo`,
         element: <ApprovalInboundRequestListByCEO />,
         allowedroles: [
-          Roles.Admin,
-          Roles.Accountant,
           Roles.Director,
-          Roles.InventoryManager,
-          Roles.SaleAdmin,
         ],
       },
       {
         key: `/inbound/create-inbound`,
-        label: `Create Inbound Order`,
+        label: `Tạo đơn nhập hàng`,
         url: `/inbound/create-inbound`,
         element: <CreateInboundOrderList />,
         allowedroles: [
-          Roles.Admin,
           Roles.Accountant,
-          Roles.Director,
-          Roles.InventoryManager,
-          Roles.SaleAdmin,
         ],
       },
       {
         key: `/inbound/history-inbound-order`,
-        label: `History Inbound Order`,
+        label: `Danh sách đơn nhập hàng`,
         url: `/inbound/history-inbound-order`,
         element: <HistoryInboundOrder />,
         allowedroles: [
@@ -137,20 +121,16 @@ export const privateRoutes: MenuRoutes[] = [
       },
       {
         key: `/inbound/create-inbound-report`,
-        label: `Create Inbound Report`,
+        label: `Tạo báo cáo nhập`,
         url: `/inbound/create-inbound-report`,
         element: <CreateInboundReport />,
         allowedroles: [
-          Roles.Admin,
-          Roles.Accountant,
-          Roles.Director,
           Roles.InventoryManager,
-          Roles.SaleAdmin,
         ],
       },
       {
         key: `/inbound/history-inbound-report`,
-        label: `History Inbound Report`,
+        label: `Danh sách báo cáo nhập`,
         url: `/inbound/history-inbound-report`,
         element: <HistoryInboundReport />,
         allowedroles: [
@@ -163,15 +143,11 @@ export const privateRoutes: MenuRoutes[] = [
       },
       {
         key: `/inbound/update-inbound`,
-        label: `Update Inbound`,
+        label: `Cập nhật đơn hàng`,
         url: `/inbound/update-inbound`,
         element: <UpdateInbound />,
         allowedroles: [
-          Roles.Admin,
           Roles.Accountant,
-          Roles.Director,
-          Roles.InventoryManager,
-          Roles.SaleAdmin,
         ],
       },
     ],
