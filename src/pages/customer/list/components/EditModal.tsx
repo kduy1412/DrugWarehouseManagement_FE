@@ -18,6 +18,7 @@ import {
 } from "../../../../types/customer";
 import { parseCustomerStatusToVietnamese } from "../../../../utils/translateCustomerStatus";
 import { queryClient } from "../../../../lib/queryClient";
+import { useUpdateCustomerMutation } from "../../../../hooks/api/customer/updateCustomerMutation";
 
 interface ComponentProps {
   isModalOpen: boolean;
@@ -41,6 +42,7 @@ const EditModal = ({
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
+  const { mutate } = useUpdateCustomerMutation();
   const customerInformationProps: DescriptionsProps["items"] = [
     {
       key: "customerId",
@@ -156,16 +158,18 @@ const EditModal = ({
       setLoading(true);
       const values = await form.validateFields();
 
-      console.log(values);
-
-      notification.success({
-        description: "Cập nhật thông tin khách hàng thành công",
-        message: "Cập Nhật Thành Công",
-      });
-
-      form.resetFields();
-      queryClient.refetchQueries({ queryKey: ["customer", queryParam] });
-      setIsModalOpen(false);
+      mutate(
+        { customerId: item.customerId, data: values },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({
+              queryKey: ["customer", queryParam],
+            });
+            form.resetFields();
+            setIsModalOpen(false);
+          },
+        }
+      );
     } catch {
       notification.error({
         description: "Có lỗi xảy ra khi cập nhật thông tin",

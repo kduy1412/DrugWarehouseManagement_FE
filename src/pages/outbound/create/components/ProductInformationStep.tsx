@@ -37,7 +37,7 @@ const initialQueryParams: LotGetRequestParams = {
 };
 
 type ProductsSelectedProps = OutboundDetailRequest &
-  Pick<OutboundDetail, "lotNumber" | "productName">;
+  Pick<OutboundDetail, "lotNumber" | "productName"> & { maxQuantity: number };
 
 interface ProductInformationStepProps {
   formData: OutboundPostRequest;
@@ -118,6 +118,7 @@ const ProductInformationStep = ({
           lotNumber: product.lotNumber,
           productName: product.productName,
           discount: 0,
+          maxQuantity: product.quantity,
         })
       );
       setSelectedProduct((prev) => [...prev, ...productsMapping]);
@@ -171,6 +172,12 @@ const ProductInformationStep = ({
       },
     },
     {
+      title: "Tồn",
+      dataIndex: "quantity",
+      key: "quantity",
+      render: (_, { quantity }) => <p>{quantity}</p>,
+    },
+    {
       title: "Nhà Cung Cấp",
       dataIndex: "providerName",
       key: "providerName",
@@ -222,10 +229,11 @@ const ProductInformationStep = ({
       title: "Số Lượng",
       dataIndex: "quantity",
       key: "quantity",
-      render: (quantity, _, index) => (
+      render: (quantity, record, index) => (
         <InputNumber
           min={1}
           value={quantity}
+          max={record.maxQuantity}
           onChange={(value) => handleChange(index, "quantity", value)}
         />
       ),

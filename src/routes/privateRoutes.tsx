@@ -28,6 +28,10 @@ import CreateCustomerPage from "../pages/customer/create";
 import CreateInboundReport from "../pages/inbounds/create inbound report";
 import HistoryInboundReport from "../pages/inbounds/list inbound report";
 import UpdateInbound from "../pages/inbounds/update inbound order";
+import CreateUserPage from "../pages/user/create";
+import UserListPage from "../pages/user/list";
+import WarehouseListPage from "../pages/warehouse/list";
+import CreateWarehousePage from "../pages/warehouse/create";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -385,5 +389,33 @@ export const privateRoutes: MenuRoutes[] = [
       Roles.SaleAdmin,
     ],
     element: <WarehousePage />,
+    children: [
+      {
+        key: `/warehouse-system/list`,
+        label: `Danh Sách Kho`,
+        url: `/warehouse-system/list`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <WarehouseListPage />,
+      },
+      {
+        key: `/warehouse-system/create`,
+        label: `Tạo mới kho`,
+        url: `/warehouse-system/create`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <CreateWarehousePage />,
+      },
+    ],
   },
 ];
