@@ -13,7 +13,7 @@ export const useUpdateInboundRequestMutation = () =>
     onSuccess: () => {
       notification.success({
         message: "Cập nhật thành công",
-        description: `Đã phê duyệt thành công yêu cầu nhập hàng`,
+        // description: `Đã phê duyệt thành công yêu cầu nhập hàng`,
         placement: "topRight",
       });
     },

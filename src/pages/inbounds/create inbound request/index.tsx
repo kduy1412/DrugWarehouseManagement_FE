@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { GetRef, InputRef, TableProps } from 'antd';
-import { Button, Form, Input, Popconfirm, Table, Select, Modal } from 'antd';
+import { Button, Form, Input, Popconfirm, Table, Select, Modal, notification } from 'antd';
 // import { ProductGetRequestParams } from '../../../types/product';
 import { useGetProductQuery } from "../../../hooks/api/product/getProductQuery";
 import { useCreateInboundRequestMutation } from "../../../hooks/api/inboundRequest/createInboundRequestMutation";
@@ -158,6 +158,7 @@ const CreateInboundRequest: React.FC = () => {
   const [productOptions, setProductOptions] = useState<{ label: string; value: number }[]>([]);
   const { mutate, isSuccess } = useCreateInboundRequestMutation();
   const [modalConfirmInboundRequest, setModalConfirmInboundRequest] = useState(false);
+  const [noteConfirm, setNoteConfirm] = useState('');
 
   const [count, setCount] = useState(2);
   useEffect(() => {
@@ -184,6 +185,7 @@ const CreateInboundRequest: React.FC = () => {
   useEffect(() => {
   if (isSuccess) {
     setModalConfirmInboundRequest(false);
+    setDataSource([])
   }
 }, [isSuccess]);
   
@@ -267,7 +269,10 @@ const CreateInboundRequest: React.FC = () => {
       //   mutate(dataSource);
       // }
 mutate({
-  note: "Set cứng",
+  note: noteConfirm || '',
+  price: Array.isArray(dataSource) ? dataSource.reduce((total, currentValue) => {
+    return Number(total) + Number(currentValue.totalprice);
+  }, 0) : 0,
   inboundRequestDetails: dataSource.map((item) => ({
     productId: item.productId,
     quantity: Number(item.quantity),
@@ -306,7 +311,14 @@ const components = {
       <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16 }}>
         Thêm sản phẩm mới
       </Button>
-      <Button style={{ marginLeft: 16 }} onClick={()=> setModalConfirmInboundRequest(true)}>
+      <Button style={{ marginLeft: 16 }} onClick={() => {
+        if (dataSource.length === 0) {
+          notification.error({
+            message: "Vui lòng thêm sản phẩm, danh sách không được để trống!",
+          });
+        } else { setModalConfirmInboundRequest(true) }
+        }
+      }>
         Tạo phiếu đặt hàng
       </Button>
       <Table<DataType>
@@ -325,6 +337,9 @@ const components = {
         onCancel={() => setModalConfirmInboundRequest(false)}
       >
         <p>Xác nhận tạo phiếu đặt hàng?</p>
+        <Input.TextArea rows={3} placeholder="Ghi chú (nếu có)" 
+        value={noteConfirm}
+        onChange={(e) => setNoteConfirm(e.target.value)}/>
       </Modal>
     </div>
   );
