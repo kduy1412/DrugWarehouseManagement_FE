@@ -6,7 +6,7 @@ const CustomerPage = () => {
   const location = useLocation();
   if (location.pathname === "/customers") return <CustomerListPage />;
 
-return <Outlet />;
+  return <Outlet />;
 };
 
 export default CustomerPage;

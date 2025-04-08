@@ -47,7 +47,6 @@ const apiClient = async (endpoint: string, options: RequestInit = {}) => {
 
     try {
       const refreshResponse = await refreshToken(refreshData.refreshToken);
-      console.log(refreshResponse);
       queryClient.setQueryData(AUTH_QUERY_KEY, (oldData: AuthResponse) => ({
         ...oldData,
         accessToken: refreshResponse.token,

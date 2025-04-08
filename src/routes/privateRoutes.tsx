@@ -297,6 +297,7 @@ export const privateRoutes: MenuRoutes[] = [
     key: `/account-management`,
     label: `Quản Lý Tài Khoản`,
     url: `/account-management`,
+    icon: React.createElement(images.accountManage),
     allowedroles: [
       Roles.Admin,
       Roles.Accountant,
@@ -305,6 +306,34 @@ export const privateRoutes: MenuRoutes[] = [
       Roles.SaleAdmin,
     ],
     element: <UserPage />,
+    children: [
+      {
+        key: `/account-management/create`,
+        label: `Tạo tài khoản mới`,
+        url: `/account-management/create`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <CreateUserPage />,
+      },
+      {
+        key: `/account-management/list`,
+        label: `Danh sách tài khoản`,
+        url: `/account-management/list`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <UserListPage />,
+      },
+    ],
   },
   {
     key: `/customers`,
