@@ -4,6 +4,7 @@ import {
   EyeOutlined,
   EditOutlined,
   DeleteOutlined,
+  FilePdfOutlined,
 } from "@ant-design/icons";
 
 // Types
@@ -11,12 +12,16 @@ interface ActionDropdownProps {
   onDetail?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onPreview?: () => void;
+  isDisablePreview?: boolean;
 }
 
 const ActionDropdown: React.FC<ActionDropdownProps> = ({
   onDetail,
   onEdit,
   onDelete,
+  onPreview,
+  isDisablePreview = true,
 }) => {
   const menuItems: MenuProps["items"] = [
     {
@@ -32,6 +37,12 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
       onClick: onEdit,
     },
     {
+      key: "pdf",
+      label: "Xem",
+      icon: <FilePdfOutlined />,
+      onClick: onPreview,
+    },
+    {
       key: "delete",
       label: "Xóa",
       icon: <DeleteOutlined />,
@@ -41,7 +52,12 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
   ].filter((item) => item.onClick);
 
   return (
-    <Dropdown menu={{ items: menuItems }} trigger={["click"]}>
+    <Dropdown
+      menu={{
+        items: isDisablePreview ? menuItems : menuItems,
+      }}
+      trigger={["click"]}
+    >
       <Button type="text" icon={<MoreOutlined />} />
     </Dropdown>
   );

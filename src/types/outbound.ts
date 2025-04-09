@@ -86,6 +86,7 @@ export type OutboundFilterParams = {
   Search?: string | null;
   DateFrom?: Dayjs | null | string;
   DateTo?: Dayjs | null | string;
+  Status?: OutboundStatus
 };
 
 //Model
@@ -93,8 +94,9 @@ export interface Outbound {
   outboundId: number;
   outboundCode: string;
   customerName: string;
-  address: string;
-  phoneNumber: string;
+  receiverName: string;
+  receiverAddress: string;
+  receiverPhone: string;
   outboundOrderCode?: string | null;
   outboundDate?: Date | null;
   status: OutboundStatus;

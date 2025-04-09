@@ -126,7 +126,7 @@ const EditModal = ({
       label: "Địa Chỉ",
       children: (
         <Input
-          value={editData?.address ?? item.address}
+          value={editData?.address ?? item.receiverAddress}
           onChange={(e) => handleChange("address", e.target.value)}
         />
       ),
@@ -137,7 +137,7 @@ const EditModal = ({
       label: "Số Điện Thoại",
       children: (
         <Input
-          value={editData?.phoneNumber ?? item.phoneNumber}
+          value={editData?.phoneNumber ?? item.receiverPhone}
           onChange={(e) => handleChange("phoneNumber", e.target.value)}
         />
       ),
