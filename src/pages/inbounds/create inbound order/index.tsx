@@ -118,7 +118,7 @@ const CreateInboundOrderList: React.FC = () => {
         footer={null} // No footer buttons
       >
         <div>
-          {selectedRecord && <CreateInbound record={selectedRecord}/>}
+          {selectedRecord && <CreateInbound record={selectedRecord} onClose={handleCancel}/>}
         </div>
       </Modal>
     </>

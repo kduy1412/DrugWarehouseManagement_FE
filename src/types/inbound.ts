@@ -32,6 +32,11 @@ export interface InboundPutRequest {
   note?: string | null;
   status?: string | null;
 }
+//PUT Status
+export interface InboundPutStatusRequest {
+  inboundId: number;
+  inboundStatus: string;
+}
 
 // POST-SAMPLE-EXPORT
 // export type SampleExportDetailsRequest = Pick<

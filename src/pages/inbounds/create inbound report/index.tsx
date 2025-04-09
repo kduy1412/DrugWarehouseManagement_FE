@@ -7,6 +7,7 @@ import { InboundDetail, InboundStatus } from "../../../types/inbound";
 import { AuthResponse } from "../../../types/auth";
 import { AUTH_QUERY_KEY } from "../../../types/constants";
 import { queryClient } from "../../../lib/queryClient";
+import { useUpdateInboundStatusMutation } from "../../../hooks/api/inbound/updateInboundStatusMutation";
 
 interface DataType {
   key: number;
@@ -34,6 +35,7 @@ const CreateInboundReport: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadFile[]>([]);
   const [problemDescription, setProblemDescription] = useState("");
+  const { mutate, isSuccess } = useUpdateInboundStatusMutation();
 
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null); // Track the selected record
   const { data, refetch } = useGetInboundQuery(initialData);
@@ -89,6 +91,19 @@ const CreateInboundReport: React.FC = () => {
           message: "Tạo phiếu nhập thành công!",
         });
         handleCancel();
+          mutate(
+            {
+              data: {
+                inboundId: selectedRecord.key,
+                inboundStatus: 'Completed'
+              },
+            },
+            {
+              onSuccess: () => {
+                refetch();
+              }
+            }
+          );
       } else {
         const error = await response.json();
         console.error("Lỗi:", error);
