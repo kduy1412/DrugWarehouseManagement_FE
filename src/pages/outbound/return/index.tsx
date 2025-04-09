@@ -5,6 +5,7 @@ import {
   OutboundGetView,
   OutboundReturnDetailsRequest,
   OutboundReturnRequest,
+  OutboundStatus,
   OutboundStatusColors,
 } from "../../../types/outbound";
 import { useGetOutBoundQuery } from "../../../hooks/api/outbound/getOutboundQuery";
@@ -29,6 +30,7 @@ import { TableRowSelection } from "antd/es/table/interface";
 import { DeleteOutlined, UndoOutlined } from "@ant-design/icons";
 import FilterComponent from "./components/FilterComponent";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
+import { useCreateReturnOutboundMutation } from "../../../hooks/api/outbound/createReturnOutboundMutation";
 
 /**Types */
 type DataType = OutboundGetView;
@@ -42,9 +44,10 @@ interface OutboundDetailsProps {
   onNoteChange: (index: number, value: string) => void;
 }
 
-const initialData = {
+const initialData: OutboundGetRequestParams = {
   Page: 1,
   PageSize: 10,
+  Status: OutboundStatus.Completed,
 };
 
 const ReturnOutboundPage = () => {
@@ -52,6 +55,7 @@ const ReturnOutboundPage = () => {
   const [initParams, setInitParams] =
     useState<OutboundGetRequestParams>(initialData);
   const { data, isLoading } = useGetOutBoundQuery(initParams);
+  const { mutate } = useCreateReturnOutboundMutation();
   const [selectedOutboundRowKeys, setSelectedOutboundRowKeys] = useState<
     React.Key[]
   >([]);
@@ -88,7 +92,7 @@ const ReturnOutboundPage = () => {
       title: "Địa Chỉ",
       dataIndex: "address",
       key: "address",
-      render: (_, { address: address }) => {
+      render: (_, { receiverAddress: address }) => {
         if (address) {
           return <p>{address}</p>;
         }
@@ -99,7 +103,7 @@ const ReturnOutboundPage = () => {
       title: "Liên Hệ",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
-      render: (_, { phoneNumber: phoneNumber }) => {
+      render: (_, { receiverPhone: phoneNumber }) => {
         if (phoneNumber) {
           return <p>{phoneNumber}</p>;
         }
@@ -254,7 +258,6 @@ const ReturnOutboundPage = () => {
       ),
     },
     {
-      title: "Hành Động", // Action in Vietnamese
       key: "action",
       render: (
         _: unknown,
@@ -359,7 +362,7 @@ const ReturnOutboundPage = () => {
       outboundId: selectedItem.outboundId,
     };
 
-    console.log(submitData);
+    mutate(submitData);
   };
 
   //  Mapping outboundDetails Data from outboundData

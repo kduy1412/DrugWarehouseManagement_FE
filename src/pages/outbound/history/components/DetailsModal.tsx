@@ -84,13 +84,13 @@ const DetailsModal = ({
     {
       key: "address",
       label: "Địa Chỉ",
-      children: <span>{item.address}</span>,
+      children: <span>{item.receiverAddress}</span>,
     },
 
     {
       key: "phoneNumber",
       label: "Số Điện Thoại",
-      children: <span>{item.phoneNumber}</span>,
+      children: <span>{item.receiverPhone}</span>,
     },
   ];
 

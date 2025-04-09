@@ -4,6 +4,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import {
   OutboundFilterParams,
   OutboundGetRequestParams,
+  OutboundStatus,
 } from "../../../../types/outbound";
 import dayjs, { Dayjs } from "dayjs";
 import { cleanFilterParams } from "../../../../utils/cleanNullOrEmpty";
@@ -17,6 +18,7 @@ const initialFilterParams: OutboundFilterParams = {
   Search: "",
   DateFrom: null,
   DateTo: null,
+  Status: OutboundStatus.Completed,
 };
 
 const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {

@@ -1,5 +1,7 @@
 import {
+  Button,
   Flex,
+  Modal,
   Pagination,
   PaginationProps,
   Spin,
@@ -11,6 +13,7 @@ import React, { useState } from "react";
 import {
   OutboundGetRequestParams,
   OutboundGetView,
+  OutboundStatus,
   OutboundStatusColors,
 } from "../../../types/outbound";
 import { useGetOutBoundQuery } from "../../../hooks/api/outbound/getOutboundQuery";
@@ -22,6 +25,9 @@ import DetailsModal from "./components/DetailsModal";
 import EditModal from "./components/EditModal";
 import { parseOutboundStatusToVietnamese } from "../../../utils/translateOutboundStatus";
 import FilterComponent from "./components/FilterComponent";
+import OutboundPreviewComponent from "../../../components/pdf/OutboundPdf";
+import { PageSize } from "@react-pdf/types";
+import PreviewModal from "./components/PreviewModal";
 
 /**Types */
 type DataType = OutboundGetView;
@@ -38,6 +44,7 @@ const OutBoundHistory = () => {
   const { data, isLoading } = useGetOutBoundQuery(initParams);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<OutboundGetView | null>(
     null
   );
@@ -66,7 +73,7 @@ const OutBoundHistory = () => {
       title: "Địa Chỉ",
       dataIndex: "address",
       key: "address",
-      render: (_, { address: address }) => {
+      render: (_, { receiverAddress: address }) => {
         if (address) {
           return <p>{address}</p>;
         }
@@ -77,7 +84,7 @@ const OutBoundHistory = () => {
       title: "Liên Hệ",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
-      render: (_, { phoneNumber: phoneNumber }) => {
+      render: (_, { receiverPhone: phoneNumber }) => {
         if (phoneNumber) {
           return <p>{phoneNumber}</p>;
         }
@@ -130,37 +137,25 @@ const OutBoundHistory = () => {
           setSelectedItem(item);
         };
 
+        const handleOnPreview = () => {
+          setIsPreviewModalOpen(true);
+          setSelectedItem(item);
+        };
+
         const handleOnClickDelete = () => {
           console.log("Delete: " + JSON.stringify(item));
         };
 
         return (
-          <>
+          <div key={`action-${item.outboundId}`}>
             <ActionDropdown
               onDetail={handleOnClickDetail}
               onEdit={handleOnClickEdit}
               onDelete={handleOnClickDelete}
+              onPreview={handleOnPreview}
+              isDisablePreview={item.status !== OutboundStatus.Completed}
             />
-
-            {selectedItem && (
-              <>
-                {/* Details Modal */}
-                <DetailsModal
-                  isModalOpen={isDetailModalOpen}
-                  item={selectedItem}
-                  setIsModalOpen={setIsDetailModalOpen}
-                />
-
-                {/* Edit Modal */}
-                <EditModal
-                  isModalOpen={isEditModalOpen}
-                  item={selectedItem}
-                  setIsModalOpen={setIsEditModalOpen}
-                  queryParam={initParams}
-                />
-              </>
-            )}
-          </>
+          </div>
         );
       },
     },
@@ -213,6 +208,31 @@ const OutBoundHistory = () => {
         <Flex justify="center" align="center" style={{ height: "100%" }}>
           <Spin />
         </Flex>
+      )}
+      {selectedItem && (
+        <>
+          {/* Details Modal */}
+          <DetailsModal
+            isModalOpen={isDetailModalOpen}
+            item={selectedItem}
+            setIsModalOpen={setIsDetailModalOpen}
+          />
+
+          {/* Edit Modal */}
+          <EditModal
+            isModalOpen={isEditModalOpen}
+            item={selectedItem}
+            setIsModalOpen={setIsEditModalOpen}
+            queryParam={initParams}
+          />
+
+          {/* Preivew Modal */}
+          <PreviewModal
+            isPreviewModalOpen={isPreviewModalOpen}
+            selectedItem={selectedItem}
+            setIsPreviewModalOpen={setIsPreviewModalOpen}
+          />
+        </>
       )}
     </>
   );

@@ -25,6 +25,7 @@ import {
   LotTransferDetail,
   LotTransferPostRequest,
   OutboundDetail,
+  OutboundStatus,
 } from "../../../../types/outbound";
 import { DeleteOutlined } from "@ant-design/icons";
 import { WarehouseGetRequestParams } from "../../../../types/warehouse";
