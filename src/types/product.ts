@@ -83,7 +83,7 @@ export interface ProductGetRequestParams
     Record<string, any> {}
 
 export type ProductFilterParams = {
-  CategoryId?: number ;
+  CategoryId?: number | null;
   Status?: string;
   Search?: string | null;
   DateFrom?: Dayjs | null | string;
@@ -95,17 +95,22 @@ export interface Product {
   productId: number;
   productCode: string;
   productName: string;
-  type: string;
+  sku: string;
   madeFrom: string;
-  providerId: number;
+  status: ProductStatus;
+  categories: [];
 }
 export interface ProductPostRequest {
   productName: string;
   productCode: string;
   sku: string;
   madeFrom: string;
-  productCategories:
-  [{categoriesId:number}]
+  productCategories: [{ categoriesId: number }];
+}
+
+export enum ProductStatus {
+  Active = 1,
+  Inactive = 2,
 }
 
 //Status

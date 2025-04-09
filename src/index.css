@@ -128,11 +128,16 @@ code {
     monospace;
 }
 
-/* .ant-select-dropdown {
-  width: 60vw !important;
+.dropdownClassNameSelector {
+  width: fit-content !important;
+  max-width: 40vw !important;
   max-height: 40vh !important;
-} */
+  overflow-y: auto;
+}
 
+.rowTableClassName {
+  cursor: pointer;
+}
 .ant-modal-wrap.ant-modal-fullscreen {
   .ant-modal {
     right: 0px;

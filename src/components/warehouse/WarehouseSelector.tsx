@@ -25,6 +25,7 @@ const WarehouseSelector = ({
   const debouncedSearchTerm = useDebounce(searchTerm, 400);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const selectRef = useRef<RefSelectProps>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     onSearchValueChange(debouncedSearchTerm);
@@ -67,6 +68,7 @@ const WarehouseSelector = ({
       onSearch={setSearchTerm}
       onFocus={() => setDropdownOpen(true)}
       onClear={() => onSelectedWarehouseChange(null)}
+      onBlur={() => !isHovered && setDropdownOpen(false)}
       open={dropdownOpen}
       dropdownRender={() => {
         if (loading) {
@@ -84,8 +86,11 @@ const WarehouseSelector = ({
               rowKey="warehouseId"
               pagination={false}
               size="small"
+              rowClassName="rowTableClassName"
               onRow={(record) => ({
                 onClick: () => handleRowClick(record),
+                onMouseEnter: () => setIsHovered(true),
+                onMouseLeave: () => setIsHovered(false),
               })}
             />
           );

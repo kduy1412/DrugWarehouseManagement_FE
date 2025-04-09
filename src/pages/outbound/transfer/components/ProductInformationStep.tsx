@@ -39,6 +39,10 @@ const initialQueryParams: LotGetRequestParams = {
   DateFrom: null,
   DateTo: null,
   Search: null,
+  Availablle: null,
+  ProductId: null,
+  ProviderId: null,
+  WarehouseId: null,
 };
 
 const initialFormData: FromWarehouseProps = {
@@ -328,6 +332,11 @@ const ProductInformationStep = ({
       fromWareHouseId: value,
     });
     updateFormData({ fromWareHouseId: value });
+    setQueryParams((prev) => ({
+      ...prev,
+      WarehouseId: value,
+    }));
+    setSelectedProduct([]);
   };
 
   return (
@@ -352,7 +361,9 @@ const ProductInformationStep = ({
                 onSearchValueChange={onSearchWarehouseValueChange}
                 onSelectedWarehouseChange={onSelectedWarehouseChange}
                 value={formData.fromWareHouseId}
-                warehouses={warehouseData?.items}
+                warehouses={warehouseData?.items.filter(
+                  (w) => w.warehouseId !== formData.toWareHouseId
+                )}
                 loading={isWarehouseFetching}
               />
             </Form.Item>
@@ -369,6 +380,7 @@ const ProductInformationStep = ({
             <FilterComponent
               initialQueryParams={initialQueryParams}
               setQuery={setQueryParams}
+              query={queryParams}
             />
             <CtaButton onClick={onClickAddProduct} disabled={!hasLotSelected}>
               Thêm vào đơn

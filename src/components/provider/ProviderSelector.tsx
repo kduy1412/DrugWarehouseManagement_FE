@@ -2,25 +2,25 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { RefSelectProps, Select, Spin, Table, TableProps, Empty } from "antd";
 import { useRef, useState, useEffect } from "react";
 import styled from "styled-components";
-import { CustomerSelectorGetView } from "../../types/customer";
+import { Provider } from "../../types/provider";
 
-interface CustomerSelectorProps {
+interface ProviderSelectorProps {
   value: number | null | undefined;
-  onSelectedCustomerChange: (customer: CustomerSelectorGetView | null) => void;
+  onSelectedProviderChange: (provider: Provider | null) => void;
   onSearchValueChange: (value: string) => void;
-  customers: CustomerSelectorGetView[] | undefined;
+  providers: Provider[] | undefined;
   loading?: boolean;
   placeholder?: string;
 }
 
-const CustomerSelector = ({
+const ProviderSelector = ({
   value,
-  onSelectedCustomerChange,
+  onSelectedProviderChange,
   onSearchValueChange,
-  customers,
+  providers,
   loading = false,
-  placeholder = "Chọn khách hàng",
-}: CustomerSelectorProps) => {
+  placeholder = "Chọn nhà cung cấp",
+}: ProviderSelectorProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 400);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -31,21 +31,25 @@ const CustomerSelector = ({
     onSearchValueChange(debouncedSearchTerm);
   }, [debouncedSearchTerm, onSearchValueChange]);
 
-  const handleRowClick = (record: CustomerSelectorGetView) => {
-    onSelectedCustomerChange(record);
+  const handleRowClick = (record: Provider) => {
+    onSelectedProviderChange(record);
     setDropdownOpen(false);
     setSearchTerm("");
     selectRef.current?.blur();
   };
 
-  const columns: TableProps<CustomerSelectorGetView>["columns"] = [
-    { title: "Tên khách hàng", dataIndex: "customerName", key: "customerName" },
-    { title: "Địa điểm", dataIndex: "address", key: "address" },
+  const columns: TableProps<Provider>["columns"] = [
+    {
+      title: "Tên nhà cung cấp",
+      dataIndex: "providerName",
+      key: "providerName",
+    },
+    { title: "Địa chỉ", dataIndex: "address", key: "address" },
     { title: "Số điện thoại", dataIndex: "phoneNumber", key: "phoneNumber" },
     { title: "Email", dataIndex: "email", key: "email" },
   ];
 
-  const selectedCustomer = customers?.find((c) => c.customerId === value);
+  const selectedProvider = providers?.find((p) => p.providerId === value);
 
   return (
     <StyledSelect
@@ -56,10 +60,10 @@ const CustomerSelector = ({
       value={value}
       onSearch={setSearchTerm}
       onFocus={() => setDropdownOpen(true)}
-      onClear={() => onSelectedCustomerChange(null)}
+      onClear={() => onSelectedProviderChange(null)}
       onBlur={() => !isHovered && setDropdownOpen(false)}
-      popupClassName="dropdownClassNameSelector"
       open={dropdownOpen}
+      popupClassName="dropdownClassNameSelector"
       dropdownRender={() => {
         if (loading) {
           return (
@@ -68,39 +72,39 @@ const CustomerSelector = ({
             </SpinWrapper>
           );
         }
-        if (customers && customers.length > 0) {
+        if (providers && providers.length > 0) {
           return (
             <Table
               columns={columns}
-              dataSource={customers}
-              rowKey="warehouseId"
+              dataSource={providers}
+              rowKey="providerId"
               pagination={false}
               rowClassName="rowTableClassName"
-              size="small"
               onRow={(record) => ({
                 onClick: () => handleRowClick(record),
                 onMouseEnter: () => setIsHovered(true),
                 onMouseLeave: () => setIsHovered(false),
               })}
+              style={{ width: "70%", height: "50vh" }}
             />
           );
         }
         return (
           <EmptyWrapper>
-            <Empty description="Không tìm thấy khách hàng" />
+            <Empty description="Không tìm thấy nhà cung cấp" />
           </EmptyWrapper>
         );
       }}
       optionLabelProp="label"
       dropdownStyle={{ minWidth: "400px" }}
     >
-      {selectedCustomer && (
+      {selectedProvider && (
         <Select.Option
-          key={selectedCustomer.customerId}
-          value={selectedCustomer.customerId}
-          label={`${selectedCustomer.customerName} (${selectedCustomer.phoneNumber})`}
+          key={selectedProvider.providerId}
+          value={selectedProvider.providerId}
+          label={`${selectedProvider.providerName} (${selectedProvider.phoneNumber})`}
         >
-          {selectedCustomer.customerName}
+          {selectedProvider.providerName}
         </Select.Option>
       )}
     </StyledSelect>
@@ -111,6 +115,7 @@ const StyledSelect = styled(Select)`
   .ant-select-selector {
     height: 2rem !important;
     width: 100%;
+    max-width: 18.75rem;
     display: flex;
     align-items: center;
   }
@@ -131,4 +136,4 @@ const EmptyWrapper = styled.div`
   text-align: center;
 `;
 
-export default CustomerSelector;
+export default ProviderSelector;
