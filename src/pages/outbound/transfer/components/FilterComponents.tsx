@@ -1,24 +1,61 @@
 import { Button, DatePicker, Input, Space } from "antd";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import { cleanFilterParams } from "../../../../utils/cleanNullOrEmpty";
 import { LotGetQueryParams, LotGetRequestParams } from "../../../../types/lot";
+import ProviderSelector from "../../../../components/provider/ProviderSelector";
+import { Provider, ProviderGetRequestParams } from "../../../../types/provider";
+import { useGetProviderQuery } from "../../../../hooks/api/provider/getProviderQuery";
+import { Product, ProductGetRequestParams } from "../../../../types/product";
+import { WarehouseGetRequestParams } from "../../../../types/warehouse";
+import { useGetProductQuery } from "../../../../hooks/api/product/getProductQuery";
+import { useGetWarehouseQuery } from "../../../../hooks/api/warehouse/getWarehouseQuery";
+import ProductSelector from "../../../../components/product/ProductSelector";
+import WarehouseSelector from "../../../../components/warehouse/WarehouseSelector";
 
 interface ComponentProps {
   setQuery: React.Dispatch<React.SetStateAction<LotGetRequestParams>>;
   initialQueryParams: LotGetRequestParams;
+  query: LotGetRequestParams;
 }
 
 const initialFilterParams: LotGetQueryParams = {
   Search: "",
   DateFrom: null,
   DateTo: null,
+  Availablle: null,
+  ProductId: null,
+  ProviderId: null,
+  WarehouseId: null,
 };
 
-const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
+const FilterComponent = ({
+  setQuery,
+  initialQueryParams,
+  query,
+}: ComponentProps) => {
   const [filterParam, setFilterParam] =
     useState<LotGetQueryParams>(initialFilterParams);
+  const [providerFilterParams, setProviderFilterParams] =
+    useState<ProviderGetRequestParams>({
+      Page: 1,
+      PageSize: 1000,
+      Search: null,
+    });
+
+  const [productFilterParams, setProductFilterParams] =
+    useState<ProductGetRequestParams>({
+      Page: 1,
+      PageSize: 1000,
+      Search: null,
+    });
+
+  const { data: queryProvider, isLoading: providerQueryLoading } =
+    useGetProviderQuery(providerFilterParams);
+
+  const { data: queryProduct, isLoading: productQueryLoading } =
+    useGetProductQuery(productFilterParams);
 
   const setDateFrom = (date: Dayjs | null) => {
     setFilterParam((prev) => ({
@@ -38,6 +75,34 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
     setFilterParam((prev) => ({
       ...prev,
       Search: value,
+    }));
+  };
+
+  const onSearchProviderChange = useCallback((value: string) => {
+    setProviderFilterParams((prev) => ({
+      ...prev,
+      Search: value,
+    }));
+  }, []);
+
+  const onSearchProductChange = useCallback((value: string) => {
+    setProductFilterParams((prev) => ({
+      ...prev,
+      Search: value,
+    }));
+  }, []);
+
+  const onSelectedProvider = (record: Provider | null) => {
+    setQuery((prev) => ({
+      ...prev,
+      ProviderId: record?.providerId,
+    }));
+  };
+
+  const onSelectedProduct = (record: Product | null) => {
+    setQuery((prev) => ({
+      ...prev,
+      ProductId: record?.productId,
     }));
   };
 
@@ -82,6 +147,20 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
             : false
         }
         style={{ width: 150 }}
+      />
+      <ProviderSelector
+        value={query.ProviderId}
+        onSearchValueChange={onSearchProviderChange}
+        onSelectedProviderChange={onSelectedProvider}
+        providers={queryProvider?.items}
+        loading={providerQueryLoading}
+      />
+      <ProductSelector
+        value={query.ProductId}
+        onSearchValueChange={onSearchProductChange}
+        onSelectedProductChange={onSelectedProduct}
+        products={queryProduct?.items}
+        loading={productQueryLoading}
       />
       <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
         Tìm kiếm

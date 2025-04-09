@@ -133,7 +133,13 @@ const CustomerInformationStep: React.FC<CustomerInformationStepProps> = ({
           <Form.Item
             name="receiverPhone"
             label="Số Điện Thoại"
-            rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập số điện thoại" },
+              {
+                pattern: /^[0-9]{10}$/,
+                message: "Số điện thoại phải là 10 chữ số",
+              },
+            ]}
             style={{ flex: "1" }}
             tooltip="Điện thoại người nhận hàng"
           >

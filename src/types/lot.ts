@@ -26,6 +26,10 @@ export interface LotGetRequestParams
     LotGetQueryParams {}
 
 export interface LotGetQueryParams {
+  ProductId?: number | null;
+  ProviderId?: number | null;
+  WarehouseId?: number | null;
+  Availablle?: boolean | null;
   Search?: string | null;
   DateFrom?: string | null;
   DateTo?: string | null;

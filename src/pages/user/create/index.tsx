@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Button, Select, Spin } from "antd";
+import { Form, Input, Button, Select, Spin, Card } from "antd";
 import styled from "styled-components";
 import { useCreateUserMutation } from "../../../hooks/api/user/createUserMutation";
 import { UserPostRequest } from "../../../types/user";
@@ -119,7 +119,7 @@ const CreateUserPage: React.FC = () => {
 
 export default CreateUserPage;
 
-const StyledContainer = styled.div`
+const StyledContainer = styled(Card)`
   max-width: 600px;
   margin: 0 auto;
   padding: 24px;
