@@ -1,5 +1,5 @@
 import apiClient from "..";
-import { InboundGetRequestParams, InboundPostRequest } from "../../types/inbound";
+import { InboundGetRequestParams, InboundPostRequest, InboundPutStatusRequest } from "../../types/inbound";
 
 
 export const createInbound = (inboundData: InboundPostRequest) =>
@@ -14,11 +14,11 @@ export const createInbound = (inboundData: InboundPostRequest) =>
 //     body: JSON.stringify(data),
 //   });
 
-// export const updateOutbound = (outboundId: number, data: OutboundPutRequest) =>
-//   apiClient(`/api/Outbound?id=${outboundId}`, {
-//     method: "PUT",
-//     body: JSON.stringify(data),
-//   });
+export const updateInboundStatus = (data: InboundPutStatusRequest) =>
+  apiClient(`/api/Inbound/status`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
 
 export const searchInbound = (
   query: InboundGetRequestParams = { Page: 1, PageSize: 10 }

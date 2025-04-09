@@ -16,6 +16,7 @@ interface CreateInboundProps {
     maphieu: string;
     sanpham: InboundRequestDetail[];
   };
+  onClose: () => void;
 }
 
 interface Batch {
@@ -35,7 +36,7 @@ const initialData: CustomerGetRequestParams = {
   PageSize: 100,
 };
 
-const CreateInbound: React.FC<CreateInboundProps> = ({ record }) => {
+const CreateInbound: React.FC<CreateInboundProps> = ({ record, onClose }) => {
   const [activeTab, setActiveTab] = useState<string>('1');
   const [batches, setBatches] = useState<Batch[]>([]);
   const [form] = Form.useForm();
@@ -52,11 +53,12 @@ const CreateInbound: React.FC<CreateInboundProps> = ({ record }) => {
   };
 
   useEffect(() => {
-  if (isSuccess) {
+    if (isSuccess) {
+      console.log("is success: ", isSuccess);
     form.resetFields();
     setBatches([]);
     setSelectedWarehouse("");
-    //onClose();
+    onClose();
   }
 }, [isSuccess]);
 
@@ -74,7 +76,8 @@ const handleSubmit = async () => {
       warehouseId: Number(selectedWarehouse),
       inboundRequestId: Number(record.key),
       inboundDetails: batches,
-    });
+    }
+    );
 
     // const tempData = {
     //   providerOrderCode: values.providerOrderCode || '',

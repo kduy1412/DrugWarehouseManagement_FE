@@ -120,7 +120,7 @@ const CreateInboundOrderList: React.FC = () => {
         onClose={handleCancel}
       >
         <div>
-          {selectedRecord && <CreateInbound record={selectedRecord}/>}
+          {selectedRecord && <CreateInbound record={selectedRecord} onClose={handleCancel}/>}
         </div>
       </Modal>
     </>
