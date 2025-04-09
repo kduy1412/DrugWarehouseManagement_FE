@@ -1,6 +1,7 @@
 import { Dayjs } from "dayjs";
 import { PaginationModelRequest } from "./paginationModelRequest";
 import { PaginationModelResponse } from "./paginationModelResponse";
+import { Provider } from "./provider";
 
 //POST
 export type InboundPostRequest = {
@@ -107,6 +108,7 @@ export interface Inbound {
   status: InboundStatus;
   inboundDetails: InboundDetail[];
   warehouseName: string;
+  providerDetails: Provider;
 }
 
 export interface InboundDetail {

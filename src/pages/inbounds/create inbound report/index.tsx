@@ -8,6 +8,7 @@ import { AuthResponse } from "../../../types/auth";
 import { AUTH_QUERY_KEY } from "../../../types/constants";
 import { queryClient } from "../../../lib/queryClient";
 import { useUpdateInboundStatusMutation } from "../../../hooks/api/inbound/updateInboundStatusMutation";
+import { Provider } from "../../../types/provider";
 
 interface DataType {
   key: number;
@@ -15,9 +16,8 @@ interface DataType {
   ngaytao: string;
   nguoitao: string;
   tongtien: number;
-  ncc: string;
+  ncc: Provider;
   nhakho: string;
-  trangthaincc: number;
   trangthai: InboundStatus;
   mst: string;
   lo: InboundDetail[];
@@ -44,9 +44,7 @@ const CreateInboundReport: React.FC = () => {
   React.useEffect(() => {
     console.log("Dữ liệu file upload Create trả về:", uploadedFiles);
   }, [uploadedFiles]);
-  React.useEffect(() => {
-    console.log("AccessToken:", accessToken);
-  }, [accessToken]);
+
   const onChangeNote = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setProblemDescription(e.target.value);
   };
@@ -145,14 +143,17 @@ const CreateInboundReport: React.FC = () => {
       tongtien: Array.isArray(item.inboundDetails) ? item.inboundDetails.reduce((total, currentValue) => {
         return Number(total) + currentValue.totalPrice;
       }, 0) : 0,
-      trangthaincc: item.status,
       trangthai: item.status,
-      ncc: item.providerName,
+      ncc: item.providerDetails,
       nhakho: item.warehouseName,
       mst: item.providerOrderCode,
       lo: item.inboundDetails
     }))
     : [];
+  
+    React.useEffect(() => {
+      console.log("Data transformedData:", selectedRecord);
+    }, [selectedRecord]);
 
   return (
     <>
@@ -178,16 +179,19 @@ const CreateInboundReport: React.FC = () => {
           <div>
             <h2>Thông tin nhà cung cấp</h2>
             <p>
-              <strong>Tên NCC: </strong> {selectedRecord.ncc}
+              <strong>Tên NCC: </strong>{selectedRecord.ncc.providerName}
             </p>
             <p>
-              <strong>Quốc gia:</strong> {selectedRecord.key} (đây là inboundId)
+              <strong>Quốc gia:</strong> {selectedRecord.ncc.nationality || "Đang để trống?"}
             </p>
             <p>
-              <strong>MST:</strong> {selectedRecord.mst}
+              <strong>MST:</strong> {selectedRecord.ncc.taxCode}
             </p>
             <p>
-              <strong>SĐT:</strong>
+              <strong>Email: </strong>{selectedRecord.ncc.email}
+            </p>
+            <p>
+              <strong>SĐT: </strong>{selectedRecord.ncc.phoneNumber}
             </p>
             <h2>Thông tin phiếu nhập hàng</h2>
             <p>
