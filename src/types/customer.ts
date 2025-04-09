@@ -9,7 +9,7 @@ export interface CustomerGetResponse extends PaginationModelResponse {
 export type CustomerPostRequest = Omit<
   Customer,
   "customerId" | "isLoyal" | "status"
->;
+> & { documentNumber: string };
 
 //PUT
 export interface CustomerPutRequest {
@@ -17,6 +17,7 @@ export interface CustomerPutRequest {
   address?: string | null;
   phoneNumber?: string | null;
   email?: string | null;
+  documentNumber?: string | null;
 }
 
 //MODEL

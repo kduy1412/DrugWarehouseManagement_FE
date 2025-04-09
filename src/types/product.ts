@@ -83,6 +83,8 @@ export interface ProductGetRequestParams
     Record<string, any> {}
 
 export type ProductFilterParams = {
+  CategoryId?: number ;
+  Status?: string;
   Search?: string | null;
   DateFrom?: Dayjs | null | string;
   DateTo?: Dayjs | null | string;
@@ -96,6 +98,14 @@ export interface Product {
   type: string;
   madeFrom: string;
   providerId: number;
+}
+export interface ProductPostRequest {
+  productName: string;
+  productCode: string;
+  sku: string;
+  madeFrom: string;
+  productCategories:
+  [{categoriesId:number}]
 }
 
 //Status

@@ -40,7 +40,9 @@ export function useAuth() {
         userName: userData.userName,
       };
 
-      const currentRole = authData.role as keyof typeof Roles;
+      const currentRole = authData.role
+        .split(" ")
+        .join("") as keyof typeof Roles;
 
       return {
         token: authData.token,

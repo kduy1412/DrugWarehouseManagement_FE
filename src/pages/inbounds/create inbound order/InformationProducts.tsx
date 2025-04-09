@@ -49,7 +49,7 @@ useEffect(() => {
     ...item,
     key: index.toString(),
   }));
-
+  
   const productColumns = [
     {
       title: "Chọn",
@@ -128,7 +128,7 @@ useEffect(() => {
   return (
     <Form form={form} layout="vertical">
       <Typography.Title level={4}>Danh sách sản phẩm</Typography.Title>
-      <Button type="dashed" style={{ marginBottom: 10 }} onClick={handleCreateBatch}>
+      <Button type="dashed" disabled={selectedProductIndex===null} style={{ marginBottom: 10 }} onClick={handleCreateBatch}>
         Tạo lô Hàng
       </Button>
       <Table
@@ -148,9 +148,10 @@ useEffect(() => {
         onCancel={handleCancel}
         okText="Tạo"
         cancelText="Hủy"
+        onClose={handleCancel}  
       >
         <Form layout="vertical">
-          <Form.Item label="Mã lô" required>
+          <Form.Item  label="Mã lô" required>
             <Input
               value={batchId}
               onChange={(e) => setBatchId(e.target.value)}

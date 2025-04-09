@@ -28,6 +28,10 @@ import CreateCustomerPage from "../pages/customer/create";
 import CreateInboundReport from "../pages/inbounds/create inbound report";
 import HistoryInboundReport from "../pages/inbounds/list inbound report";
 import UpdateInbound from "../pages/inbounds/update inbound order";
+import CreateUserPage from "../pages/user/create";
+import UserListPage from "../pages/user/list";
+import WarehouseListPage from "../pages/warehouse/list";
+import CreateWarehousePage from "../pages/warehouse/create";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -54,21 +58,17 @@ export const privateRoutes: MenuRoutes[] = [
       {
         key: `/inbound/create-inbound-request`,
 
-        label: `Create Inbound Request`,
+        label: `Tạo phiếu đặt hàng`,
         url: `/inbound/create-inbound-request`,
         element: <CreateInboundRequest />,
         allowedroles: [
-          Roles.Admin,
-          Roles.Accountant,
-          Roles.Director,
-          Roles.InventoryManager,
           Roles.SaleAdmin,
         ],
       },
       {
         key: `/inbound/history-inbound-request`,
 
-        label: `History Inbound Request`,
+        label: `Danh sách phiếu đặt hàng `,
         url: `/inbound/history-inbound-request`,
         element: <InboundRequestList />,
         allowedroles: [
@@ -81,46 +81,34 @@ export const privateRoutes: MenuRoutes[] = [
       },
       {
         key: `/inbound/approval-inbound-request-by-accountant`,
-        label: `Approval By Accountant`,
+        label: `Đơn chờ duyệt`,
         url: `/inbound/approval-inbound-request-by-accountant`,
         element: <ApprovalInboundRequestList />,
         allowedroles: [
-          Roles.Admin,
           Roles.Accountant,
-          Roles.Director,
-          Roles.InventoryManager,
-          Roles.SaleAdmin,
         ],
       },
       {
         key: `/inbound/approval-inbound-request-by-ceo`,
-        label: `Approval By CEO`,
+        label: `Đơn chờ duyệt`,
         url: `/inbound/approval-inbound-request-by-ceo`,
         element: <ApprovalInboundRequestListByCEO />,
         allowedroles: [
-          Roles.Admin,
-          Roles.Accountant,
           Roles.Director,
-          Roles.InventoryManager,
-          Roles.SaleAdmin,
         ],
       },
       {
         key: `/inbound/create-inbound`,
-        label: `Create Inbound Order`,
+        label: `Tạo đơn nhập hàng`,
         url: `/inbound/create-inbound`,
         element: <CreateInboundOrderList />,
         allowedroles: [
-          Roles.Admin,
           Roles.Accountant,
-          Roles.Director,
-          Roles.InventoryManager,
-          Roles.SaleAdmin,
         ],
       },
       {
         key: `/inbound/history-inbound-order`,
-        label: `History Inbound Order`,
+        label: `Danh sách đơn nhập hàng`,
         url: `/inbound/history-inbound-order`,
         element: <HistoryInboundOrder />,
         allowedroles: [
@@ -133,20 +121,16 @@ export const privateRoutes: MenuRoutes[] = [
       },
       {
         key: `/inbound/create-inbound-report`,
-        label: `Create Inbound Report`,
+        label: `Tạo báo cáo nhập`,
         url: `/inbound/create-inbound-report`,
         element: <CreateInboundReport />,
         allowedroles: [
-          Roles.Admin,
-          Roles.Accountant,
-          Roles.Director,
           Roles.InventoryManager,
-          Roles.SaleAdmin,
         ],
       },
       {
         key: `/inbound/history-inbound-report`,
-        label: `History Inbound Report`,
+        label: `Danh sách báo cáo nhập`,
         url: `/inbound/history-inbound-report`,
         element: <HistoryInboundReport />,
         allowedroles: [
@@ -159,15 +143,11 @@ export const privateRoutes: MenuRoutes[] = [
       },
       {
         key: `/inbound/update-inbound`,
-        label: `Update Inbound`,
+        label: `Cập nhật đơn hàng`,
         url: `/inbound/update-inbound`,
         element: <UpdateInbound />,
         allowedroles: [
-          Roles.Admin,
           Roles.Accountant,
-          Roles.Director,
-          Roles.InventoryManager,
-          Roles.SaleAdmin,
         ],
       },
     ],
@@ -293,6 +273,7 @@ export const privateRoutes: MenuRoutes[] = [
     key: `/account-management`,
     label: `Quản Lý Tài Khoản`,
     url: `/account-management`,
+    icon: React.createElement(images.accountManage),
     allowedroles: [
       Roles.Admin,
       Roles.Accountant,
@@ -301,6 +282,34 @@ export const privateRoutes: MenuRoutes[] = [
       Roles.SaleAdmin,
     ],
     element: <UserPage />,
+    children: [
+      {
+        key: `/account-management/create`,
+        label: `Tạo tài khoản mới`,
+        url: `/account-management/create`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <CreateUserPage />,
+      },
+      {
+        key: `/account-management/list`,
+        label: `Danh sách tài khoản`,
+        url: `/account-management/list`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <UserListPage />,
+      },
+    ],
   },
   {
     key: `/customers`,
@@ -385,5 +394,33 @@ export const privateRoutes: MenuRoutes[] = [
       Roles.SaleAdmin,
     ],
     element: <WarehousePage />,
+    children: [
+      {
+        key: `/warehouse-system/list`,
+        label: `Danh Sách Kho`,
+        url: `/warehouse-system/list`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <WarehouseListPage />,
+      },
+      {
+        key: `/warehouse-system/create`,
+        label: `Tạo mới kho`,
+        url: `/warehouse-system/create`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <CreateWarehousePage />,
+      },
+    ],
   },
 ];

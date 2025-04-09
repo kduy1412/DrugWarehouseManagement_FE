@@ -32,6 +32,7 @@ const CreateInboundOrderList: React.FC = () => {
   const handleCancel = () => {
     setIsModalOpen(false); // Close the modal
     setSelectedRecord(null); // Reset the selected record
+    
   };
 
   const { data } = useGetInboundRequestQuery(initialData);
@@ -116,6 +117,7 @@ const CreateInboundOrderList: React.FC = () => {
         open={isModalOpen}
         onCancel={handleCancel}
         footer={null} // No footer buttons
+        onClose={handleCancel}
       >
         <div>
           {selectedRecord && <CreateInbound record={selectedRecord} onClose={handleCancel}/>}

@@ -1,5 +1,9 @@
 import apiClient from "..";
-import { WarehouseGetRequestParams } from "../../types/warehouse";
+import {
+  WarehouseGetRequestParams,
+  WarehousePostRequest,
+  WarehousePutRequest,
+} from "../../types/warehouse";
 
 export const searchWarehouse = (
   query: WarehouseGetRequestParams = { Page: 1, PageSize: 10 }
@@ -9,3 +13,18 @@ export const searchWarehouse = (
     method: "GET",
   });
 };
+
+export const createWarehouse = (data: WarehousePostRequest) =>
+  apiClient("/api/Warehouse", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+
+export const updateWarehouse = (
+  data: WarehousePutRequest,
+  warehouseId: number
+) =>
+  apiClient(`/api/Warehouse/${warehouseId}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });

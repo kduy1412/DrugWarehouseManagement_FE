@@ -1,5 +1,5 @@
 import apiClient from "..";
-import { ProductGetRequestParams } from "../../types/product";
+import { ProductGetRequestParams, ProductPostRequest } from "../../types/product";
 
 // export const createOutbound = (outboundData: OutboundPostRequest) =>
 //   apiClient("/api/Outbound", {
@@ -27,6 +27,12 @@ export const searchProduct = (
     method: "GET",
   });
 };
+export const CreateProduct = 
+  (data: ProductPostRequest  ) => {
+    return apiClient(`/api/Product`, {
+      method:"POST",
+      body: JSON.stringify(data)})
+  };
 
 // export const getOutboundById = (id: string) =>
 //   apiClient(`/api/Outbound/${id}`, {
