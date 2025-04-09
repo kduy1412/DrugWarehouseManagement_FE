@@ -2,50 +2,49 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { RefSelectProps, Select, Spin, Table, TableProps, Empty } from "antd";
 import { useRef, useState, useEffect } from "react";
 import styled from "styled-components";
-import { CustomerSelectorGetView } from "../../types/customer";
+import { Product } from "../../types/product"; // Assuming this contains product view type
 
-interface CustomerSelectorProps {
+interface ProductSelectorProps {
   value: number | null | undefined;
-  onSelectedCustomerChange: (customer: CustomerSelectorGetView | null) => void;
+  onSelectedProductChange: (product: Product | null) => void;
   onSearchValueChange: (value: string) => void;
-  customers: CustomerSelectorGetView[] | undefined;
+  products: Product[] | undefined;
   loading?: boolean;
   placeholder?: string;
 }
 
-const CustomerSelector = ({
+const ProductSelector = ({
   value,
-  onSelectedCustomerChange,
+  onSelectedProductChange,
   onSearchValueChange,
-  customers,
+  products,
   loading = false,
-  placeholder = "Chọn khách hàng",
-}: CustomerSelectorProps) => {
+  placeholder = "Chọn sản phẩm",
+}: ProductSelectorProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 400);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const selectRef = useRef<RefSelectProps>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const selectRef = useRef<RefSelectProps>(null);
 
   useEffect(() => {
     onSearchValueChange(debouncedSearchTerm);
   }, [debouncedSearchTerm, onSearchValueChange]);
 
-  const handleRowClick = (record: CustomerSelectorGetView) => {
-    onSelectedCustomerChange(record);
+  const handleRowClick = (record: Product) => {
+    onSelectedProductChange(record);
     setDropdownOpen(false);
     setSearchTerm("");
     selectRef.current?.blur();
   };
 
-  const columns: TableProps<CustomerSelectorGetView>["columns"] = [
-    { title: "Tên khách hàng", dataIndex: "customerName", key: "customerName" },
-    { title: "Địa điểm", dataIndex: "address", key: "address" },
-    { title: "Số điện thoại", dataIndex: "phoneNumber", key: "phoneNumber" },
-    { title: "Email", dataIndex: "email", key: "email" },
+  const columns: TableProps<Product>["columns"] = [
+    { title: "Tên sản phẩm", dataIndex: "productName", key: "productName" },
+    { title: "Mã sản phẩm", dataIndex: "productCode", key: "productCode" },
+    { title: "Loại", dataIndex: "sku", key: "sku" },
   ];
 
-  const selectedCustomer = customers?.find((c) => c.customerId === value);
+  const selectedProduct = products?.find((p) => p.productId === value);
 
   return (
     <StyledSelect
@@ -56,9 +55,9 @@ const CustomerSelector = ({
       value={value}
       onSearch={setSearchTerm}
       onFocus={() => setDropdownOpen(true)}
-      onClear={() => onSelectedCustomerChange(null)}
-      onBlur={() => !isHovered && setDropdownOpen(false)}
+      onClear={() => onSelectedProductChange(null)}
       popupClassName="dropdownClassNameSelector"
+      onBlur={() => !isHovered && setDropdownOpen(false)}
       open={dropdownOpen}
       dropdownRender={() => {
         if (loading) {
@@ -68,15 +67,15 @@ const CustomerSelector = ({
             </SpinWrapper>
           );
         }
-        if (customers && customers.length > 0) {
+        if (products && products.length > 0) {
           return (
             <Table
               columns={columns}
-              dataSource={customers}
-              rowKey="warehouseId"
+              dataSource={products}
+              rowKey="productId"
               pagination={false}
-              rowClassName="rowTableClassName"
               size="small"
+              rowClassName="rowTableClassName"
               onRow={(record) => ({
                 onClick: () => handleRowClick(record),
                 onMouseEnter: () => setIsHovered(true),
@@ -87,20 +86,20 @@ const CustomerSelector = ({
         }
         return (
           <EmptyWrapper>
-            <Empty description="Không tìm thấy khách hàng" />
+            <Empty description="Không tìm thấy sản phẩm" />
           </EmptyWrapper>
         );
       }}
       optionLabelProp="label"
       dropdownStyle={{ minWidth: "400px" }}
     >
-      {selectedCustomer && (
+      {selectedProduct && (
         <Select.Option
-          key={selectedCustomer.customerId}
-          value={selectedCustomer.customerId}
-          label={`${selectedCustomer.customerName} (${selectedCustomer.phoneNumber})`}
+          key={selectedProduct.productId}
+          value={selectedProduct.productId}
+          label={`${selectedProduct.productName} (${selectedProduct.productCode})`}
         >
-          {selectedCustomer.customerName}
+          {selectedProduct.productName}
         </Select.Option>
       )}
     </StyledSelect>
@@ -131,4 +130,4 @@ const EmptyWrapper = styled.div`
   text-align: center;
 `;
 
-export default CustomerSelector;
+export default ProductSelector;

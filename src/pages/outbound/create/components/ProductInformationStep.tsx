@@ -34,6 +34,10 @@ const initialQueryParams: LotGetRequestParams = {
   DateFrom: null,
   DateTo: null,
   Search: null,
+  Availablle: null,
+  ProductId: null,
+  ProviderId: null,
+  WarehouseId: null,
 };
 
 type ProductsSelectedProps = OutboundDetailRequest &
@@ -356,6 +360,7 @@ const ProductInformationStep = ({
         <FilterComponent
           initialQueryParams={initialQueryParams}
           setQuery={setQueryParams}
+          query = {queryParams}
         />
         <CtaButton onClick={onClickAddProduct} disabled={!hasSelected}>
           Thêm vào đơn

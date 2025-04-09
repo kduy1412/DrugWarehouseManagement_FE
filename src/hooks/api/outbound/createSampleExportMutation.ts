@@ -2,6 +2,7 @@ import { SampleExportRequest } from "../../../types/outbound";
 import { createSampleExport } from "../../../api/endpoints/outbound";
 import { notification } from "antd";
 import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "../../../lib/queryClient";
 
 export const useCreateSampleExportMutation = () => {
   return useMutation<unknown, Error, SampleExportRequest>({
@@ -11,6 +12,9 @@ export const useCreateSampleExportMutation = () => {
         message: "Thành công",
         description: "Tạo đơn xuất mẫu thành công!",
         placement: "topRight",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["outbound", { Page: 1, PageSize: 10 }],
       });
     },
     onError: (error) => {
