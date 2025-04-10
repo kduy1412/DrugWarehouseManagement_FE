@@ -13,6 +13,7 @@ import { useGetProductQuery } from "../../../../hooks/api/product/getProductQuer
 import { useGetWarehouseQuery } from "../../../../hooks/api/warehouse/getWarehouseQuery";
 import ProductSelector from "../../../../components/product/ProductSelector";
 import WarehouseSelector from "../../../../components/warehouse/WarehouseSelector";
+import styled from "styled-components";
 
 interface ComponentProps {
   setQuery: React.Dispatch<React.SetStateAction<LotGetRequestParams>>;
@@ -121,7 +122,11 @@ const FilterComponent = ({
   };
 
   return (
-    <Space direction="horizontal" size="middle" style={{ marginBottom: 16 }}>
+    <StyledSpace
+      direction="horizontal"
+      size="middle"
+      style={{ marginBottom: 16 }}
+    >
       <Input
         placeholder="Nhập từ khóa tìm kiếm"
         value={filterParam.Search ?? ""}
@@ -166,8 +171,13 @@ const FilterComponent = ({
         Tìm kiếm
       </Button>
       <Button onClick={handleReset}>Đặt lại</Button>
-    </Space>
+    </StyledSpace>
   );
 };
 
 export default FilterComponent;
+
+const StyledSpace = styled(Space)`
+  flex-wrap: wrap;
+  max-width: 90%;
+`;
