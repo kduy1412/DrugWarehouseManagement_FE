@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Table, Modal, Button, Input, UploadFile, notification } from "antd";
-import InboundReport from './InboundReport'
+import InboundReport from "./InboundReport";
 import UploadReport from "./UploadFile";
 import { useGetInboundQuery } from "../../../hooks/api/inbound/getInboundQuery";
 import { InboundDetail, InboundStatus } from "../../../types/inbound";
@@ -24,11 +24,8 @@ interface DataType {
 }
 const initialData = {
   Page: 1,
-  PageSize: 100
-  ,
+  PageSize: 100,
 };
-
-
 
 const CreateInboundReport: React.FC = () => {
   const { TextArea } = Input;
@@ -49,15 +46,15 @@ const CreateInboundReport: React.FC = () => {
     setProblemDescription(e.target.value);
   };
   const handleOpenModal = (record: DataType) => {
-    setSelectedRecord(record);  // Set the selected record to show its details
-    setIsModalOpen(true);  // Open the modal
+    setSelectedRecord(record); // Set the selected record to show its details
+    setIsModalOpen(true); // Open the modal
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);  // Close the modal
-    setSelectedRecord(null);  // Reset the selected record
+    setIsModalOpen(false); // Close the modal
+    setSelectedRecord(null); // Reset the selected record
     setProblemDescription("");
-    setUploadedFiles([])
+    setUploadedFiles([]);
   };
 
   const handleSubmit = async () => {
@@ -74,13 +71,16 @@ const CreateInboundReport: React.FC = () => {
     });
 
     try {
-      const response = await fetch("http://poserdungeon.myddns.me:5001/api/InboundReport", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken || ""}`,
-        },
-        body: formData,
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/InboundReport`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken || ""}`,
+          },
+          body: formData,
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
@@ -89,19 +89,19 @@ const CreateInboundReport: React.FC = () => {
           message: "Tạo phiếu nhập thành công!",
         });
         handleCancel();
-          mutate(
-            {
-              data: {
-                inboundId: selectedRecord.key,
-                inboundStatus: 'Completed'
-              },
+        mutate(
+          {
+            data: {
+              inboundId: selectedRecord.key,
+              inboundStatus: "Completed",
             },
-            {
-              onSuccess: () => {
-                refetch();
-              }
-            }
-          );
+          },
+          {
+            onSuccess: () => {
+              refetch();
+            },
+          }
+        );
       } else {
         const error = await response.json();
         console.error("Lỗi:", error);
@@ -136,24 +136,26 @@ const CreateInboundReport: React.FC = () => {
 
   const transformedData: DataType[] = Array.isArray(data?.items)
     ? data.items.map((item) => ({
-      key: item.inboundId,
-      ngaytao: item.inboundDate,
-      maphieu: item.inboundCode,
-      nguoitao: item.createBy,
-      tongtien: Array.isArray(item.inboundDetails) ? item.inboundDetails.reduce((total, currentValue) => {
-        return Number(total) + currentValue.totalPrice;
-      }, 0) : 0,
-      trangthai: item.status,
-      ncc: item.providerDetails,
-      nhakho: item.warehouseName,
-      mst: item.providerOrderCode,
-      lo: item.inboundDetails
-    }))
+        key: item.inboundId,
+        ngaytao: item.inboundDate,
+        maphieu: item.inboundCode,
+        nguoitao: item.createBy,
+        tongtien: Array.isArray(item.inboundDetails)
+          ? item.inboundDetails.reduce((total, currentValue) => {
+              return Number(total) + currentValue.totalPrice;
+            }, 0)
+          : 0,
+        trangthai: item.status,
+        ncc: item.providerDetails,
+        nhakho: item.warehouseName,
+        mst: item.providerOrderCode,
+        lo: item.inboundDetails,
+      }))
     : [];
-  
-    React.useEffect(() => {
-      console.log("Data transformedData:", selectedRecord);
-    }, [selectedRecord]);
+
+  React.useEffect(() => {
+    console.log("Data transformedData:", selectedRecord);
+  }, [selectedRecord]);
 
   return (
     <>
@@ -163,7 +165,7 @@ const CreateInboundReport: React.FC = () => {
         dataSource={transformedData}
         size="middle"
         pagination={{ pageSize: 50 }}
-      // scroll={{ y: 55 * 5 }}
+        // scroll={{ y: 55 * 5 }}
       />
 
       {/* Modal for Create Inbound */}
@@ -179,19 +181,23 @@ const CreateInboundReport: React.FC = () => {
           <div>
             <h2>Thông tin nhà cung cấp</h2>
             <p>
-              <strong>Tên NCC: </strong>{selectedRecord.ncc.providerName}
+              <strong>Tên NCC: </strong>
+              {selectedRecord.ncc.providerName}
             </p>
             <p>
-              <strong>Quốc gia:</strong> {selectedRecord.ncc.nationality || "Đang để trống?"}
+              <strong>Quốc gia:</strong>{" "}
+              {selectedRecord.ncc.nationality || "Đang để trống?"}
             </p>
             <p>
               <strong>MST:</strong> {selectedRecord.ncc.taxCode}
             </p>
             <p>
-              <strong>Email: </strong>{selectedRecord.ncc.email}
+              <strong>Email: </strong>
+              {selectedRecord.ncc.email}
             </p>
             <p>
-              <strong>SĐT: </strong>{selectedRecord.ncc.phoneNumber}
+              <strong>SĐT: </strong>
+              {selectedRecord.ncc.phoneNumber}
             </p>
             <h2>Thông tin phiếu nhập hàng</h2>
             <p>
@@ -221,12 +227,23 @@ const CreateInboundReport: React.FC = () => {
               maxLength={100}
               onChange={onChangeNote}
               placeholder="Nhập báo cáo vấn đề"
-              style={{ height: 120, resize: 'none' }}
+              style={{ height: 120, resize: "none" }}
             />
             <h2>Tài liệu</h2>
             <UploadReport onFileListChange={setUploadedFiles} />
-            <div style={{ display: 'flex', alignItems: 'flex-end', flexDirection: 'column' }}>
-              <Button type="primary" style={{ width: '50%', marginTop: 20 }} onClick={handleSubmit} block>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-end",
+                flexDirection: "column",
+              }}
+            >
+              <Button
+                type="primary"
+                style={{ width: "50%", marginTop: 20 }}
+                onClick={handleSubmit}
+                block
+              >
                 Tạo
               </Button>
             </div>
