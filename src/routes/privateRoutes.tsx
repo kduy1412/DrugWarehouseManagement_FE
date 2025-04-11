@@ -6,7 +6,7 @@ import LotPage from "../pages/lot";
 import ReportPage from "../pages/reports";
 import UserPage from "../pages/user";
 import CustomerPage from "../pages/customer";
-import SupplierPage from "../pages/supplier";
+import ProviderPage from "../pages/provider";
 import ProductsPage from "../pages/product";
 import WarehousePage from "../pages/warehouse";
 import HomePage from "../pages/HomePage";
@@ -36,6 +36,8 @@ import CategoryPage from "../pages/category";
 import { TagsOutlined } from "@ant-design/icons";
 import ProductListPage from "../pages/product/list";
 import CreateProductPage from "../pages/product/create";
+import ProviderListPage from "../pages/provider/list";
+import CreateProviderPage from "../pages/provider/create";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -286,10 +288,10 @@ export const privateRoutes: MenuRoutes[] = [
     element: <CustomerPage />,
   },
   {
-    key: `/suppliers`,
+    key: `/providers`,
     icon: React.createElement(images.shoppingCart),
     label: `Nhà Cung Cấp`,
-    url: `/suppliers`,
+    url: `/providers`,
     allowedroles: [
       Roles.Admin,
       Roles.Accountant,
@@ -297,7 +299,35 @@ export const privateRoutes: MenuRoutes[] = [
       Roles.InventoryManager,
       Roles.SaleAdmin,
     ],
-    element: <SupplierPage />,
+    element: <ProviderPage />,
+    children: [
+      {
+        key: `/providers/provider-list`,
+        label: `Danh sách nhà cung cấp`,
+        url: `/providers/provider-list`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <ProviderListPage />,
+      },
+      {
+        key: `/providers/provider-create`,
+        label: `Tạo mới nhà cung cấp`,
+        url: `/providers/provider-create`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <CreateProviderPage />,
+      },
+    ],
   },
   {
     key: `/products`,

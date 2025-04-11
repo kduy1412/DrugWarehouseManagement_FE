@@ -1,3 +1,4 @@
+import { Dayjs } from "dayjs";
 import { PaginationModelRequest } from "./paginationModelRequest";
 import { PaginationModelResponse } from "./paginationModelResponse";
 
@@ -5,19 +6,29 @@ import { PaginationModelResponse } from "./paginationModelResponse";
 export interface ProviderGetResponse extends PaginationModelResponse {
   items: Provider[];
 }
-//POST
-// export type ProviderPostRequest = Omit<
-// Provider,
-//   "customerId" | "isLoyal" | "status"
-// >;
+// POST
+export interface ProviderPostRequest {
+  providerName: string;
+  address: string;
+  email: string;
+  phoneNumber: string;
+  taxCode: string;
+  nationality: string;
+  documentNumber: string;
+  documentIssueDate: Date | Dayjs | string;
+}
 
-//PUT
-// export interface ProviderPutRequest {
-//   customerName?: string | null;
-//   address?: string | null;
-//   phoneNumber?: string | null;
-//   email?: string | null;
-// }
+export interface ProviderPutRequest {
+  providerName: string;
+  address: string;
+  phoneNumber: string;
+  taxCode: string;
+  nationality: string;
+  email: string;
+  documentNumber: string;
+  documentIssueDate: Date | Dayjs | string;
+  status: ProviderStatus;
+}
 
 //MODEL
 export interface Provider {
@@ -47,19 +58,15 @@ export interface ProviderFilterParams {
   DateTo?: string | null;
 }
 
-//VIEW
-export type ProviderSelectorGetView = Omit<Provider, "isLoyal" | "status">;
-
-//VIEW-LIST
-export type ProviderGetView = Provider;
-
 //STATUS
 export enum ProviderStatus {
   Active = 1,
   Inactive = 2,
+  Deleted = 3,
 }
 
-export const CustomerStatusColors = [
+export const ProviderStatusColors = [
   "var(--status-active)",
   "var(--status-inactive)",
+  "var(--status-deleted)",
 ];

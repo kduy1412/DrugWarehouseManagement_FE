@@ -181,12 +181,16 @@ const CreateProductPage: React.FC = () => {
 export default CreateProductPage;
 
 const StyledCard = styled(Card)`
-  margin: 1.25rem auto;
-  min-width: 60%;
-  max-width: 80%;
+  margin: 1rem auto;
+  min-width: 30%;
+  max-width: 45%;
 `;
 
 const CtaButton = styled(Button)`
+  width: 100%;
+  padding: 1.5rem 0;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-title-2);
   &:not(:disabled) {
     color: white !important;
   }

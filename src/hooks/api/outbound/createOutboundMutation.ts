@@ -14,7 +14,7 @@ export const useCreateOutboundMutation = () => {
     },
     onError: (error) => {
       notification.error({
-        message: "Error creating outbound",
+        message: "Tạo đơn xuất kho thất bại",
         description: error.message,
       });
     },
