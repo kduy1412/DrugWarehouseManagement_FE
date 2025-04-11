@@ -102,7 +102,8 @@ const EditModal = ({
 
   const subCategory = data?.items.filter(
     (item) =>
-      item.subCategories.length > 0 &&
+      item.parentCategoryId !== null &&
+      item.subCategories.length === 0 &&
       item.status !== CategoryStatusArray[CategoryStatus.Inactive - 1]
   );
 
