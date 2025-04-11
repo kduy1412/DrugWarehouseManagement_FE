@@ -34,6 +34,8 @@ import WarehouseListPage from "../pages/warehouse/list";
 import CreateWarehousePage from "../pages/warehouse/create";
 import CategoryPage from "../pages/category";
 import { TagsOutlined } from "@ant-design/icons";
+import ProductListPage from "../pages/product/list";
+import CreateProductPage from "../pages/product/create";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -158,9 +160,9 @@ export const privateRoutes: MenuRoutes[] = [
     element: <OutboundPage />,
     children: [
       {
-        key: `/outbound/create`,
+        key: `/outbound/create-outbound`,
         label: `Tạo Đơn`,
-        url: `/outbound/create`,
+        url: `/outbound/create-outbound`,
         allowedroles: [Roles.InventoryManager, Roles.SaleAdmin],
         element: <CreateOutboundPage />,
       },
@@ -232,16 +234,16 @@ export const privateRoutes: MenuRoutes[] = [
     element: <UserPage />,
     children: [
       {
-        key: `/account-management/create`,
+        key: `/account-management/create-account`,
         label: `Tạo tài khoản mới`,
-        url: `/account-management/create`,
+        url: `/account-management/create-account`,
         allowedroles: [Roles.Admin],
         element: <CreateUserPage />,
       },
       {
-        key: `/account-management/list`,
+        key: `/account-management/list-account`,
         label: `Danh sách tài khoản`,
-        url: `/account-management/list`,
+        url: `/account-management/list-account`,
         allowedroles: [Roles.Admin],
         element: <UserListPage />,
       },
@@ -255,9 +257,9 @@ export const privateRoutes: MenuRoutes[] = [
     allowedroles: [Roles.Admin],
     children: [
       {
-        key: `/customers/list`,
+        key: `/customers/list-customer`,
         label: `Danh Sách Khách Hàng`,
-        url: `/customers/list`,
+        url: `/customers/list-customer`,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
@@ -268,9 +270,9 @@ export const privateRoutes: MenuRoutes[] = [
         element: <CustomerListPage />,
       },
       {
-        key: `/customers/create`,
+        key: `/customers/create-customer`,
         label: `Thêm Khách Hàng Mới`,
-        url: `/customers/create`,
+        url: `/customers/create-customer`,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
@@ -310,6 +312,34 @@ export const privateRoutes: MenuRoutes[] = [
       Roles.SaleAdmin,
     ],
     element: <ProductsPage />,
+    children: [
+      {
+        key: `/products/list-product`,
+        label: `Danh sách mặt hàng`,
+        url: `/products/list-product`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <ProductListPage />,
+      },
+      {
+        key: `/products/create-product`,
+        label: `Tạo mặt hàng mới`,
+        url: `/products/create-product`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <CreateProductPage />,
+      },
+    ],
   },
   {
     key: `/warehouse-system`,
@@ -326,9 +356,9 @@ export const privateRoutes: MenuRoutes[] = [
     element: <WarehousePage />,
     children: [
       {
-        key: `/warehouse-system/list`,
+        key: `/warehouse-system/list-product`,
         label: `Danh Sách Kho`,
-        url: `/warehouse-system/list`,
+        url: `/warehouse-system/list-product`,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,
@@ -339,9 +369,9 @@ export const privateRoutes: MenuRoutes[] = [
         element: <WarehouseListPage />,
       },
       {
-        key: `/warehouse-system/create`,
+        key: `/warehouse-system/create-warehouse`,
         label: `Tạo mới kho`,
-        url: `/warehouse-system/create`,
+        url: `/warehouse-system/create-warehouse`,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,

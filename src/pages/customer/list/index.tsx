@@ -122,32 +122,11 @@ const CustomerListPage = () => {
         };
 
         return (
-          <>
-            <ActionDropdown
-              onDetail={handleOnClickDetail}
-              onEdit={handleOnClickEdit}
-              onDelete={handleOnClickDelete}
-            />
-
-            {selectedItem && (
-              <>
-                {/* Details Modal */}
-                <DetailsModal
-                  isModalOpen={isDetailModalOpen}
-                  item={selectedItem}
-                  setIsModalOpen={setIsDetailModalOpen}
-                />
-
-                {/* Edit Modal */}
-                <EditModal
-                  isModalOpen={isEditModalOpen}
-                  item={selectedItem}
-                  setIsModalOpen={setIsEditModalOpen}
-                  queryParam={initParams}
-                />
-              </>
-            )}
-          </>
+          <ActionDropdown
+            onDetail={handleOnClickDetail}
+            onEdit={handleOnClickEdit}
+            onDelete={handleOnClickDelete}
+          />
         );
       },
     },
@@ -198,6 +177,24 @@ const CustomerListPage = () => {
         <Flex justify="center" align="center" style={{ height: "100%" }}>
           <Spin />
         </Flex>
+      )}
+      {selectedItem && (
+        <>
+          {/* Details Modal */}
+          <DetailsModal
+            isModalOpen={isDetailModalOpen}
+            item={selectedItem}
+            setIsModalOpen={setIsDetailModalOpen}
+          />
+
+          {/* Edit Modal */}
+          <EditModal
+            isModalOpen={isEditModalOpen}
+            item={selectedItem}
+            setIsModalOpen={setIsEditModalOpen}
+            queryParam={initParams}
+          />
+        </>
       )}
     </>
   );

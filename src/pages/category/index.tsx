@@ -16,7 +16,7 @@ import {
 
 const initialParams: CategoryGetRequestParams = {
   Page: 1,
-  PageSize: 1000,
+  PageSize: 100000,
 };
 
 const CategoryPage = () => {

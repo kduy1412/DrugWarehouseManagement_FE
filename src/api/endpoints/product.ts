@@ -1,23 +1,9 @@
 import apiClient from "..";
-import { ProductGetRequestParams, ProductPostRequest } from "../../types/product";
-
-// export const createOutbound = (outboundData: OutboundPostRequest) =>
-//   apiClient("/api/Outbound", {
-//     method: "POST",
-//     body: JSON.stringify(outboundData),
-//   });
-
-// export const createSampleExport = (data: SampleExportRequest) =>
-//   apiClient("/api/Outbound/sample-export", {
-//     method: "POST",
-//     body: JSON.stringify(data),
-//   });
-
-// export const updateOutbound = (outboundId: number, data: OutboundPutRequest) =>
-//   apiClient(`/api/Outbound?id=${outboundId}`, {
-//     method: "PUT",
-//     body: JSON.stringify(data),
-//   });
+import {
+  ProductGetRequestParams,
+  ProductPostRequest,
+  ProductPutRequest,
+} from "../../types/product";
 
 export const searchProduct = (
   query: ProductGetRequestParams = { Page: 1, PageSize: 10 }
@@ -27,25 +13,16 @@ export const searchProduct = (
     method: "GET",
   });
 };
-export const CreateProduct = 
-  (data: ProductPostRequest  ) => {
-    return apiClient(`/api/Product`, {
-      method:"POST",
-      body: JSON.stringify(data)})
-  };
 
-// export const getOutboundById = (id: string) =>
-//   apiClient(`/api/Outbound/${id}`, {
-//     method: "GET",
-//   });
+export const CreateProduct = (data: ProductPostRequest) => {
+  return apiClient(`/api/Product`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+};
 
-// export const getOutboundExportsById = (id: string) =>
-//   apiClient(`/api/Outbound/exports/${id}`, {
-//     method: "GET",
-//   });
-
-// export const createReturnOutbound = (data: OutboundReturnRequest) =>
-//   apiClient("/api/ReturnOutbound/create", {
-//     method: "POST",
-//     body: JSON.stringify(data),
-//   });
+export const UpdateProduct = (data: ProductPutRequest, productId: number) =>
+  apiClient(`/api/Product/${productId}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });

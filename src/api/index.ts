@@ -9,10 +9,6 @@ const apiClient = async (endpoint: string, options: RequestInit = {}) => {
   const authData = queryClient.getQueryData<AuthResponse>(AUTH_QUERY_KEY);
   const accessToken = authData?.token;
 
-  // const defaultHeaders = {
-  //   "Content-Type": "application/json",
-  //   ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-  // };
   const isFormData = options.body instanceof FormData;
   const defaultHeaders = {
   ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
@@ -49,7 +45,7 @@ const apiClient = async (endpoint: string, options: RequestInit = {}) => {
       const refreshResponse = await refreshToken(refreshData.refreshToken);
       queryClient.setQueryData(AUTH_QUERY_KEY, (oldData: AuthResponse) => ({
         ...oldData,
-        accessToken: refreshResponse.token,
+        token: refreshResponse.token,
       }));
 
       config.headers.Authorization = `Bearer ${refreshResponse.token}`;

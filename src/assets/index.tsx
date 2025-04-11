@@ -10,7 +10,7 @@ import Pill from "./shared/Pill.svg?react";
 import Warehouse from "./shared/warehouse.svg?react";
 import SidebarBanner from "./shared/sidebarBanner.svg?react";
 import LoginIcon from "./shared/ArrowSquareRight.svg";
-
+import LogoWhiteText from "./shared/logoWhiteText.svg";
 const images = {
   accountManage: AccountManage,
   home: Home,
@@ -23,6 +23,7 @@ const images = {
   pill: Pill,
   warehouse: Warehouse,
   sidebarBanner: SidebarBanner,
+  logoWhiteText: LogoWhiteText,
   loginIcon: LoginIcon,
 };
 

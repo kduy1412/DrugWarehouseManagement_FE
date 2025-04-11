@@ -2,81 +2,8 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-color: var(--color-white);
-
-  .formWrapper {
-    width: 60%;
-    height: 100%;
-    position: absolute;
-    border-radius: 0.5rem;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--line-width-medium);
-
-    .imageContainer {
-      width: 30%;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      img {
-        object-fit: contain;
-        width: 100%;
-        height: auto;
-      }
-    }
-
-    .formContainer {
-      width: 68%;
-      background-color: white;
-      padding: var(--line-width-regular) var(--line-width-medium);
-      box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-      .form {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        .login-button {
-          display: flex;
-          align-items: center;
-          cursor: pointer;
-          font-weight: var(--font-weight-medium);
-          font-size: 17px;
-          padding: 0.8em 1.3em 0.8em 0.9em;
-          color: white;
-          background: #ad5389;
-          background: var(--color-secondary-600);
-          border: none;
-          letter-spacing: 0.05em;
-          border-radius: 16px;
-          margin-top: var(--line-width-medium);
-        }
-
-        .login-button svg {
-          margin-right: 3px;
-          transform: rotate(30deg);
-          transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
-        }
-
-        .login-button span {
-          transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
-        }
-
-        .login-button:hover {
-          background-color: var(--color-primary) !important;
-        }
-
-        .login-button:hover svg {
-          transform: translateX(5px) rotate(90deg);
-        }
-
-        .login-button:hover span {
-          transform: translateX(7px);
-          color: var(--color-secondary-900) !important;
-        }
-      }
-    }
-  }
+  background-image: url("../../assets/shared/BackgroundLogin.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }

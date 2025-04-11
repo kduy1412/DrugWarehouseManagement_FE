@@ -1,7 +1,12 @@
 import React from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import ProductListPage from "./list";
 
 const ProductsPage = () => {
-  return <div>Products</div>;
+  const location = useLocation();
+  if (location.pathname === "/products") return <ProductListPage />;
+
+  return <Outlet />;
 };
 
 export default ProductsPage;

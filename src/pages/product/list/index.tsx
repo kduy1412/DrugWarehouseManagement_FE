@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Flex,
   Pagination,
@@ -8,62 +7,82 @@ import {
   TableProps,
   Tag,
 } from "antd";
-import styled from "styled-components";
+import React, { useEffect, useState } from "react";
 import {
-  WarehouseGetRequestParams,
-  WarehouseGetResponse,
-  Warehouse,
-  WarehouseStatusColors,
-} from "../../../types/warehouse";
-import ActionDropdown from "./components/ActionDropdown"; // Reused from UserListPage
-import DetailsModal from "./components/DetailsModal"; // Adapted for Warehouse
-import EditModal from "./components/EditModal"; // Adapted for Warehouse
-import FilterComponent from "./components/FilterComponent"; // Adapted for Warehouse
-import { useGetWarehouseQuery } from "../../../hooks/api/warehouse/getWarehouseQuery";
-import { parseWarehouseStatusToVietnamese } from "../../../utils/translateWarehouseStatus";
+  Product,
+  ProductGetRequestParams,
+  ProductStatus,
+  ProductStatusAsString,
+  ProductStatusColors,
+} from "../../../types/product";
+import styled from "styled-components";
+import { useGetProductQuery } from "../../../hooks/api/product/getProductQuery";
+import FilterComponent from "./components/FilterComponent";
+import ActionDropdown from "./components/DropdownActionOptions";
+import DetailsModal from "./components/DetailsModal";
+import EditModal from "./components/EditModal";
+import { parseProductStatusToVietNamese } from "../../../utils/translateProductStatus";
 
-const initialData: WarehouseGetRequestParams = {
+const initialData: ProductGetRequestParams = {
   Page: 1,
   PageSize: 10,
 };
 
-const WarehouseListPage: React.FC = () => {
+const ProductListPage = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Warehouse | null>(null);
-  const [initParams, setInitParams] =
-    useState<WarehouseGetRequestParams>(initialData);
+  const [selectedItem, setSelectedItem] = useState<Product | null>(null);
+  const [initParams, setInitParams] = useState<ProductGetRequestParams>({
+    Page: 1,
+    PageSize: 10,
+  });
 
-  const { data, isLoading } = useGetWarehouseQuery(initParams);
+  const { data, isLoading } = useGetProductQuery(initParams);
 
-  const columns: TableProps<Warehouse>["columns"] = [
+  const columns: TableProps<Product>["columns"] = [
     {
       title: "#",
-      dataIndex: "warehouseId",
-      key: "id",
-      render: (_, { warehouseId: id }) => <strong>{id}</strong>,
+      dataIndex: "productId",
+      key: "productId",
+      render: (productId) => <strong>{productId}</strong>,
     },
     {
-      title: "Tên kho",
-      dataIndex: "warehouseName",
-      key: "name",
-      render: (_, { warehouseName: name }) => <p>{name}</p>,
+      title: "Mã Sản Phẩm",
+      dataIndex: "productCode",
+      key: "productCode",
+      render: (_, { productCode }) => <p>{productCode}</p>,
     },
     {
-      title: "Địa chỉ",
-      dataIndex: "address",
-      key: "address",
-      render: (_, { address }) => <p>{address || "Chưa xác định"}</p>,
+      title: "Tên Sản Phẩm",
+      dataIndex: "productName",
+      key: "productName",
+      render: (_, { productName }) => <p>{productName}</p>,
+    },
+    {
+      title: "SKU",
+      dataIndex: "sku",
+      key: "sku",
+      render: (_, { sku }) => <p>{sku}</p>,
+    },
+    {
+      title: "Nguồn Gốc",
+      dataIndex: "madeFrom",
+      key: "madeFrom",
+      render: (_, { madeFrom }) =>
+        madeFrom ? <p>{madeFrom}</p> : <Tag color="warning">Chưa xác định</Tag>,
     },
     {
       title: "Trạng Thái",
       dataIndex: "status",
       key: "status",
-      render: (_, { status }) => (
-        <Tag color={WarehouseStatusColors[status - 1]}>
-          {parseWarehouseStatusToVietnamese(status)}
-        </Tag>
-      ),
+      render: (_, { status }) => {
+        const statusEnum = ProductStatusAsString[status];
+        return (
+          <Tag color={ProductStatusColors[statusEnum - 1]}>
+            {parseProductStatusToVietNamese(statusEnum)}
+          </Tag>
+        );
+      },
     },
     {
       key: "action",
@@ -79,7 +98,7 @@ const WarehouseListPage: React.FC = () => {
         };
 
         const handleOnClickDelete = () => {
-          console.log("Delete: " + JSON.stringify(item.warehouseId));
+          console.log("Delete: " + JSON.stringify(item));
         };
 
         return (
@@ -110,6 +129,12 @@ const WarehouseListPage: React.FC = () => {
     }));
   };
 
+  useEffect(() => {
+    if (!isEditModalOpen) {
+      setSelectedItem(null);
+    }
+  }, [isEditModalOpen, setSelectedItem]);
+
   return (
     <>
       <FilterComponent
@@ -118,7 +143,7 @@ const WarehouseListPage: React.FC = () => {
       />
       {data && (
         <>
-          <Table<Warehouse>
+          <Table<Product>
             pagination={false}
             dataSource={data.items}
             columns={columns}
@@ -159,8 +184,8 @@ const WarehouseListPage: React.FC = () => {
   );
 };
 
-export default WarehouseListPage;
+export default ProductListPage;
 
 const StyledPagination = styled(Pagination)`
-  margin-top: 16px;
+  margin-top: var(--line-width-light);
 `;

@@ -98,14 +98,38 @@ export interface Product {
   sku: string;
   madeFrom: string;
   status: ProductStatus;
-  categories: [];
+  categories: ProductCategoryResponse[];
 }
+
+export type ProductCategoryResponse = {
+  categoriesId: number;
+  categoryName: string;
+};
+
+// POST
 export interface ProductPostRequest {
   productName: string;
   productCode: string;
   sku: string;
   madeFrom: string;
-  productCategories: [{ categoriesId: number }];
+  productCategories: ProductCategoriesPostRequest[];
+}
+
+export type ProductCategoriesPutRequest = {
+  categoriesId: number;
+};
+
+export type ProductCategoriesPostRequest = {
+  categoriesId: number;
+};
+
+// PUT
+export interface ProductPutRequest {
+  productName?: string | null;
+  productCode?: string | null;
+  sku?: string | null;
+  madeFrom?: string | null;
+  productCategories: ProductCategoriesPutRequest[];
 }
 
 export enum ProductStatus {
@@ -113,19 +137,12 @@ export enum ProductStatus {
   Inactive = 2,
 }
 
-//Status
-// export enum OutboundStatus {
-//   Pending = 1,
-//   InProgress = 2,
-//   Cancelled = 3,
-//   Completed = 4,
-//   Returned = 5,
-// }
+export const ProductStatusAsString: Record<any, number> = {
+  Active: ProductStatus.Active,
+  Inactive: ProductStatus.Inactive,
+};
 
-// export const OutboundStatusColors = [
-//   "var(--status-pending)",
-//   "var(--status-in-progress)",
-//   "var(--status-cancelled)",
-//   "var(--status-completed)",
-//   "var(--status-returned)",
-// ];
+export const ProductStatusColors = [
+  "var(--status-active)",
+  "var(--status-inactive)",
+];

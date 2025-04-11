@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Button, Spin } from "antd";
+import { Form, Input, Button, Spin, Card } from "antd";
 import { WarehousePostRequest } from "../../../types/warehouse"; // Adjust path
 import styled from "styled-components";
 import { useCreateWarehouseMutation } from "../../../hooks/api/warehouse/createWarehouseMutation";
@@ -80,8 +80,9 @@ const CreateWarehousePage: React.FC = () => {
 
 export default CreateWarehousePage;
 
-const StyledContainer = styled.div`
+const StyledContainer = styled(Card)`
   max-width: 600px;
+  min-width: 400px;
   margin: 0 auto;
   padding: 24px;
 
