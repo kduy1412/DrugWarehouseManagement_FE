@@ -107,7 +107,11 @@ const DetailsModal = ({
       <Divider orientation="left" style={{ borderColor: "black" }}>
         Thông tin người dùng
       </Divider>
-      <Descriptions bordered items={userInformationProps} />
+      <Descriptions
+        bordered
+        items={userInformationProps}
+        labelStyle={{ fontWeight: "var(--font-weight-semibold)" }}
+      />
     </StyledModal>
   );
 };

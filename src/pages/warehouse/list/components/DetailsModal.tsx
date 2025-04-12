@@ -36,7 +36,11 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
       onCancel={() => setIsModalOpen(false)}
       footer={null}
     >
-      <Descriptions bordered items={items} />
+      <Descriptions
+        bordered
+        items={items}
+        labelStyle={{ fontWeight: "var(--font-weight-semibold)" }}
+      />
     </StyledModal>
   );
 };

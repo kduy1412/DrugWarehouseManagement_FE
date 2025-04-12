@@ -80,12 +80,12 @@ const ProviderSelector = ({
               rowKey="providerId"
               pagination={false}
               rowClassName="rowTableClassName"
+              size="large"
               onRow={(record) => ({
                 onClick: () => handleRowClick(record),
                 onMouseEnter: () => setIsHovered(true),
                 onMouseLeave: () => setIsHovered(false),
               })}
-              style={{ width: "70%", height: "50vh" }}
             />
           );
         }
@@ -115,7 +115,6 @@ const StyledSelect = styled(Select)`
   .ant-select-selector {
     height: 2rem !important;
     width: 100%;
-    max-width: 18.75rem;
     display: flex;
     align-items: center;
   }

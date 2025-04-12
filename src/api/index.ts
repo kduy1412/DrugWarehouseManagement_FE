@@ -5,15 +5,19 @@ import { AUTH_QUERY_KEY } from "../types/constants";
 import { refreshToken } from "./auth";
 import { notification } from "antd";
 
-const apiClient = async (endpoint: string, options: RequestInit = {}) => {
+const apiClient = async (
+  endpoint: string,
+  options: RequestInit = {},
+  isBlob = false
+) => {
   const authData = queryClient.getQueryData<AuthResponse>(AUTH_QUERY_KEY);
   const accessToken = authData?.token;
 
   const isFormData = options.body instanceof FormData;
   const defaultHeaders = {
-  ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-  ...(isFormData ? {} : { "Content-Type": "application/json" }),
-};
+    ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
+  };
 
   const config = {
     ...options,
@@ -63,6 +67,10 @@ const apiClient = async (endpoint: string, options: RequestInit = {}) => {
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || "Something went wrong");
+  }
+
+  if (isBlob) {
+    return response.blob();
   }
 
   return response.json();

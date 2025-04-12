@@ -102,7 +102,11 @@ const DetailsModal = ({
       <Divider orientation="left" style={{ borderColor: "black" }}>
         Thông tin khách hàng
       </Divider>
-      <Descriptions bordered items={customerInformationProps} />
+      <Descriptions
+        bordered
+        items={customerInformationProps}
+        labelStyle={{ fontWeight: "var(--font-weight-semibold)" }}
+      />
     </StyledModal>
   );
 };

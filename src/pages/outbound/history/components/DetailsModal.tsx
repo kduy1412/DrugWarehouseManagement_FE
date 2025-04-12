@@ -143,13 +143,21 @@ const DetailsModal = ({
       <Divider orientation="left" style={{ borderColor: "black" }}>
         Thông tin phiếu
       </Divider>
-      <Descriptions bordered items={outboundInformationItems} />
+      <Descriptions
+        bordered
+        items={outboundInformationItems}
+        labelStyle={{ fontWeight: "var(--font-weight-semibold)" }}
+      />
 
       {/* Thông tin khách hàng */}
       <Divider orientation="left" style={{ borderColor: "black" }}>
         Thông tin khách hàng
       </Divider>
-      <Descriptions bordered items={outboundCustomerInformationItems} />
+      <Descriptions
+        bordered
+        items={outboundCustomerInformationItems}
+        labelStyle={{ fontWeight: "var(--font-weight-semibold)" }}
+      />
 
       {/* Thông tin chi tiết đơn hàng */}
       <Divider orientation="left" style={{ borderColor: "black" }}>

@@ -84,7 +84,11 @@ const DetailsModal = ({
       <Divider orientation="left" style={{ borderColor: "black" }}>
         Thông tin sản phẩm
       </Divider>
-      <Descriptions bordered items={productInformationProps} />
+      <Descriptions
+        bordered
+        items={productInformationProps}
+        labelStyle={{ fontWeight: "var(--font-weight-semibold)" }}
+      />
     </StyledModal>
   );
 };
