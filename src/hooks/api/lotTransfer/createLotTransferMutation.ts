@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { LotTransferPostRequest } from "../../../types/outbound";
 import { createLotTransfer } from "../../../api/endpoints/lotTransfer";
 import { notification } from "antd";
+import { queryClient } from "../../../lib/queryClient";
 
 export const useCreateLotTransferMutation = () =>
   useMutation<unknown, Error, LotTransferPostRequest>({
@@ -11,6 +12,9 @@ export const useCreateLotTransferMutation = () =>
         message: "Thành công",
         description: "Tạo chuyển lô thành công!",
         placement: "topRight",
+      });
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes("lot"),
       });
     },
     onError: (error) => {

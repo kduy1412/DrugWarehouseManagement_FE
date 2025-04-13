@@ -31,6 +31,7 @@ import { DeleteOutlined, UndoOutlined } from "@ant-design/icons";
 import FilterComponent from "./components/FilterComponent";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
 import { useCreateReturnOutboundMutation } from "../../../hooks/api/outbound/createReturnOutboundMutation";
+import { redirect } from "react-router-dom";
 
 /**Types */
 type DataType = OutboundGetView;
@@ -55,7 +56,7 @@ const ReturnOutboundPage = () => {
   const [initParams, setInitParams] =
     useState<OutboundGetRequestParams>(initialData);
   const { data, isLoading } = useGetOutBoundQuery(initParams);
-  const { mutate } = useCreateReturnOutboundMutation();
+  const { mutate, isPending } = useCreateReturnOutboundMutation();
   const [selectedOutboundRowKeys, setSelectedOutboundRowKeys] = useState<
     React.Key[]
   >([]);
@@ -235,8 +236,8 @@ const ReturnOutboundPage = () => {
         <InputNumber
           min={0}
           value={quantity}
-          max={selectedData[index].quantity}
-          onChange={(value) => onQuantityChange(index, value || 0)}
+          max={selectedData[index]?.quantity ?? 0}
+          onChange={(value) => onQuantityChange(index, value ?? 0)}
           style={{ width: "100%", maxWidth: "100px" }}
         />
       ),
@@ -340,6 +341,7 @@ const ReturnOutboundPage = () => {
     }));
     setSelectedOutboundDetailsReturnData(data);
   };
+
   const handleOnSubmit = () => {
     const mapToReturnDetails =
       selectedOutboundDetailsReturnData.map<OutboundReturnDetailsRequest>(
@@ -362,7 +364,13 @@ const ReturnOutboundPage = () => {
       outboundId: selectedItem.outboundId,
     };
 
-    mutate(submitData);
+    mutate(submitData, {
+      onSuccess: () => {
+        setSelectedOutboundRowKeys([]);
+        setSelectedOutboundDetailsReturnData([]);
+        redirect("/outbound/history");
+      },
+    });
   };
 
   //  Mapping outboundDetails Data from outboundData
@@ -447,6 +455,7 @@ const ReturnOutboundPage = () => {
               disabled={selectedOutboundDetailsReturnData.length <= 0}
               type="primary"
               onClick={handleOnSubmit}
+              loading={isPending}
             >
               Xác Nhận
             </CtaButton>

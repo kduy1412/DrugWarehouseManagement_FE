@@ -81,7 +81,7 @@ const ProductInformationStep = ({
     useState<LotGetRequestParams>(initialQueryParams);
   const { data: lotData, isLoading: isLotFetching } =
     useGetLotQuery(queryParams);
-  const { mutate: lotTransferMutate } = useCreateLotTransferMutation();
+  const { mutate: lotTransferMutate,isPending } = useCreateLotTransferMutation();
   const [selectedLotRowKeys, setSelectedLotRowKeys] = useState<React.Key[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<
     ProductsSelectedProps[]
@@ -194,6 +194,12 @@ const ProductInformationStep = ({
         }
         return <Tag color="warning">Chưa xác định</Tag>;
       },
+    },
+    {
+      title: "Tồn",
+      dataIndex: "quantity",
+      key: "quantity",
+      render: (_, { quantity }) => <p>{quantity}</p>,
     },
     {
       title: "Nhà Cung Cấp",
@@ -419,6 +425,7 @@ const ProductInformationStep = ({
             onClick={handleSubmit}
             style={{ marginTop: 16 }}
             disabled={selectedProduct.length <= 0}
+            loading={isPending}
           >
             Hoàn tất
           </CtaButton>

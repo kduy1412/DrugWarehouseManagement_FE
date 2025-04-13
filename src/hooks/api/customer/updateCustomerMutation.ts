@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { updateCustomer } from "../../../api/endpoints/customer";
 import { CustomerPutRequest } from "../../../types/customer";
 import { notification } from "antd";
+import { queryClient } from "../../../lib/queryClient";
 
 interface CustomerPutRequestParams {
   customerId: number;
@@ -17,6 +18,9 @@ export const useUpdateCustomerMutation = () =>
         message: "Thành công",
         description: "Thông tin khách hàng đã được cập nhật thành công",
         placement: "topRight",
+      });
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes("customer"),
       });
     },
     onError: (error: Error) => {

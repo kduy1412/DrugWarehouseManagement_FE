@@ -12,7 +12,7 @@ export const useCreateProviderMutation = () =>
         message: "Tạo thành công nhà cung cấp",
       });
       queryClient.invalidateQueries({
-        queryKey: ["provider", { Page: 1, PageSize: 10 }],
+        predicate: (query) => query.queryKey.includes("provider"),
       });
     },
     onError: (error) => {

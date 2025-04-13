@@ -16,8 +16,11 @@ export type OutboundPostRequest = {
 export type OutboundDetailRequest = {
   lotId: number;
   quantity: number;
-  unitPrice: number;
+  unitPrice: number | null;
   discount: number;
+  usePricingFormula: boolean;
+  profitMargin: number | null;
+  taxPercentage: number | null;
 };
 
 //PUT
@@ -86,7 +89,7 @@ export type OutboundFilterParams = {
   Search?: string | null;
   DateFrom?: Dayjs | null | string;
   DateTo?: Dayjs | null | string;
-  Status?: OutboundStatus
+  Status?: OutboundStatus;
 };
 
 //Model

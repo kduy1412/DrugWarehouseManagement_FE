@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { notification } from "antd";
 import { createAccount } from "../../../api/endpoints/user";
 import { UserPostRequest } from "../../../types/user";
+import { queryClient } from "../../../lib/queryClient";
 
 export const useCreateUserMutation = () =>
   useMutation<unknown, Error, UserPostRequest>({
@@ -11,6 +12,9 @@ export const useCreateUserMutation = () =>
         message: "Thành công",
         description: "Tài khoản đã được tạo thành công",
         placement: "topRight",
+      });
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes("users"),
       });
     },
     onError: (error: Error) => {

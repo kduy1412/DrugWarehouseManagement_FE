@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { ProviderPutRequest } from "../../../types/provider";
 import { updateProvider } from "../../../api/endpoints/provider";
 import { notification } from "antd";
+import { queryClient } from "../../../lib/queryClient";
 
 interface UpdateProviderMutationProps {
   providerId: number;
@@ -15,6 +16,9 @@ export const useUpdateProviderMutation = () =>
     onSuccess: () => {
       notification.success({
         message: "Cập nhật thành công nhà cung cấp",
+      });
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes("provider"),
       });
     },
     onError: (error) => {

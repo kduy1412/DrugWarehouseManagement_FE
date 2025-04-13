@@ -71,7 +71,7 @@ const ProductInformationStep = ({
     ProductsSelectedProps[] | []
   >([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { mutate, isSuccess } = useCreateOutboundMutation();
+  const { mutate, isPending, isSuccess } = useCreateOutboundMutation();
   const navigate = useNavigate();
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
@@ -123,6 +123,9 @@ const ProductInformationStep = ({
           productName: product.productName,
           discount: 0,
           maxQuantity: product.quantity,
+          usePricingFormula: false,
+          profitMargin: 1,
+          taxPercentage: 1,
         })
       );
       setSelectedProduct((prev) => [...prev, ...productsMapping]);
@@ -246,18 +249,19 @@ const ProductInformationStep = ({
       title: "Đơn Giá",
       dataIndex: "unitPrice",
       key: "unitPrice",
-      render: (unitPrice, record, index) => (
-        <InputNumber
-          min={1000}
-          value={unitPrice}
-          formatter={(value) =>
-            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-          }
-          style={{ width: "100%", maxWidth: "12rem" }}
-          parser={(value) => (value ? parseInt(value.replace(/\D/g, "")) : 0)}
-          onChange={(value) => handleChange(index, "unitPrice", value)}
-        />
-      ),
+      render: (unitPrice, record, index) =>
+        !record.usePricingFormula && (
+          <InputNumber
+            min={1000}
+            value={unitPrice}
+            formatter={(value) =>
+              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            }
+            style={{ width: "100%", maxWidth: "12rem" }}
+            parser={(value) => (value ? parseInt(value.replace(/\D/g, "")) : 0)}
+            onChange={(value) => handleChange(index, "unitPrice", value)}
+          />
+        ),
     },
     {
       title: "Chiết Khấu",
@@ -277,6 +281,71 @@ const ProductInformationStep = ({
           onChange={(value) => handleChange(index, "discount", value)}
         />
       ),
+    },
+    {
+      title: "Biên Lợi Nhuận",
+      dataIndex: "profitMargin",
+      key: "profitMargin",
+      render: (profitMargin, record, index) =>
+        record.usePricingFormula ? (
+          <InputNumber
+            min={0}
+            value={profitMargin ?? 1}
+            formatter={(value) => `${value}%`}
+            style={{ width: "100%", maxWidth: "12rem" }}
+            parser={(value) => {
+              const parsed = value
+                ? parseFloat(value.replace(/[^\d.]/g, ""))
+                : 0;
+              return Math.min(Math.max(parsed, 0), 100);
+            }}
+            onChange={(value) => handleChange(index, "profitMargin", value)}
+          />
+        ) : null,
+    },
+    {
+      title: "Phần Trăm Thuế",
+      dataIndex: "taxPercentage",
+      key: "taxPercentage",
+      render: (taxPercentage, record, index) =>
+        record.usePricingFormula ? (
+          <InputNumber
+            min={0}
+            value={taxPercentage ?? 1}
+            formatter={(value) => `${value}%`}
+            style={{ width: "100%", maxWidth: "12rem" }}
+            parser={(value) => {
+              const parsed = value
+                ? parseFloat(value.replace(/[^\d.]/g, ""))
+                : 0;
+              return Math.min(Math.max(parsed, 0), 100);
+            }}
+            onChange={(value) => handleChange(index, "taxPercentage", value)}
+          />
+        ) : null,
+    },
+    {
+      title: "Công thức định giá",
+      dataIndex: "usePricingFormula",
+      key: "usePricingFormula",
+      render: (usePricingFormula: boolean, _, index) => {
+        if (usePricingFormula) {
+          return (
+            <CtaButton
+              onClick={() => handleChange(index, "usePricingFormula", false)}
+            >
+              Bật
+            </CtaButton>
+          );
+        }
+        return (
+          <CloseButton
+            onClick={() => handleChange(index, "usePricingFormula", true)}
+          >
+            Tắt
+          </CloseButton>
+        );
+      },
     },
     {
       key: "action",
@@ -309,7 +378,7 @@ const ProductInformationStep = ({
   const handleChange = (
     index: number,
     field: keyof ProductsSelectedProps,
-    value: number | null
+    value: number | boolean | null
   ) => {
     const newData = [...selectedProduct];
     newData[index] = { ...newData[index], [field]: value ?? 0 };
@@ -332,8 +401,15 @@ const ProductInformationStep = ({
         (product) => ({
           lotId: product.lotId,
           quantity: product.quantity,
-          unitPrice: product.unitPrice,
+          unitPrice: product.usePricingFormula ? 1 : product.unitPrice,
           discount: product.discount ?? 0,
+          usePricingFormula: product.usePricingFormula,
+          profitMargin: product.usePricingFormula
+            ? (product.profitMargin ?? 1) / 100
+            : null,
+          taxPercentage: product.usePricingFormula
+            ? (product.taxPercentage ?? 1) / 100
+            : null,
         })
       );
 
@@ -360,7 +436,7 @@ const ProductInformationStep = ({
         <FilterComponent
           initialQueryParams={initialQueryParams}
           setQuery={setQueryParams}
-          query = {queryParams}
+          query={queryParams}
         />
         <CtaButton onClick={onClickAddProduct} disabled={!hasSelected}>
           Thêm vào đơn
@@ -395,6 +471,7 @@ const ProductInformationStep = ({
         type="primary"
         onClick={handleSubmit}
         style={{ marginTop: 16 }}
+        loading={isPending}
         disabled={selectedProduct.length <= 0}
       >
         Hoàn tất
@@ -415,7 +492,7 @@ const ProductInformationStep = ({
           dataSource={selectedProduct}
           rowKey="lotId"
           pagination={false}
-          scroll={{ y: "calc(100vh - 14rem)" }}
+          style={{ height: "calc(100vh - 14rem)", overflowY: "auto" }}
         />
       </StyledModal>
     </>
@@ -460,3 +537,10 @@ const StyledDivider = styled(Divider)`
 `;
 
 const StyledModal = styled(Modal)``;
+
+const CloseButton = styled(Button)`
+  &:not(:disabled):hover {
+    border-color: var(--color-secondary-600) !important;
+    color: var(--color-secondary-600) !important;
+  }
+`;

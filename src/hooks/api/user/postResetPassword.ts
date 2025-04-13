@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { notification } from "antd";
 import { resetPassword } from "../../../api/endpoints/user";
+import { queryClient } from "../../../lib/queryClient";
 
 export const useResetUserPasswordMutation = () =>
   useMutation<unknown, Error, string>({
@@ -10,6 +11,9 @@ export const useResetUserPasswordMutation = () =>
         message: "Thành công",
         description: "Mật khẩu đã được thiết lập lại thành công",
         placement: "topRight",
+      });
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes("users"),
       });
     },
     onError: (error: Error) => {

@@ -14,7 +14,10 @@ export const useCreateSampleExportMutation = () => {
         placement: "topRight",
       });
       queryClient.invalidateQueries({
-        queryKey: ["outbound", { Page: 1, PageSize: 10 }],
+        predicate: (query) => query.queryKey.includes("outbound"),
+      });
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes("lot"),
       });
     },
     onError: (error) => {

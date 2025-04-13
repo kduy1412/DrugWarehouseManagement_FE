@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { notification } from "antd";
 import { WarehousePutRequest } from "../../../types/warehouse";
 import { updateWarehouse } from "../../../api/endpoints/warehouse";
+import { queryClient } from "../../../lib/queryClient";
 
 interface WarehousePutRequestMutation {
   warehouseId: number;
@@ -17,6 +18,9 @@ export const usePutWarehouseMutation = () =>
         message: "Thành công",
         description: "Kho đã được cập nhật thành công",
         placement: "topRight",
+      });
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes("warehouse"),
       });
     },
     onError: (error: Error) => {

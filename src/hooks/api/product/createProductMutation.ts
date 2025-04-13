@@ -14,7 +14,7 @@ export const CreateProductMutation = () => {
         message: "Tạo sản phẩm thành công!",
       });
       queryClient.invalidateQueries({
-        queryKey: ["product", { Page: 1, PageSize: 10 }],
+        predicate: (query) => query.queryKey.includes("product"),
       });
     },
     onError: (error) => {

@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { notification } from "antd";
 import { UpdateProduct } from "../../../api/endpoints/product";
 import { ProductPutRequest } from "../../../types/product";
+import { queryClient } from "../../../lib/queryClient";
 
 interface CreateProductMutationProps {
   productId: number;
@@ -15,6 +16,9 @@ export const useUpdateProductMutation = () => {
     onSuccess: () => {
       notification.success({
         message: "Cập nhật sản phẩm thành công!",
+      });
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes("product"),
       });
     },
     onError: (error) => {

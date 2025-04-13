@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { OutboundPutRequest } from "../../../types/outbound";
 import { updateOutbound } from "../../../api/endpoints/outbound";
 import { notification } from "antd";
+import { queryClient } from "../../../lib/queryClient";
 
 interface OutboundPutRequestParams {
   id: number;
@@ -16,6 +17,9 @@ export const useUpdateOutboundMutation = () =>
         message: "Cập nhật thành công",
         description: `Đã cập nhật thành công đơn xuất`,
         placement: "topRight",
+      });
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes("outbound"),
       });
     },
     onError: (error) => {
