@@ -5,8 +5,8 @@ import { PaginationModelResponse } from "./paginationModelResponse";
 //POST
 export type InboundRequestPostRequest = {
   note?: string | null;
-  price: number;
   inboundRequestDetails: InboundRequestDetailRequest[];
+  Images: File[] | null;
 };
 
 export type InboundRequestDetailRequest = {

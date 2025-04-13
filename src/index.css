@@ -138,6 +138,7 @@ code {
 .rowTableClassName {
   cursor: pointer;
 }
+
 .ant-modal-wrap.ant-modal-fullscreen {
   .ant-modal {
     right: 0px;
@@ -152,5 +153,13 @@ code {
   .ant-modal-content {
     height: 100vh;
     overflow-y: scroll;
+  }
+}
+
+.wrap-confirm {
+  .ant-modal {
+    width: fit-content !important;
+    max-width: 80vw;
+    min-width: 520px;
   }
 }

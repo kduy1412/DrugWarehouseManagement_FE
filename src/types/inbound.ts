@@ -39,19 +39,6 @@ export interface InboundPutStatusRequest {
   inboundStatus: string;
 }
 
-// POST-SAMPLE-EXPORT
-// export type SampleExportDetailsRequest = Pick<
-//   InboundDetail,
-//   "lotId" | "quantity" | "discount" | "unitPrice"
-// >;
-
-// export type SampleExportRequest = Omit<
-//   InboundPostRequest,
-//   "inboundDetails"
-// > & {
-//   inboundDetails: SampleExportDetailsRequest[];
-// };
-
 // POST-LOT-TRANSFER
 export interface LotTransferPostRequest {
   lotTransferCode: string;
@@ -64,17 +51,6 @@ export interface LotTransferDetail {
   quantity: number;
   lotId: number;
 }
-
-//POST-RETURNED
-// export type InboundReturnRequest = {
-//   inboundId: number;
-//   details: InboundReturnDetailsRequest[];
-// };
-
-// export type InboundReturnDetailsRequest = Pick<
-//   InboundDetail,
-//   "inboundDetailsId" | "quantity"
-// > & { note: string | null };
 
 //GET
 export interface InboundGetResponse extends PaginationModelResponse {

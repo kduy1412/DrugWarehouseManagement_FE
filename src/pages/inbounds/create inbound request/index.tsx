@@ -1,15 +1,20 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import type { GetRef, InputRef, TableProps } from 'antd';
-import { Button, Form, Input, Popconfirm, Table, Select, Modal, notification } from 'antd';
-// import { ProductGetRequestParams } from '../../../types/product';
+import React, { useContext, useEffect, useRef, useState } from "react";
+import type { GetRef, InputRef, TableProps } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Popconfirm,
+  Table,
+  Select,
+  Modal,
+  notification,
+} from "antd";
 import { useGetProductQuery } from "../../../hooks/api/product/getProductQuery";
 import { useCreateInboundRequestMutation } from "../../../hooks/api/inboundRequest/createInboundRequestMutation";
-// import { validateObjectProperties } from "../../../utils/validateObjectProperties";
-// import {
-//   InboundRequestDetail,
-//   InboundRequestDetailRequest,
-//   InboundRequestPostRequest,
-// } from "../../../types/inboundRequest";
+import FileImport from "../../../components/FileImport";
+import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
+import styled from "styled-components";
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
 const EditableContext = React.createContext<FormInstance<Item> | null>(null);
@@ -24,8 +29,7 @@ interface EditableRowProps {
   index: number;
 }
 
-const EditableRow: React.FC<Omit<EditableRowProps, 'index'>> = (props) => {
-
+const EditableRow: React.FC<Omit<EditableRowProps, "index">> = (props) => {
   const [form] = Form.useForm();
   return (
     <Form form={form} component={false}>
@@ -75,49 +79,54 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
       toggleEdit();
       handleSave({ ...record, ...values });
     } catch (errInfo) {
-      console.log('Save failed:', errInfo);
+      console.log("Save failed:", errInfo);
     }
   };
-  
 
   let childNode = children;
 
   if (editable) {
     childNode = editing ? (
-<Form.Item
-  style={{ margin: 0 }}
-  name={dataIndex}
-  rules={[{ required: true, message: `${title} is required.` }]}>
-  {dataIndex === 'name' ? (
-    <div>
-      <Select
-        showSearch
-        placeholder="Chọn sản phẩm"
-        options={productOptions}
-        filterOption={(input, option) =>
-          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-        }
-        onBlur={save}
-        onChange={(value, option) => {
-          const selectedOption = option as { label: string; value: number };
-          if (!selectedOption) return;
+      <Form.Item
+        style={{ margin: 0 }}
+        name={dataIndex}
+        rules={[{ required: true, message: `${title} is required.` }]}
+      >
+        {dataIndex === "name" ? (
+          <div>
+            <Select
+              showSearch
+              placeholder="Chọn sản phẩm"
+              options={productOptions}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              onBlur={save}
+              onChange={(value, option) => {
+                const selectedOption = option as {
+                  label: string;
+                  value: number;
+                };
+                if (!selectedOption) return;
 
-          form.setFieldsValue({ 
-            name: selectedOption.label, 
-            productId: selectedOption.value  // ✅ Cập nhật productId
-          });
+                form.setFieldsValue({
+                  name: selectedOption.label,
+                  productId: selectedOption.value, // ✅ Cập nhật productId
+                });
 
-          save();
-        }}
-      />
-      <Form.Item name="productId" hidden>
-        <Input />
+                save();
+              }}
+            />
+            <Form.Item name="productId" hidden>
+              <Input />
+            </Form.Item>
+          </div>
+        ) : (
+          <Input onPressEnter={save} onBlur={save} />
+        )}
       </Form.Item>
-    </div>
-  ) : (
-    <Input onPressEnter={save} onBlur={save} />
-  )}
-</Form.Item>
     ) : (
       <div
         className="editable-cell-value-wrap"
@@ -141,29 +150,27 @@ interface DataType {
   totalprice: string;
 }
 
-type ColumnTypes = Exclude<TableProps<DataType>['columns'], undefined>;
+type ColumnTypes = Exclude<TableProps<DataType>["columns"], undefined>;
 
-  const initialData = {
+const initialData = {
   Page: 1,
   PageSize: 100,
 };
 
 const CreateInboundRequest: React.FC = () => {
-  const [dataSource, setDataSource] = useState<DataType[]>([
-    
-  ]);
-  // const [initParams, setInitParams] =
-  //   useState<ProductGetRequestParams>(initialData);
+  const [dataSource, setDataSource] = useState<DataType[]>([]);
   const { data, isLoading } = useGetProductQuery(initialData);
-  const [productOptions, setProductOptions] = useState<{ label: string; value: number }[]>([]);
-  const { mutate, isSuccess } = useCreateInboundRequestMutation();
-  const [modalConfirmInboundRequest, setModalConfirmInboundRequest] = useState(false);
-  const [noteConfirm, setNoteConfirm] = useState('');
+  const [productOptions, setProductOptions] = useState<
+    { label: string; value: number }[]
+  >([]);
+  const { mutate, isSuccess, isPending } = useCreateInboundRequestMutation();
+  const [modalConfirmInboundRequest, setModalConfirmInboundRequest] =
+    useState(false);
+  const [noteConfirm, setNoteConfirm] = useState("");
+  const [file, setFile] = useState<File[]>([]);
 
   const [count, setCount] = useState(2);
   useEffect(() => {
-    console.log("Dữ liệu API trả về:", data);
-
     if (data?.items) {
       setProductOptions(
         data.items.map((product) => ({
@@ -174,54 +181,53 @@ const CreateInboundRequest: React.FC = () => {
     }
   }, [data]);
 
-    useEffect(() => {
-    console.log("dataSource: ", dataSource);
-    }, [dataSource]);
-  
-      useEffect(() => {
-    console.log("tạo phiếu: ", isSuccess);
-      }, [isSuccess]);
-  
   useEffect(() => {
-  if (isSuccess) {
-    setModalConfirmInboundRequest(false);
-    setDataSource([])
-  }
-}, [isSuccess]);
-  
+    if (isSuccess) {
+      setModalConfirmInboundRequest(false);
+      setDataSource([]);
+    }
+  }, [isSuccess]);
+
   const handleDelete = (key: React.Key) => {
     const newData = dataSource.filter((item) => item.key !== key);
     setDataSource(newData);
   };
 
-
-  const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[] = [
+  const defaultColumns: (ColumnTypes[number] & {
+    editable?: boolean;
+    dataIndex: string;
+  })[] = [
     {
-      title: 'Tên sản phẩm',
-      dataIndex: 'name',
-      width: '30%',
+      title: "Tên sản phẩm",
+      dataIndex: "name",
+      width: "30%",
       editable: true,
     },
     {
-      title: 'Số lượng',
-      dataIndex: 'quantity',
+      title: "Số lượng",
+      dataIndex: "quantity",
       editable: true,
     },
     {
-      title: 'Giá thành',
-      dataIndex: 'unitprice',
+      title: "Giá thành",
+      dataIndex: "unitprice",
       editable: true,
+      render: (value: string) => parseToVietNameseCurrency(Number(value)),
     },
     {
-      title: 'Tổng tiền',
-      dataIndex: 'totalprice',
+      title: "Tổng tiền",
+      dataIndex: "totalprice",
+      render: (value: string) => parseToVietNameseCurrency(Number(value)),
     },
     {
-      title: 'Thao tác',
-      dataIndex: 'operation',
+      title: "Thao tác",
+      dataIndex: "operation",
       render: (_, record) =>
         dataSource.length >= 1 ? (
-          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+          <Popconfirm
+            title="Sure to delete?"
+            onConfirm={() => handleDelete(record.key)}
+          >
             <a>Delete</a>
           </Popconfirm>
         ) : null,
@@ -233,7 +239,7 @@ const CreateInboundRequest: React.FC = () => {
       key: count,
       productId: 0,
       name: `Chọn sản phẩm`,
-      quantity: '1',
+      quantity: "1",
       unitprice: `0`,
       totalprice: ``,
     };
@@ -248,47 +254,45 @@ const CreateInboundRequest: React.FC = () => {
 
     const updatedProductId = row.productId || item.productId;
 
-    const totalPrice = (parseFloat(row.quantity) || 0) * (parseFloat(row.unitprice) || 0);
+    const totalPrice =
+      (parseFloat(row.quantity) || 0) * (parseFloat(row.unitprice) || 0);
 
     newData.splice(index, 1, {
       ...item,
       ...row,
-      productId: updatedProductId,  // ✅ Giữ productId nếu có
+      productId: updatedProductId,
       totalprice: totalPrice.toFixed(2),
     });
     setDataSource(newData);
-
   };
 
-    const handleSubmit = () => {
-      // const isValidationSuccess = validateObjectProperties<InboundRequestPostRequest>(
-      //   dataSource,
-      //   validationMessage
-      // );
-      // if (isValidationSuccess) {
-      //   mutate(dataSource);
-      // }
-mutate({
-  note: noteConfirm || '',
-  price: Array.isArray(dataSource) ? dataSource.reduce((total, currentValue) => {
-    return Number(total) + Number(currentValue.totalprice);
-  }, 0) : 0,
-  inboundRequestDetails: dataSource.map((item) => ({
-    productId: item.productId,
-    quantity: Number(item.quantity),
-    unitPrice: Number(item.unitprice),
-    totalPrice: Number(item.totalprice),
-  })),
-});
+  const handleSubmit = () => {
+    const submitData = {
+      note: noteConfirm || "",
+      inboundRequestDetails: dataSource.map((item) => ({
+        productId: item.productId,
+        quantity: Number(item.quantity),
+        unitPrice: Number(item.unitprice),
+        totalPrice: Number(item.totalprice),
+      })),
+      Images: file,
     };
-const components = {
-  body: {
-    row: EditableRow,
-    cell: (props: EditableCellProps) => (
-      <EditableCell {...props} productOptions={productOptions} />
-    ),
-  },
-};
+    mutate(submitData);
+  };
+
+  const handleCancelSubmit = () => {
+    setModalConfirmInboundRequest(false);
+    setFile([]);
+  };
+
+  const components = {
+    body: {
+      row: EditableRow,
+      cell: (props: EditableCellProps) => (
+        <EditableCell {...props} productOptions={productOptions} />
+      ),
+    },
+  };
 
   const columns = defaultColumns.map((col) => {
     if (!col.editable) {
@@ -308,41 +312,84 @@ const components = {
 
   return (
     <div>
-      <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16 }}>
+      <CtaButton
+        onClick={handleAdd}
+        loading={isPending}
+        type="primary"
+        style={{ marginBottom: 16 }}
+      >
         Thêm sản phẩm mới
-      </Button>
-      <Button style={{ marginLeft: 16 }} onClick={() => {
-        if (dataSource.length === 0) {
-          notification.error({
-            message: "Vui lòng thêm sản phẩm, danh sách không được để trống!",
-          });
-        } else { setModalConfirmInboundRequest(true) }
-        }
-      }>
+      </CtaButton>
+      <CloseButton
+        style={{ marginLeft: 16 }}
+        loading={isPending}
+        onClick={() => {
+          if (dataSource.length === 0) {
+            notification.error({
+              message: "Vui lòng thêm sản phẩm, danh sách không được để trống!",
+            });
+          } else {
+            setModalConfirmInboundRequest(true);
+          }
+        }}
+      >
         Tạo phiếu đặt hàng
-      </Button>
+      </CloseButton>
       <Table<DataType>
         components={components}
-        rowClassName={() => 'editable-row'}
+        rowClassName={() => "editable-row"}
         bordered
         dataSource={dataSource}
         columns={columns as ColumnTypes}
         loading={isLoading}
       />
-      <Modal
+      <StyledModal
         title="Thông báo"
         centered
         open={modalConfirmInboundRequest}
-        onOk={() => { handleSubmit(); }}
-        onCancel={() => setModalConfirmInboundRequest(false)}
+        onOk={handleSubmit}
+        onCancel={handleCancelSubmit}
+        footer={[
+          <CloseButton key="close" onClick={handleCancelSubmit}>
+            Hủy
+          </CloseButton>,
+          <CtaButton key="save" onClick={handleSubmit} disabled={isPending}>
+            Xác nhận
+          </CtaButton>,
+        ]}
+        wrapClassName="wrap-confirm"
       >
         <p>Xác nhận tạo phiếu đặt hàng?</p>
-        <Input.TextArea rows={3} placeholder="Ghi chú (nếu có)" 
-        value={noteConfirm}
-        onChange={(e) => setNoteConfirm(e.target.value)}/>
-      </Modal>
+        <Input.TextArea
+          rows={3}
+          placeholder="Ghi chú (nếu có)"
+          value={noteConfirm}
+          onChange={(e) => setNoteConfirm(e.target.value)}
+        />
+        <FileImport fileList={file} setFileList={setFile} />
+      </StyledModal>
     </div>
   );
 };
 
 export default CreateInboundRequest;
+
+const CloseButton = styled(Button)`
+  &:hover {
+    border-color: var(--color-secondary-600) !important;
+    color: var(--color-secondary-600) !important;
+  }
+`;
+
+const CtaButton = styled(Button)`
+  &:not(:disabled) {
+    color: white !important;
+  }
+  border-color: transparent !important;
+  background-color: var(--color-secondary-600);
+  &:not(:disabled):hover {
+    background-color: var(--color-secondary-500) !important;
+  }
+`;
+
+const StyledModal = styled(Modal)``;

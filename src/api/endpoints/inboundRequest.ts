@@ -2,48 +2,46 @@ import apiClient from "..";
 import {
   InboundRequestPostRequest,
   InboundRequestGetRequestParams,
-  InboundRequestPutRequest
+  InboundRequestPutRequest,
 } from "../../types/inboundRequest";
 
-// export const createInboundRequest = (inboundRequestData: InboundRequestPostRequest) =>
-//   apiClient("/api/InboundRequest", {
-//     method: "POST",
-//     body: JSON.stringify(inboundRequestData),
-//   });
-
-export const createInboundRequest = (inboundRequestData: InboundRequestPostRequest) => {
+export const createInboundRequest = (
+  inboundRequestData: InboundRequestPostRequest
+) => {
   const formData = new FormData();
 
   formData.append("Note", inboundRequestData.note || "");
-  formData.append("Price", inboundRequestData.price.toString());
 
   inboundRequestData.inboundRequestDetails.forEach((detail, index) => {
-    formData.append(`InboundRequestDetails[${index}].productId`, detail.productId.toString());
-    formData.append(`InboundRequestDetails[${index}].quantity`, detail.quantity.toString());
-    formData.append(`InboundRequestDetails[${index}].unitPrice`, detail.unitPrice.toString());
-    formData.append(`InboundRequestDetails[${index}].totalPrice`, detail.totalPrice.toString());
+    formData.append(
+      `InboundRequestDetails[${index}].productId`,
+      detail.productId.toString()
+    );
+    formData.append(
+      `InboundRequestDetails[${index}].quantity`,
+      detail.quantity.toString()
+    );
+    formData.append(
+      `InboundRequestDetails[${index}].unitPrice`,
+      detail.unitPrice.toString()
+    );
+    formData.append(
+      `InboundRequestDetails[${index}].totalPrice`,
+      detail.totalPrice.toString()
+    );
   });
-   console.log("=== Log FormData ===");
-for (const pair of formData.entries()) {
-  console.log(pair[0] + ':', pair[1]);
-}
-  // inboundRequestData.images?.forEach((image) => {
-  //   formData.append("Images", image); // nếu backend accept array => cùng 1 key "Images"
-  // });
+
+  if (inboundRequestData.Images) {
+    inboundRequestData.Images.forEach((image, index) => {
+      formData.append(`Images`, image);
+    });
+  }
 
   return apiClient("/api/InboundRequest", {
     method: "POST",
     body: formData,
   });
 };
-
-
-
-// export const createSampleExport = (data: SampleExportRequest) =>
-//   apiClient("/api/Outbound/sample-export", {
-//     method: "POST",
-//     body: JSON.stringify(data),
-//   });
 
 export const updateInboundRequestStatus = (data: InboundRequestPutRequest) =>
   apiClient(`/api/InboundRequest/status`, {
@@ -59,19 +57,3 @@ export const searchInboundRequest = (
     method: "GET",
   });
 };
-
-// export const getOutboundById = (id: string) =>
-//   apiClient(`/api/Outbound/${id}`, {
-//     method: "GET",
-//   });
-
-// export const getOutboundExportsById = (id: string) =>
-//   apiClient(`/api/Outbound/exports/${id}`, {
-//     method: "GET",
-//   });
-
-// export const createReturnOutbound = (data: OutboundReturnRequest) =>
-//   apiClient("/api/ReturnOutbound/create", {
-//     method: "POST",
-//     body: JSON.stringify(data),
-//   });
