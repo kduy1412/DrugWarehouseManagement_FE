@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   Modal,
@@ -7,6 +7,9 @@ import {
   UploadFile,
   notification,
   Tag,
+  Checkbox,
+  Flex,
+  Form,
 } from "antd";
 import InboundReport from "./InboundReport";
 import UploadReport from "./UploadFile";
@@ -15,16 +18,14 @@ import {
   InboundDetail,
   InboundStatus,
   InboundStatusAsNum,
-  InboundStatusAsString,
   InboundStatusColors,
 } from "../../../types/inbound";
-import { AuthResponse } from "../../../types/auth";
-import { AUTH_QUERY_KEY } from "../../../types/constants";
-import { queryClient } from "../../../lib/queryClient";
 import { useUpdateInboundStatusMutation } from "../../../hooks/api/inbound/updateInboundStatusMutation";
 import { Provider } from "../../../types/provider";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
 import { parseInboundStatusToVietnamese } from "../../../utils/translateInboundStatus";
+import { formatDateTime } from "../../../utils/timeHelper";
+import { useCreateInboundReportMutation } from "../../../hooks/api/inboundReport/createInboundReportMutation";
 
 interface DataType {
   key: number;
@@ -40,27 +41,28 @@ interface DataType {
 }
 const initialData = {
   Page: 1,
-  PageSize: 100,
+  PageSize: 50,
 };
 
 const CreateInboundReport: React.FC = () => {
   const { TextArea } = Input;
+  const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadFile[]>([]);
   const [problemDescription, setProblemDescription] = useState("");
-  const { mutate } = useUpdateInboundStatusMutation();
+  const [note, setNote] = useState("");
+  const { mutate: updateInboundStatus } = useUpdateInboundStatusMutation();
+  const { mutate: createInboundReport } = useCreateInboundReportMutation();
+  const [initialParams, setInitialParams] = useState(initialData);
 
-  const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null); // Track the selected record
-  const { data, refetch } = useGetInboundQuery(initialData);
-  const authData = queryClient.getQueryData<AuthResponse>(AUTH_QUERY_KEY);
-  const accessToken = authData?.token;
+  const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
+  const [isFulfilled, setIsFulfilled] = useState(true);
+  const { data, refetch } = useGetInboundQuery(initialParams);
+
   React.useEffect(() => {
     console.log("Dữ liệu file upload Create trả về:", uploadedFiles);
   }, [uploadedFiles]);
 
-  const onChangeNote = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setProblemDescription(e.target.value);
-  };
   const handleOpenModal = (record: DataType) => {
     setSelectedRecord(record); // Set the selected record to show its details
     setIsModalOpen(true); // Open the modal
@@ -71,70 +73,75 @@ const CreateInboundReport: React.FC = () => {
     setSelectedRecord(null); // Reset the selected record
     setProblemDescription("");
     setUploadedFiles([]);
+    form.resetFields();
+  };
+
+  const handleTableChange = (pagination: any) => {
+    setInitialParams({
+      Page: pagination.current,
+      PageSize: pagination.pageSize,
+    });
   };
 
   const handleSubmit = async () => {
     if (!selectedRecord) return;
 
     const formData = new FormData();
-    formData.append("InboundId", selectedRecord.key.toString());
-    formData.append("ProblemDescription", problemDescription);
+    const note = form.getFieldValue("note") as string | undefined;
+    const finalNote =
+      problemDescription.length > 0 && !isFulfilled
+        ? `${problemDescription}${note ?? ""}`
+        : "Đơn không có hàng lỗi";
+    console.log(finalNote);
 
+    formData.append("InboundId", selectedRecord.key.toString());
+    formData.append("ProblemDescription", finalNote);
     uploadedFiles.forEach((file) => {
       if (file.originFileObj) {
         formData.append("Images", file.originFileObj);
       }
     });
 
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/InboundReport`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken || ""}`,
-          },
-          body: formData,
-        }
-      );
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Upload thành công:", result);
-        notification.success({
-          message: "Tạo phiếu nhập thành công!",
-        });
-        handleCancel();
-        mutate(
-          {
-            data: {
-              inboundId: selectedRecord.key,
-              inboundStatus: "Completed",
+    if (isFulfilled) {
+      // Create inbound report
+      createInboundReport(formData, {
+        onSuccess: () => {
+          // Update date inbound with completed status
+          updateInboundStatus(
+            {
+              data: {
+                inboundId: selectedRecord.key,
+                inboundStatus: "Completed",
+              },
             },
-          },
-          {
-            onSuccess: () => {
-              refetch();
-            },
-          }
-        );
-      } else {
-        const error = await response.json();
-        console.error("Lỗi:", error);
-        notification.error({
-          message: "Tạo report thất bại!",
-          description: error.message,
-        });
-      }
-    } catch (error) {
-      console.error("Lỗi fetch:", error);
+            {
+              onSuccess: () => {
+                refetch();
+                handleCancel();
+              },
+            }
+          );
+        },
+      });
+      return;
     }
+
+    // Create inbound report for accountant to edit
+    createInboundReport(formData, {
+      onSuccess: () => {
+        handleCancel();
+      },
+    });
   };
 
   // Table columns
   const columns = [
     { title: "Mã đơn hàng", dataIndex: "maphieu" },
-    { title: "Ngày tạo", dataIndex: "ngaytao" },
+    {
+      title: "Ngày tạo",
+      dataIndex: "ngaytao",
+      render: (date: string) => parseDate(date),
+    },
     { title: "Người tạo", dataIndex: "nguoitao" },
     {
       title: "Tổng tiền",
@@ -147,7 +154,6 @@ const CreateInboundReport: React.FC = () => {
       render: (status: string) => renderTag(status),
     },
     {
-      title: "Action",
       key: "action",
       render: (_: string, record: DataType) => (
         <Button type="link" onClick={() => handleOpenModal(record)}>
@@ -189,20 +195,31 @@ const CreateInboundReport: React.FC = () => {
         columns={columns}
         dataSource={transformedData}
         size="middle"
-        pagination={{ pageSize: 50 }}
-        // scroll={{ y: 55 * 5 }}
+        pagination={{
+          current: data?.currentPage,
+          pageSize: data?.pageSize,
+          pageSizeOptions: [10, 20, 50, 100],
+          showSizeChanger: true,
+          total: transformedData.length || 0,
+          onChange: (page, pageSize) =>
+            handleTableChange({ current: page, pageSize }),
+          onShowSizeChange: (_, size) =>
+            handleTableChange({ current: 1, pageSize: size }),
+        }}
+        onChange={handleTableChange}
       />
 
       {/* Modal for Create Inbound */}
-      <Modal
-        title="Chi tiết Inbound Order"
-        open={isModalOpen}
-        onCancel={handleCancel}
-        footer={null} // No footer buttons
-        width={800}
-        onClose={handleCancel}
-      >
-        {selectedRecord && (
+      {selectedRecord && (
+        <Modal
+          title="Chi tiết đơn nhập"
+          open={isModalOpen}
+          onCancel={handleCancel}
+          footer={null}
+          width={800}
+          onClose={handleCancel}
+          wrapClassName="wrap-confirm"
+        >
           <div>
             <h2>Thông tin nhà cung cấp</h2>
             <p>
@@ -243,19 +260,39 @@ const CreateInboundReport: React.FC = () => {
             <p>
               <strong>Trạng thái:</strong> {selectedRecord.trangthai}
             </p>
-            <h2>Chi tiết lô hàng</h2>
+            <Flex justify="space-between" align="center">
+              <h2>Chi tiết lô hàng</h2>
+              <Checkbox
+                checked={isFulfilled}
+                onChange={(e) => setIsFulfilled((prev) => !prev)}
+              >
+                Hàng không có lỗi
+              </Checkbox>
+            </Flex>
             <InboundReport record={selectedRecord} />
-            <h2>Báo cáo vấn đề</h2>
-            <TextArea
-              required
-              showCount
-              maxLength={100}
-              onChange={onChangeNote}
-              placeholder="Nhập báo cáo vấn đề"
-              style={{ height: 120, resize: "none" }}
-            />
-            <h2>Tài liệu</h2>
-            <UploadReport onFileListChange={setUploadedFiles} />
+            {!isFulfilled && (
+              <>
+                <h2>Báo cáo lỗi</h2>
+                <InboundReport
+                  record={selectedRecord}
+                  isFulfilled={false}
+                  setProblemDescription={setProblemDescription}
+                />
+                <Form form={form}>
+                  <Form.Item name="note">
+                    <TextArea
+                      required
+                      showCount
+                      maxLength={100}
+                      placeholder="Nhập báo cáo vấn đề"
+                      style={{ height: 120, resize: "none" }}
+                    />
+                  </Form.Item>
+                </Form>
+                <h2>Tài liệu</h2>
+                <UploadReport onFileListChange={setUploadedFiles} />
+              </>
+            )}
             <div
               style={{
                 display: "flex",
@@ -273,8 +310,8 @@ const CreateInboundReport: React.FC = () => {
               </Button>
             </div>
           </div>
-        )}
-      </Modal>
+        </Modal>
+      )}
     </>
   );
 };
@@ -288,4 +325,16 @@ const renderPrice = (price: number) => {
 const renderTag = (status: string) => {
   const color = InboundStatusColors[InboundStatusAsNum[status] - 1];
   return <Tag color={color}>{parseInboundStatusToVietnamese(status)}</Tag>;
+};
+
+const parseDate = (date: string) => {
+  const [day, month, year, hours, minutes] = date.split(/[/\s:]/).map(Number);
+
+  const parsedDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+
+  if (isNaN(parsedDate.getTime())) {
+    return <p>Invalid Date</p>;
+  }
+
+  return <p>{formatDateTime(parsedDate)}</p>;
 };

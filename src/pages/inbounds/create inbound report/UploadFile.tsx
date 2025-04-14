@@ -75,7 +75,7 @@ const UploadReport: React.FC<UploadReportProps> = ({ onFileListChange }) => {
       <SortableContext items={fileList.map((i) => i.uid)} strategy={verticalListSortingStrategy}>
         <Upload
           multiple
-          beforeUpload={() => false} // Prevent auto upload
+          beforeUpload={() => false}
           fileList={fileList}
           onChange={onChange}
           itemRender={(originNode, file) => (

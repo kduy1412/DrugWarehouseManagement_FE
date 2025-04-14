@@ -131,7 +131,7 @@ const renderPrice = (price: number) => {
 const parseDate = (date: string) => {
   const [day, month, year, hours, minutes] = date.split(/[/\s:]/).map(Number);
 
-  const parsedDate = new Date(year, month - 1, day, hours, minutes);
+  const parsedDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
 
   if (isNaN(parsedDate.getTime())) {
     return <p>Invalid Date</p>;
