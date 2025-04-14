@@ -81,7 +81,7 @@ export interface Inbound {
   createBy: string;
   note: string;
   inboundDate: string;
-  status: InboundStatus;
+  status: InboundStatus | string;
   inboundDetails: InboundDetail[];
   warehouseName: string;
   providerDetails: Provider;
@@ -105,6 +105,20 @@ export enum InboundStatus {
   Cancelled = 4,
   Completed = 3,
 }
+
+export const InboundStatusAsString = {
+  [InboundStatus.Pending]: "Pending",
+  [InboundStatus.InProgress]: "InProgress",
+  [InboundStatus.Completed]: "Completed",
+  [InboundStatus.Cancelled]: "Cancelled",
+};
+
+export const InboundStatusAsNum: Record<string, number> = {
+  Pending: 1,
+  InProgress: 2,
+  Completed: 3,
+  Cancelled: 4,
+};
 
 export const InboundStatusColors = [
   "var(--status-pending)",

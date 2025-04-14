@@ -1,6 +1,7 @@
-import React from 'react';
-import { Table} from 'antd';
-import type { TableProps } from 'antd';
+import React from "react";
+import { Table } from "antd";
+import type { TableProps } from "antd";
+import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
 
 interface DataType {
   key: string;
@@ -20,57 +21,68 @@ interface ApprovalTableProps {
   }[];
 }
 
-const columns: TableProps<DataType>['columns'] = [
+const columns: TableProps<DataType>["columns"] = [
   {
-    title: 'Tên',
-    dataIndex: 'name',
-    key: 'name',
+    title: "Tên",
+    dataIndex: "name",
+    key: "name",
     render: (text) => <a>{text}</a>,
   },
   {
-    title: 'Số lượng',
-    dataIndex: 'quantity',
-    key: 'quantity',
+    title: "Số lượng",
+    dataIndex: "quantity",
+    key: "quantity",
   },
   {
-    title: 'Unit Price',
-    dataIndex: 'unitprice',
-    key: 'unitprice',
+    title: "Đơn giá",
+    dataIndex: "unitprice",
+    key: "unitprice",
+    render: (_, { unitprice }) => renderPrice(unitprice),
   },
   {
-    title: 'Total Price',
-    dataIndex: 'totalprice',
-    key: 'totalprice',
+    title: "Tổng giá",
+    dataIndex: "totalprice",
+    key: "totalprice",
+    render: (_, { totalprice }) => renderPrice(totalprice),
   },
 ];
 
-// const data: DataType[] = [
-//   {
-//     key: '1',
-//     name: 'A',
-//     quantity: 32,
-//     unitprice: 1000,
-//     totalprice: 1000,
-//   },
-//     {
-//     key: '2',
-//     name: '12',
-//     quantity: 12,
-//     unitprice: 1000,
-//     totalprice: 1000,
-//   },
-// ];
-
-const ApprovalTableInboundRequest: React.FC<ApprovalTableProps> = ({ listInboundRequest }) => {
-  // Chuyển đổi dữ liệu từ API thành dạng phù hợp
+const ApprovalTableInboundRequest: React.FC<ApprovalTableProps> = ({
+  listInboundRequest,
+}) => {
   const data: DataType[] = listInboundRequest.map((item, index) => ({
     key: index.toString(),
-    name: item.productName, // Bạn có thể thay đổi cách lấy tên sản phẩm từ API khác nếu có
+    name: item.productName,
     quantity: item.quantity,
     unitprice: item.unitPrice,
     totalprice: item.totalPrice,
   }));
 
-  return <Table<DataType> columns={columns} dataSource={data} />;
+  const totalPrice = listInboundRequest.reduce(
+    (sum, item) => sum + item.totalPrice,
+    0
+  );
+
+  return (
+    <Table<DataType>
+      columns={columns}
+      dataSource={data}
+      summary={() => (
+        <Table.Summary.Row>
+          <Table.Summary.Cell index={0} colSpan={3}>
+            <strong>Tổng cộng</strong>
+          </Table.Summary.Cell>
+          <Table.Summary.Cell index={3}>
+            <strong>{parseToVietNameseCurrency(totalPrice)}</strong>
+          </Table.Summary.Cell>
+        </Table.Summary.Row>
+      )}
+    />
+  );
 };
+
 export default ApprovalTableInboundRequest;
+
+const renderPrice = (price: number) => {
+  return <p>{parseToVietNameseCurrency(price)}</p>;
+};

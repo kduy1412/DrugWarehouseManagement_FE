@@ -1,8 +1,15 @@
 import React, { useState } from "react";
-import { Table, Modal, Button } from "antd";
+import { Table, Modal, Button, Tag } from "antd";
 import CreateInbound from "./CreateInboundOrder"; // Import CreateInbound component
-import { InboundRequestDetail } from "../../../types/inboundRequest";
+import {
+  InboundRequestDetail,
+  InboundRequestStatusAsNum,
+  InboundRequestStatusColors,
+} from "../../../types/inboundRequest";
 import { useGetInboundRequestQuery } from "../../../hooks/api/inboundRequest/getInboundRequestQuery";
+import { parseInboundRequestStatusToVietnamese } from "../../../utils/translateInboundRequestStatus";
+import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
+import { formatDateTime } from "../../../utils/timeHelper";
 
 interface DataType {
   key: number;
@@ -14,10 +21,9 @@ interface DataType {
   sanpham: InboundRequestDetail[];
 }
 
-  const initialData = {
+const initialData = {
   Page: 1,
-  PageSize: 100
-  ,
+  PageSize: 100,
 };
 
 const CreateInboundOrderList: React.FC = () => {
@@ -32,24 +38,32 @@ const CreateInboundOrderList: React.FC = () => {
   const handleCancel = () => {
     setIsModalOpen(false); // Close the modal
     setSelectedRecord(null); // Reset the selected record
-    
   };
 
   const { data } = useGetInboundRequestQuery(initialData);
-      React.useEffect(() => {
-          console.log("Dữ liệu API Create inbound trả về:", data?.items);
-      }, [data]);
 
   // Table columns
   const columns = [
     { title: "Mã phiếu", dataIndex: "maphieu" },
-    { title: "Ngày tạo", dataIndex: "ngaytao" },
-    { title: "Người tạo", dataIndex: "nguoitao" },
-    { title: "Tổng tiền", dataIndex: "tongtien" },
-    { title: "Ghi chú", dataIndex: "ghichu" },
-    { title: "Trạng thái", dataIndex: "trangthai" },
     {
-      title: "Action",
+      title: "Ngày tạo",
+      dataIndex: "ngaytao",
+
+      render: (date: string) => parseDate(date),
+    },
+    {
+      title: "Tổng tiền",
+      dataIndex: "tongtien",
+
+      render: (price: number) => renderPrice(price),
+    },
+    { title: "Ghi chú", dataIndex: "ghichu" },
+    {
+      title: "Trạng thái",
+      dataIndex: "trangthai",
+      render: (data: string) => renderTag(data as string),
+    },
+    {
       key: "action",
       render: (_: string, record: DataType) => (
         <Button type="link" onClick={() => handleOpenModal(record)}>
@@ -59,72 +73,69 @@ const CreateInboundOrderList: React.FC = () => {
     },
   ];
 
- const transformedData: DataType[] = Array.isArray(data?.items)
-  ? data.items
-      .filter((item) => item.status.toString() === "Completed")
-      .map((item) => ({
-        key: item.inboundRequestId,
-        maphieu: item.inboundRequestCode,
-        ngaytao: item.createDate,
-        tongtien: item.price,
-        ghichu: item.note || "Không có ghi chú",
-        trangthai: item.status.toString(),
-        sanpham: item.inboundRequestDetails || []
-      }))
-  : [];
-
-  // Sample data
-  // const data: DataType[] = [
-  //   {
-  //     key: "1",
-  //     maphieu: "PH001",
-  //     ngaytao: "2024-03-01",
-  //     nguoitao: "Nguyễn Văn A",
-  //     tongtien: "10,000,000 VND",
-  //     trangthai: "Đã nhập kho",
-  //   },
-  //   {
-  //     key: "2",
-  //     maphieu: "PH002",
-  //     ngaytao: "2024-03-02",
-  //     nguoitao: "Trần Thị B",
-  //     tongtien: "5,000,000 VND",
-  //     trangthai: "Chờ duyệt",
-  //   },
-  //   {
-  //     key: "3",
-  //     maphieu: "PH003",
-  //     ngaytao: "2024-03-03",
-  //     nguoitao: "Lê Văn C",
-  //     tongtien: "15,000,000 VND",
-  //     trangthai: "Đang xử lý",
-  //   },
-  // ];
+  const transformedData: DataType[] = Array.isArray(data?.items)
+    ? data.items
+        .filter((item) => item.status.toString() === "InProgress")
+        .map((item) => ({
+          key: item.inboundRequestId,
+          maphieu: item.inboundRequestCode,
+          ngaytao: item.createDate,
+          tongtien: item.price,
+          ghichu: item.note || "Không có ghi chú",
+          trangthai: item.status.toString(),
+          sanpham: item.inboundRequestDetails || [],
+        }))
+    : [];
 
   return (
     <>
-      {/* Table Component */}
       <Table<DataType>
         columns={columns}
         dataSource={transformedData}
         size="middle"
         pagination={{ pageSize: 50 }}
       />
-
-      {/* Modal for Create Inbound */}
-      <Modal
-        title="Tạo Inbound Order"
-        open={isModalOpen}
-        onCancel={handleCancel}
-        footer={null} // No footer buttons
-        onClose={handleCancel}
-      >
-        <div>
-          {selectedRecord && <CreateInbound record={selectedRecord} onClose={handleCancel}/>}
-        </div>
-      </Modal>
+      {isModalOpen && (
+        <Modal
+          title="Tạo Inbound Order"
+          open={isModalOpen}
+          onCancel={handleCancel}
+          footer={null}
+          onClose={handleCancel}
+        >
+          <div>
+            {selectedRecord && (
+              <CreateInbound record={selectedRecord} onClose={handleCancel} />
+            )}
+          </div>
+        </Modal>
+      )}
     </>
   );
 };
 
 export default CreateInboundOrderList;
+
+const renderTag = (status: string) => {
+  const color =
+    InboundRequestStatusColors[InboundRequestStatusAsNum[status] - 1];
+  return (
+    <Tag color={color}>{parseInboundRequestStatusToVietnamese(status)}</Tag>
+  );
+};
+
+const renderPrice = (price: number) => {
+  return <p>{parseToVietNameseCurrency(price)}</p>;
+};
+
+const parseDate = (date: string) => {
+  const [day, month, year, hours, minutes] = date.split(/[/\s:]/).map(Number);
+
+  const parsedDate = new Date(year, month - 1, day, hours, minutes);
+
+  if (isNaN(parsedDate.getTime())) {
+    return <p>Invalid Date</p>;
+  }
+
+  return <p>{formatDateTime(parsedDate)}</p>;
+};

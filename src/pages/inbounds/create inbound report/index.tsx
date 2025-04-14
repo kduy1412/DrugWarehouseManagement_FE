@@ -1,14 +1,30 @@
 import React, { useState } from "react";
-import { Table, Modal, Button, Input, UploadFile, notification } from "antd";
+import {
+  Table,
+  Modal,
+  Button,
+  Input,
+  UploadFile,
+  notification,
+  Tag,
+} from "antd";
 import InboundReport from "./InboundReport";
 import UploadReport from "./UploadFile";
 import { useGetInboundQuery } from "../../../hooks/api/inbound/getInboundQuery";
-import { InboundDetail, InboundStatus } from "../../../types/inbound";
+import {
+  InboundDetail,
+  InboundStatus,
+  InboundStatusAsNum,
+  InboundStatusAsString,
+  InboundStatusColors,
+} from "../../../types/inbound";
 import { AuthResponse } from "../../../types/auth";
 import { AUTH_QUERY_KEY } from "../../../types/constants";
 import { queryClient } from "../../../lib/queryClient";
 import { useUpdateInboundStatusMutation } from "../../../hooks/api/inbound/updateInboundStatusMutation";
 import { Provider } from "../../../types/provider";
+import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
+import { parseInboundStatusToVietnamese } from "../../../utils/translateInboundStatus";
 
 interface DataType {
   key: number;
@@ -18,7 +34,7 @@ interface DataType {
   tongtien: number;
   ncc: Provider;
   nhakho: string;
-  trangthai: InboundStatus;
+  trangthai: InboundStatus | string;
   mst: string;
   lo: InboundDetail[];
 }
@@ -32,7 +48,7 @@ const CreateInboundReport: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadFile[]>([]);
   const [problemDescription, setProblemDescription] = useState("");
-  const { mutate, isSuccess } = useUpdateInboundStatusMutation();
+  const { mutate } = useUpdateInboundStatusMutation();
 
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null); // Track the selected record
   const { data, refetch } = useGetInboundQuery(initialData);
@@ -112,7 +128,6 @@ const CreateInboundReport: React.FC = () => {
       }
     } catch (error) {
       console.error("Lỗi fetch:", error);
-      // Modal.error({ title: "Tạo report thất bại!", content: error.message });
     }
   };
 
@@ -121,8 +136,16 @@ const CreateInboundReport: React.FC = () => {
     { title: "Mã đơn hàng", dataIndex: "maphieu" },
     { title: "Ngày tạo", dataIndex: "ngaytao" },
     { title: "Người tạo", dataIndex: "nguoitao" },
-    { title: "Tổng tiền", dataIndex: "tongtien" },
-    { title: "Trạng thái", dataIndex: "trangthai" },
+    {
+      title: "Tổng tiền",
+      dataIndex: "tongtien",
+      render: (price: number) => renderPrice(price),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "trangthai",
+      render: (status: string) => renderTag(status),
+    },
     {
       title: "Action",
       key: "action",
@@ -135,22 +158,24 @@ const CreateInboundReport: React.FC = () => {
   ];
 
   const transformedData: DataType[] = Array.isArray(data?.items)
-    ? data.items.map((item) => ({
-        key: item.inboundId,
-        ngaytao: item.inboundDate,
-        maphieu: item.inboundCode,
-        nguoitao: item.createBy,
-        tongtien: Array.isArray(item.inboundDetails)
-          ? item.inboundDetails.reduce((total, currentValue) => {
-              return Number(total) + currentValue.totalPrice;
-            }, 0)
-          : 0,
-        trangthai: item.status,
-        ncc: item.providerDetails,
-        nhakho: item.warehouseName,
-        mst: item.providerOrderCode,
-        lo: item.inboundDetails,
-      }))
+    ? data.items
+        .map((item) => ({
+          key: item.inboundId,
+          ngaytao: item.inboundDate,
+          maphieu: item.inboundCode,
+          nguoitao: item.createBy,
+          tongtien: Array.isArray(item.inboundDetails)
+            ? item.inboundDetails.reduce((total, currentValue) => {
+                return Number(total) + currentValue.totalPrice;
+              }, 0)
+            : 0,
+          trangthai: item.status,
+          ncc: item.providerDetails,
+          nhakho: item.warehouseName,
+          mst: item.providerOrderCode,
+          lo: item.inboundDetails,
+        }))
+        .filter((item) => item.trangthai === "Pending")
     : [];
 
   React.useEffect(() => {
@@ -255,3 +280,12 @@ const CreateInboundReport: React.FC = () => {
 };
 
 export default CreateInboundReport;
+
+const renderPrice = (price: number) => {
+  return <p>{parseToVietNameseCurrency(price)}</p>;
+};
+
+const renderTag = (status: string) => {
+  const color = InboundStatusColors[InboundStatusAsNum[status] - 1];
+  return <Tag color={color}>{parseInboundStatusToVietnamese(status)}</Tag>;
+};

@@ -117,7 +117,7 @@ body {
   --status-not-started: #d9d9d9;
   --status-other: #d4b106;
   --status-waiting-for-import: #fadb14;
-  --status-waiting-for-approval: var(--color-warning-500);
+  --status-waiting-for-approval: var(--color-warning-600);
   --status-waiting-for-accountant-approval: var(--status-waiting-for-approval);
   --status-waiting-for-director-approval: var(--status-waiting-for-approval);
   --status-waiting-for-sale-admin-approval: var(--status-waiting-for-approval);

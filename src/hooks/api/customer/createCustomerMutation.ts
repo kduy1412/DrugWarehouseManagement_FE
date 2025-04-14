@@ -13,9 +13,9 @@ export const useCreateCustomerMutation = () =>
         description: "Khách hàng đã được tạo thành công",
         placement: "topRight",
       });
-            queryClient.invalidateQueries({
-              predicate: (query) => query.queryKey.includes("customer"),
-            });
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes("customer"),
+      });
     },
     onError: (error: Error) => {
       notification.error({

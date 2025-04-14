@@ -1,73 +1,68 @@
 import React, { useState, useEffect } from "react";
-import { Table, Space, Dropdown, Modal, Button, Popconfirm  } from "antd";
-import type { TableColumnsType, MenuProps  } from "antd";
+import { Table, Space, Dropdown, Modal, Button, Popconfirm, Tag } from "antd";
+import type { TableColumnsType, MenuProps } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import ApprovalTableInboundRequest from "./ApprovalTableInboundRequest";
 import { useGetInboundRequestQuery } from "../../../hooks/api/inboundRequest/getInboundRequestQuery";
 import { useUpdateInboundRequestMutation } from "../../../hooks/api/inboundRequest/updateInboundRequestMutation";
-import { InboundRequestDetail } from "../../../types/inboundRequest";
+import {
+  InboundRequest,
+  InboundRequestStatusAsNum,
+  InboundRequestStatusColors,
+} from "../../../types/inboundRequest";
+import styled from "styled-components";
+import { useGetInboundReportAssetQuery } from "../../../hooks/api/asset/getInboundReportAssetQuery";
+import { parseInboundRequestStatusToVietnamese } from "../../../utils/translateInboundRequestStatus";
+import AssetPreview from "../../../components/AssetsPreview";
+import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
 
-interface DataType {
-  key: number;
-  ngaytao: string;
-  tongtien: number;
-  maphieu: string;
-  ghichu: string;
-  trangthai: string;
-  sanpham: InboundRequestDetail[];
-}
+type DataType = InboundRequest;
 
-  const initialData = {
+const initialData = {
   Page: 1,
-  PageSize: 100
-  ,
+  PageSize: 100,
 };
-
-// const confirm: PopconfirmProps['onConfirm'] = (e) => {
-//   console.log(e);
-//   message.success('Click on Yes');
-// };
-
-// const cancel: PopconfirmProps['onCancel'] = (e) => {
-//   console.log(e);
-//   message.error('Click on No');
-// };
 
 const ApprovalInboundRequestList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"edit" | "detail">("detail");
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
-  const { data, refetch  } = useGetInboundRequestQuery(initialData);
-  const { mutate, isSuccess } = useUpdateInboundRequestMutation();
+  const { data, refetch } = useGetInboundRequestQuery(initialData);
+  const { mutate } = useUpdateInboundRequestMutation();
+  const { mutate: getAsset, isPending } = useGetInboundReportAssetQuery();
+  const [assetUrls, setAssetUrls] = useState<
+    { url: string; isImage: boolean; fileName: string }[]
+  >([]);
 
-
- const handleAccountantChangeStatus = (inboundId: number, status: string) => {
-  mutate(
-    {
-      data: {
-        inboundId: inboundId,
-        inboundOrderStatus: status
+  const handleAccountantChangeStatus = (inboundId: number, status: string) => {
+    mutate(
+      {
+        data: {
+          inboundId: inboundId,
+          inboundOrderStatus: status,
+        },
       },
-    },
-    {
-      onSuccess: () => {
-        setIsModalOpen(false);
-        refetch();
+      {
+        onSuccess: () => {
+          setIsModalOpen(false);
+          refetch();
+        },
       }
-    }
-  );
-};
-
-  useEffect(() => {
-      console.log("Dữ liệu API Inbound Approval trả về:", data?.items);
-  }, [data]);
+    );
+  };
 
   useEffect(() => {
     refetch();
   }, []);
-  
+
   const handleOpenModal = (record: DataType, type: "edit" | "detail") => {
     setSelectedRecord(record);
+    getAsset({
+      assets: record.assets,
+      onSuccessCallback: (results) => {
+        setAssetUrls(results);
+      },
+    });
     setModalType(type);
     setIsModalOpen(true);
   };
@@ -75,29 +70,41 @@ const ApprovalInboundRequestList: React.FC = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
     setSelectedRecord(null);
+    setAssetUrls([]);
   };
 
   const items = (record: DataType): MenuProps["items"] => [
     {
       key: "1",
-      label: <a onClick={() => handleOpenModal(record, "edit")}>Chỉnh sửa</a>,
-    },
-    {
-      key: "2",
       label: <a onClick={() => handleOpenModal(record, "detail")}>Chi tiết</a>,
     },
   ];
 
   const columns: TableColumnsType<DataType> = [
-    { title: "Mã phiếu", dataIndex: "maphieu" },
-    { title: "Ngày tạo", dataIndex: "ngaytao" },
-    { title: "Tổng tiền", dataIndex: "tongtien" },
-    { title: "Ghi chú", dataIndex: "ghichu" },
-    { title: "Trạng thái", dataIndex: "trangthai" },
+    { title: "Mã phiếu", dataIndex: "inboundRequestCode" },
+    { title: "Ngày tạo", dataIndex: "createDate" },
     {
-      title: "Action",
+      title: "Tổng tiền",
+      dataIndex: "price",
+      render: (_, { price }) => renderPrice(price),
+    },
+    { title: "Ghi chú", dataIndex: "note" },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      render: (_, { status }) => {
+        const color =
+          InboundRequestStatusColors[InboundRequestStatusAsNum[status] - 1];
+        return (
+          <Tag color={color}>
+            {parseInboundRequestStatusToVietnamese(status as string)}
+          </Tag>
+        );
+      },
+    },
+    {
       key: "action",
-      render: (text, record) => (
+      render: (_, record) => (
         <Dropdown menu={{ items: items(record) }}>
           <a href="#" onClick={(e) => e.preventDefault()}>
             <Space>
@@ -109,20 +116,22 @@ const ApprovalInboundRequestList: React.FC = () => {
     },
   ];
 
-const transformedData: DataType[] = Array.isArray(data?.items)
-  ? data.items
-    .filter((item) => item.status.toString() === "WaitingForAccountantApproval")
-    .map((item) => ({
-      key: item.inboundRequestId,
-      maphieu: item.inboundRequestCode,
-      ngaytao: item.createDate,
-      tongtien: item.price,
-      ghichu: item.note || "Không có ghi chú",
-      trangthai: item.status.toString(),
-      sanpham: item.inboundRequestDetails || []
-    }))
-  : [];
-
+  const transformedData: DataType[] = Array.isArray(data?.items)
+    ? data.items
+        .filter(
+          (item) => item.status.toString() === "WaitingForAccountantApproval"
+        )
+        .map<DataType>((item) => ({
+          inboundRequestId: item.inboundRequestId,
+          inboundRequestCode: item.inboundRequestCode,
+          createDate: item.createDate,
+          price: item.price,
+          note: item.note || "Không có ghi chú",
+          status: item.status.toString(),
+          inboundRequestDetails: item.inboundRequestDetails || [],
+          assets: item.assets || [],
+        }))
+    : [];
 
   return (
     <>
@@ -131,80 +140,111 @@ const transformedData: DataType[] = Array.isArray(data?.items)
         dataSource={transformedData}
         size="middle"
         pagination={{ pageSize: 50 }}
-        //scroll={{ y: 55 * 5 }}
       />
 
-      {/* Modal for Edit or Detail */}
       <Modal
-        title={modalType === "edit" ? "Chỉnh sửa phiếu nhập" : "Chi tiết phiếu nhập"}
+        title={
+          modalType === "edit" ? "Chỉnh sửa phiếu nhập" : "Chi tiết phiếu nhập"
+        }
         open={isModalOpen}
         footer={[
           modalType === "detail" ? (
             <>
-             <Popconfirm
-              title="Thông báo"
-              description="Bạn có chắc hủy phiếu đặt hàng này?"
-                onConfirm={() => {
-                if (selectedRecord?.key !== undefined) {
-                  handleAccountantChangeStatus(selectedRecord.key, "Cancelled");
-                   }
-                  }}   
-              okText="Yes"
-                cancelText="Cancel"
-                
-              >
-            <Button key="cancel" danger>
-                Huỷ yêu cầu
-                </Button>
-                </Popconfirm>
               <Popconfirm
-              title="Thông báo"
-              description="Bạn có chắc phê duyệt phiếu đặt hàng này?"
+                title="Thông báo"
+                description="Bạn có chắc hủy phiếu đặt hàng này?"
                 onConfirm={() => {
-                if (selectedRecord?.key !== undefined) {
-                  handleAccountantChangeStatus(selectedRecord.key, "WaitingForDirectorApproval");
-                   }
-                  }}   
-              okText="Yes"
+                  if (selectedRecord?.inboundRequestId !== undefined) {
+                    handleAccountantChangeStatus(
+                      selectedRecord.inboundRequestId,
+                      "Cancelled"
+                    );
+                  }
+                }}
+                okText="Yes"
                 cancelText="Cancel"
-                
               >
-              <Button key="confirm" type="primary"
-                // onClick={() => {
-                // if (selectedRecord?.key !== undefined) {
-                // handleAccountantApproval(selectedRecord.key);
-                //    }
-                //   }}
-                >
-                Duyệt
+                <Button key="cancel" danger>
+                  Huỷ yêu cầu
                 </Button>
-                </Popconfirm>
+              </Popconfirm>
+              <Popconfirm
+                title="Thông báo"
+                description="Bạn có chắc phê duyệt phiếu đặt hàng này?"
+                onConfirm={() => {
+                  if (selectedRecord?.inboundRequestId !== undefined) {
+                    handleAccountantChangeStatus(
+                      selectedRecord.inboundRequestId,
+                      "WaitingForDirectorApproval"
+                    );
+                  }
+                }}
+                okText="Yes"
+                cancelText="Cancel"
+              >
+                <CtaButton key="confirm">Duyệt</CtaButton>
+              </Popconfirm>
             </>
           ) : null,
-          <Button key="cancel" onClick={handleCancel}>
+          <CloseButton key="cancel" onClick={handleCancel}>
             Đóng
-          </Button>,
+          </CloseButton>,
         ]}
+        onCancel={() => handleCancel()}
       >
         {selectedRecord && (
           <div>
             <p>
-              <strong>Mã phiếu:</strong> {selectedRecord.maphieu}
+              <strong>Mã phiếu:</strong> {selectedRecord.inboundRequestCode}
             </p>
             <p>
-              <strong>Mã phiếu:</strong> {selectedRecord.ghichu}
+              <strong>Ghi chú:</strong> {selectedRecord.note}
             </p>
             <p>
-              <strong>Trạng thái:</strong> {selectedRecord.trangthai}
+              <strong>Trạng thái:</strong>{" "}
+              {renderTag(selectedRecord.status as string)}
             </p>
-    {selectedRecord.sanpham && (
-      <ApprovalTableInboundRequest listInboundRequest={selectedRecord.sanpham} />
-    )}          </div>
+            {selectedRecord.inboundRequestDetails && (
+              <ApprovalTableInboundRequest
+                listInboundRequest={selectedRecord.inboundRequestDetails}
+              />
+            )}
+            <AssetPreview assetUrls={assetUrls} isPending={isPending} />
+          </div>
         )}
-
       </Modal>
     </>
   );
 };
 
 export default ApprovalInboundRequestList;
+
+const renderTag = (status: string) => {
+  const color =
+    InboundRequestStatusColors[InboundRequestStatusAsNum[status] - 1];
+  return (
+    <Tag color={color}>{parseInboundRequestStatusToVietnamese(status)}</Tag>
+  );
+};
+
+const renderPrice = (price: number) => {
+  return <p>{parseToVietNameseCurrency(price)}</p>;
+};
+
+const CloseButton = styled(Button)`
+  &:hover {
+    border-color: var(--color-secondary-600) !important;
+    color: var(--color-secondary-600) !important;
+  }
+`;
+
+const CtaButton = styled(Button)`
+  &:not(:disabled) {
+    color: white !important;
+  }
+  border-color: transparent !important;
+  background-color: var(--color-secondary-600);
+  &:not(:disabled):hover {
+    background-color: var(--color-secondary-500) !important;
+  }
+`;

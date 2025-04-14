@@ -21,52 +21,10 @@ export interface InboundRequestPutRequest {
   inboundId?: number | null;
   inboundOrderStatus?: string | null;
 }
-
-// POST-SAMPLE-EXPORT
-// export type SampleExportDetailsRequest = Pick<
-//   InboundRequestDetail,
-//   "lotId" | "quantity" | "discount" | "unitPrice"
-// >;
-
-// export type SampleExportRequest = Omit<
-//   InboundPostRequest,
-//   "inboundDetails"
-// > & {
-//   inboundDetails: SampleExportDetailsRequest[];
-// };
-
-// POST-LOT-TRANSFER
-// export interface LotTransferPostRequest {
-//   lotTransferCode: string;
-//   fromWareHouseId: number | null;
-//   toWareHouseId: number | null;
-//   lotTransferDetails: LotTransferDetail[];
-// }
-
-// export interface LotTransferDetail {
-//   quantity: number;
-//   lotId: number;
-// }
-
-//POST-RETURNED
-// export type InboundReturnRequest = {
-//   inboundId: number;
-//   details: InboundReturnDetailsRequest[];
-// };
-
-// export type InboundReturnDetailsRequest = Pick<
-//   InboundRequestDetail,
-//   "inboundDetailsId" | "quantity"
-// > & { note: string | null };
-
 //GET
 export interface InboundRequestGetResponse extends PaginationModelResponse {
   items: InboundRequest[];
 }
-
-// export type InboundRequestGetView = InboundRequest;
-
-//GET-PARAMS
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface InboundRequestGetRequestParams
   extends PaginationModelRequest,
@@ -86,8 +44,9 @@ export interface InboundRequest {
   createDate: string;
   price: number;
   note: string;
-  status: InboundRequestStatus;
+  status: InboundRequestStatus | string;
   inboundRequestDetails: InboundRequestDetail[];
+  assets: Asset[];
 }
 
 export interface InboundRequestDetail {
@@ -97,6 +56,19 @@ export interface InboundRequestDetail {
   unitPrice: number;
   totalPrice: number;
 }
+
+export interface Asset {
+  assetId: number;
+  fileUrl: string;
+  fileName: string;
+  fileExtension: string;
+  fileSize: number;
+  uploadedAt: Date;
+  status: string;
+  accountId: string;
+  categoryId: number;
+}
+
 //Status
 export enum InboundRequestStatus {
   WaitingForAccountantApproval = 1,
@@ -108,10 +80,35 @@ export enum InboundRequestStatus {
   Cancelled = 7,
 }
 
-export const InboundStatusColors = [
-  "var(--status-pending)",
+export const InboundRequestStatusAsNum: Record<string, number> = {
+  WaitingForAccountantApproval: 1,
+  WaitingForDirectorApproval: 2,
+  InProgress: 3,
+  WaitingForSaleAdminApproval: 4,
+  WaitingForImport: 5,
+  Completed: 6,
+  Cancelled: 7,
+};
+
+export const InboundRequestStatusAsString = {
+  [InboundRequestStatus.WaitingForAccountantApproval]:
+    "WaitingForAccountantApproval",
+  [InboundRequestStatus.WaitingForDirectorApproval]:
+    "WaitingForDirectorApproval",
+  [InboundRequestStatus.InProgress]: "InProgress",
+  [InboundRequestStatus.WaitingForSaleAdminApproval]:
+    "WaitingForSaleAdminApproval",
+  [InboundRequestStatus.WaitingForImport]: "WaitingForImport",
+  [InboundRequestStatus.Completed]: "Completed",
+  [InboundRequestStatus.Cancelled]: "Cancelled",
+};
+
+export const InboundRequestStatusColors = [
+  "var(--status-waiting-for-accountant-approval)",
+  "var(--status-waiting-for-director-approval)",
   "var(--status-in-progress)",
-  "var(--status-cancelled)",
+  "var(--status-waiting-for-sale-admin-approval)",
+  "var(--status-waiting-for-import)",
   "var(--status-completed)",
-  "var(--status-returned)",
+  "var(--status-cancelled)",
 ];
