@@ -11,7 +11,7 @@ import {
   InboundRequestStatusColors,
 } from "../../../types/inboundRequest";
 import styled from "styled-components";
-import { useGetInboundReportAssetQuery } from "../../../hooks/api/asset/getInboundReportAssetQuery";
+import { useGetInboundRequestAssetQuery } from "../../../hooks/api/asset/getInboundRequestAssetQuery";
 import { parseInboundRequestStatusToVietnamese } from "../../../utils/translateInboundRequestStatus";
 import AssetPreview from "../../../components/AssetsPreview";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
@@ -29,7 +29,7 @@ const ApprovalInboundRequestListByCEO: React.FC = () => {
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
   const { data, refetch } = useGetInboundRequestQuery(initialData);
   const { mutate } = useUpdateInboundRequestMutation();
-  const { mutate: getAsset, isPending } = useGetInboundReportAssetQuery();
+  const { mutate: getAsset, isPending } = useGetInboundRequestAssetQuery();
   const [assetUrls, setAssetUrls] = useState<
     { url: string; isImage: boolean; fileName: string }[]
   >([]);

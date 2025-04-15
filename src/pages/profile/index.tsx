@@ -270,7 +270,7 @@ const StyledContainer = styled(Flex)`
 
 const StyledFlex = styled(Flex)`
   width: 100%;
-  height: 100vh;
+  height: 100%;
 `;
 
 const StyledCard = styled(Card)`

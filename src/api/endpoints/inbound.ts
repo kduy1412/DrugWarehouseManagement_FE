@@ -2,6 +2,7 @@ import apiClient from "..";
 import {
   InboundGetRequestParams,
   InboundPostRequest,
+  InboundPutRequest,
   InboundPutStatusRequest,
 } from "../../types/inbound";
 
@@ -13,6 +14,12 @@ export const createInbound = (inboundData: InboundPostRequest) =>
 
 export const updateInboundStatus = (data: InboundPutStatusRequest) =>
   apiClient(`/api/Inbound/status`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+
+export const updateInbound = (data: InboundPutRequest) =>
+  apiClient(`/api/Inbound`, {
     method: "PUT",
     body: JSON.stringify(data),
   });

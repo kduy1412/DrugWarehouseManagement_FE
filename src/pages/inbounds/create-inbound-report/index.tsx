@@ -50,7 +50,6 @@ const CreateInboundReport: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadFile[]>([]);
   const [problemDescription, setProblemDescription] = useState("");
-  const [note, setNote] = useState("");
   const { mutate: updateInboundStatus } = useUpdateInboundStatusMutation();
   const { mutate: createInboundReport } = useCreateInboundReportMutation();
   const [initialParams, setInitialParams] = useState(initialData);
@@ -92,7 +91,6 @@ const CreateInboundReport: React.FC = () => {
       problemDescription.length > 0 && !isFulfilled
         ? `${problemDescription}${note ?? ""}`
         : "Đơn không có hàng lỗi";
-    console.log(finalNote);
 
     formData.append("InboundId", selectedRecord.key.toString());
     formData.append("ProblemDescription", finalNote);

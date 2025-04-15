@@ -2,6 +2,7 @@ import { Dayjs } from "dayjs";
 import { PaginationModelRequest } from "./paginationModelRequest";
 import { PaginationModelResponse } from "./paginationModelResponse";
 import { Provider } from "./provider";
+import { InboundReport } from "./inboundReport";
 
 //POST
 export type InboundPostRequest = {
@@ -25,14 +26,22 @@ export type InboundDetailRequest = {
 
 //PUT
 export interface InboundPutRequest {
-  customerName?: string | null;
-  address?: string | null;
-  phoneNumber?: string | null;
-  inboundOrderCode?: string | null;
-  trackingNumber?: string | null;
-  note?: string | null;
-  status?: string | null;
+  inboundId: number;
+  providerOrderCode: string;
+  providerId: number;
+  note: string;
+  inboundDetails: InboundDetailPutRequest[];
 }
+
+export interface InboundDetailPutRequest {
+  lotNumber: string;
+  manufacturingDate: Date;
+  expiryDate: Date;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
 //PUT Status
 export interface InboundPutStatusRequest {
   inboundId: number;
@@ -70,6 +79,8 @@ export type InboundFilterParams = {
   Search?: string | null;
   DateFrom?: Dayjs | null | string;
   DateTo?: Dayjs | null | string;
+  IsReportPendingExist?: boolean | null;
+  InboundStatus?: InboundStatus | null;
 };
 
 //Model
@@ -85,6 +96,7 @@ export interface Inbound {
   inboundDetails: InboundDetail[];
   warehouseName: string;
   providerDetails: Provider;
+  report: InboundReport | null;
 }
 
 export interface InboundDetail {
@@ -102,8 +114,8 @@ export interface InboundDetail {
 export enum InboundStatus {
   Pending = 1,
   InProgress = 2,
-  Cancelled = 4,
   Completed = 3,
+  Cancelled = 4,
 }
 
 export const InboundStatusAsString = {

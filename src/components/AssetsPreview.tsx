@@ -18,7 +18,7 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
 }) => {
   return (
     <div>
-      <strong>Tài liệu đính kèm:</strong>
+      <h2>Tài liệu đính kèm:</h2>
       {assetUrls.length > 0 && assetUrls.some((item) => item.isImage) && (
         <div
           style={{

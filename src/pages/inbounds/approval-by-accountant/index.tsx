@@ -20,10 +20,11 @@ import {
   InboundRequestStatusColors,
 } from "../../../types/inboundRequest";
 import styled from "styled-components";
-import { useGetInboundReportAssetQuery } from "../../../hooks/api/asset/getInboundReportAssetQuery";
+import { useGetInboundRequestAssetQuery } from "../../../hooks/api/asset/getInboundRequestAssetQuery";
 import { parseInboundRequestStatusToVietnamese } from "../../../utils/translateInboundRequestStatus";
 import AssetPreview from "../../../components/AssetsPreview";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
+import ApprovalInboundReportList from "../approval-report-by-accountant";
 
 type DataType = InboundRequest;
 
@@ -49,7 +50,7 @@ const ApprovalInboundRequestList: React.FC = () => {
   );
   const { data, refetch } = useGetInboundRequestQuery(inboundInitParams);
   const { mutate } = useUpdateInboundRequestMutation();
-  const { mutate: getAsset, isPending } = useGetInboundReportAssetQuery();
+  const { mutate: getAsset, isPending } = useGetInboundRequestAssetQuery();
   const [assetUrls, setAssetUrls] = useState<
     { url: string; isImage: boolean; fileName: string }[]
   >([]);
@@ -73,7 +74,7 @@ const ApprovalInboundRequestList: React.FC = () => {
 
   useEffect(() => {
     refetch();
-  }, []);
+  }, [currentType]);
 
   const handleTableChange = (pagination: any) => {
     setInboundInitParams({
@@ -263,7 +264,9 @@ const ApprovalInboundRequestList: React.FC = () => {
         </>
       )}
       {/* List inbound report */}
-      {currentType === approvalType.InboundReport && <>Test</>}
+      {currentType === approvalType.InboundReport && (
+        <ApprovalInboundReportList />
+      )}
     </div>
   );
 };
@@ -303,14 +306,19 @@ const CtaButton = styled(Button)`
 const StyledSegmented = styled(Segmented)`
   margin-bottom: var(--line-width-light);
   font-weight: var(--font-weight-medium);
+  padding: 6px;
+  border: 0.1px solid hsl(0, 0%, 85%);
+  background-color: hsl(0, 0%, 90%);
   .ant-segmented-group {
     gap: var(--line-width-thin);
-  }
-  .ant-segmented-item {
-    background-color: var(--color-secondary-200);
   }
   .ant-segmented-item-selected {
     background-color: var(--color-secondary-600) !important;
     color: white !important;
+  }
+  .ant-segmented-item:hover {
+    background-color: var(--color-secondary-600);
+    color: white !important;
+    transition: all 300ms;
   }
 `;
