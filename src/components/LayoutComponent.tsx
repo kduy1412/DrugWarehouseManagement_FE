@@ -79,11 +79,11 @@ const LayoutComponent = () => {
     },
   ];
 
-  const filteredMenu = filterMenuByRole(privateRoutes, role ?? null);
+  const filteredMenu = filterMenuByRole(privateRoutes, role ?? null).filter(
+    (item) => !item.allowedroles.includes(Roles.Public)
+  );
 
   const breadcrumbItems = generateBreadcrumbItems(location.pathname);
-
-  console.log(location.pathname);
 
   return (
     <Layout>

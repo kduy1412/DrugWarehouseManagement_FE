@@ -41,7 +41,6 @@ const EditModal = ({
     taxCode: item.taxCode,
     nationality: item.nationality,
     documentNumber: item.documentNumber,
-    documentIssueDate: dayjs(item.documentIssueDate),
     status: item.status,
   };
 
@@ -157,19 +156,6 @@ const EditModal = ({
         </Form.Item>
       ),
     },
-    {
-      key: "documentIssueDate",
-      label: "Ngày Cấp",
-      span: "filled",
-      children: (
-        <Form.Item
-          rules={[{ required: true, message: "Vui lòng chọn ngày cấp" }]}
-          name="documentIssueDate"
-        >
-          <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
-        </Form.Item>
-      ),
-    },
   ];
 
   const handleCancel = () => {
@@ -187,9 +173,6 @@ const EditModal = ({
           providerId: item.providerId,
           data: {
             ...values,
-            documentIssueDate: dayjs(values.documentIssueDate).format(
-              `YYYY-MM-DD`
-            ),
           },
         },
         {

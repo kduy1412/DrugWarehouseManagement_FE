@@ -15,7 +15,6 @@ export interface ProviderPostRequest {
   taxCode: string;
   nationality: string;
   documentNumber: string;
-  documentIssueDate: Date | Dayjs | string;
 }
 
 export interface ProviderPutRequest {
@@ -26,7 +25,6 @@ export interface ProviderPutRequest {
   nationality: string;
   email: string;
   documentNumber: string;
-  documentIssueDate: Date | Dayjs | string;
   status: ProviderStatus;
 }
 

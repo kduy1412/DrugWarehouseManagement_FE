@@ -66,6 +66,21 @@ export function useAuth() {
     },
   });
 
+  const updateUserInformation = (data: StoredUser) => {
+    const currentData = queryClient.getQueryData<AuthResponse>(AUTH_QUERY_KEY);
+    if (!currentData?.user) {
+      notification.error({
+        message: "Không có thông tin người dùng",
+      });
+    }
+
+    queryClient.setQueryData(AUTH_QUERY_KEY, (oldData: AuthResponse) => {
+      const updatedData: AuthResponse = { ...oldData, user: data };
+      setAuthData(updatedData);
+      return updatedData;
+    });
+  };
+
   /*Refresh token mutation */
   const refreshMutation = useMutation({
     mutationFn: () => {
@@ -92,6 +107,7 @@ export function useAuth() {
   /*Logout mutation */
   const logout = () => {
     queryClient.setQueryData(AUTH_QUERY_KEY, null);
+    queryClient.invalidateQueries({ queryKey: ["profile"] });
     setAuthData(null);
   };
 
@@ -105,5 +121,6 @@ export function useAuth() {
     refresh: refreshMutation.mutate,
     role: authQuery.data?.role as Roles | null,
     isLoading: authQuery.isLoading || loginMutation.isPending,
+    setUser: (data: StoredUser) => updateUserInformation(data),
   };
 }

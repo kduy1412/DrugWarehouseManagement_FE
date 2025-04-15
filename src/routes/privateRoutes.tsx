@@ -10,24 +10,20 @@ import ProviderPage from "../pages/provider";
 import ProductsPage from "../pages/product";
 import WarehousePage from "../pages/warehouse";
 import HomePage from "../pages/HomePage";
-import CreateInboundRequest from "../pages/inbounds/create inbound request";
+import CreateInboundRequest from "../pages/inbounds/create-inbound-request";
 import images from "../assets";
 import OutBoundHistory from "../pages/outbound/history";
 import CreateOutboundPage from "../pages/outbound/create";
 import InboundPage from "../pages/inbounds";
-import InboundRequestList from "../pages/inbounds/list inbound request";
-import ApprovalInboundRequestList from "../pages/inbounds/approval by accountant";
-import ApprovalInboundRequestListByCEO from "../pages/inbounds/approval by ceo";
-import CreateInboundOrderList from "../pages/inbounds/create inbound order";
-import HistoryInboundOrder from "../pages/inbounds/list inbound order";
+import ApprovalInboundRequestList from "../pages/inbounds/approval-by-accountant";
+import ApprovalInboundRequestListByCEO from "../pages/inbounds/approval-by-ceo";
+import CreateInboundOrderList from "../pages/inbounds/create-inbound-order";
 import SampleExportPage from "../pages/outbound/sample-export";
 import TransferLotPage from "../pages/outbound/transfer";
 import ReturnOutboundPage from "../pages/outbound/return";
 import CustomerListPage from "../pages/customer/list";
 import CreateCustomerPage from "../pages/customer/create";
-import CreateInboundReport from "../pages/inbounds/create inbound report";
-import HistoryInboundReport from "../pages/inbounds/list inbound report";
-import UpdateInbound from "../pages/inbounds/update inbound order";
+import CreateInboundReport from "../pages/inbounds/create-inbound-report";
 import CreateUserPage from "../pages/user/create";
 import UserListPage from "../pages/user/list";
 import WarehouseListPage from "../pages/warehouse/list";
@@ -38,6 +34,7 @@ import ProductListPage from "../pages/product/list";
 import CreateProductPage from "../pages/product/create";
 import ProviderListPage from "../pages/provider/list";
 import CreateProviderPage from "../pages/provider/create";
+import ProfilePage from "../pages/profile";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -70,20 +67,6 @@ export const privateRoutes: MenuRoutes[] = [
         allowedroles: [Roles.SaleAdmin],
       },
       {
-        key: `/inbound/history-inbound-request`,
-
-        label: `Danh sách phiếu đặt hàng `,
-        url: `/inbound/history-inbound-request`,
-        element: <InboundRequestList />,
-        allowedroles: [
-          Roles.Admin,
-          Roles.Accountant,
-          Roles.Director,
-          Roles.InventoryManager,
-          Roles.SaleAdmin,
-        ],
-      },
-      {
         key: `/inbound/approval-inbound-request-by-accountant`,
         label: `Đơn chờ duyệt`,
         url: `/inbound/approval-inbound-request-by-accountant`,
@@ -105,48 +88,14 @@ export const privateRoutes: MenuRoutes[] = [
         allowedroles: [Roles.Accountant],
       },
       {
-        key: `/inbound/history-inbound-order`,
-        label: `Danh sách đơn nhập hàng`,
-        url: `/inbound/history-inbound-order`,
-        element: <HistoryInboundOrder />,
-        allowedroles: [
-          Roles.Admin,
-          Roles.Accountant,
-          Roles.Director,
-          Roles.InventoryManager,
-          Roles.SaleAdmin,
-        ],
-      },
-      {
         key: `/inbound/create-inbound-report`,
         label: `Tạo báo cáo nhập`,
         url: `/inbound/create-inbound-report`,
         element: <CreateInboundReport />,
         allowedroles: [Roles.InventoryManager],
       },
-      {
-        key: `/inbound/history-inbound-report`,
-        label: `Danh sách báo cáo nhập`,
-        url: `/inbound/history-inbound-report`,
-        element: <HistoryInboundReport />,
-        allowedroles: [
-          Roles.Admin,
-          Roles.Accountant,
-          Roles.Director,
-          Roles.InventoryManager,
-          Roles.SaleAdmin,
-        ],
-      },
-      {
-        key: `/inbound/update-inbound`,
-        label: `Cập nhật đơn hàng`,
-        url: `/inbound/update-inbound`,
-        element: <UpdateInbound />,
-        allowedroles: [Roles.Accountant],
-      },
     ],
     allowedroles: [
-      Roles.Admin,
       Roles.Accountant,
       Roles.Director,
       Roles.InventoryManager,
@@ -420,5 +369,12 @@ export const privateRoutes: MenuRoutes[] = [
     icon: <TagsOutlined />,
     allowedroles: [Roles.Admin],
     element: <CategoryPage />,
+  },
+  {
+    key: `/profile`,
+    label: `Quản Lý Danh Mục`,
+    url: `/profile`,
+    allowedroles: [Roles.Public],
+    element: <ProfilePage />,
   },
 ];

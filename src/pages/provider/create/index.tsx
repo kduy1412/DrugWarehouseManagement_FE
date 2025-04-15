@@ -3,7 +3,6 @@ import { Form, Input, Button, Card, DatePicker } from "antd";
 import { ProviderPostRequest } from "../../../types/provider";
 import { useCreateProviderMutation } from "../../../hooks/api/provider/createProviderMutation";
 import styled from "styled-components";
-import dayjs from "dayjs";
 
 const CreateProviderPage: React.FC = () => {
   const [form] = Form.useForm();
@@ -12,7 +11,6 @@ const CreateProviderPage: React.FC = () => {
   const handleFinish = (values: ProviderPostRequest) => {
     const formattedValues: ProviderPostRequest = {
       ...values,
-      documentIssueDate: dayjs(values.documentIssueDate).format(`YYYY-MM-DD`),
     };
 
     mutate(formattedValues, {
@@ -131,24 +129,6 @@ const CreateProviderPage: React.FC = () => {
               ]}
             >
               <Input placeholder="Nhập mã chứng từ (tùy chọn)" />
-            </Form.Item>
-          </FlexItem>
-          <FlexItem>
-            <Form.Item
-              name="documentIssueDate"
-              label="Ngày Cấp Chứng Từ"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn ngày cấp chứng từ",
-                },
-              ]}
-            >
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="Chọn ngày cấp"
-                format="DD/MM/YYYY"
-              />
             </Form.Item>
           </FlexItem>
         </FlexRow>

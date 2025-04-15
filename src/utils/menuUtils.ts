@@ -7,7 +7,11 @@ export const filterMenuByRole = (
 ): MenuRoutes[] => {
   if (!role) return [];
   return menu
-    .filter((item) => item.allowedroles.includes(role) && item.element)
+    .filter(
+      (item) =>
+        (item.allowedroles.includes(role) && item.element) ||
+        item.allowedroles.includes(Roles.Public)
+    )
     .map((item) => ({
       ...item,
       children: item.children

@@ -4,6 +4,7 @@ export enum Roles {
   Accountant = 3,
   SaleAdmin = 4,
   Director = 5,
+  Public = 6,
 }
 
 export type RolesAsString =

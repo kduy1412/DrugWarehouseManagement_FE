@@ -14,7 +14,7 @@ export const createAccount = (data: UserPostRequest) =>
 
 export const changePassword = (data: UserPutPasswordRequest) =>
   apiClient("/api/Account/changePassword", {
-    method: "POST",
+    method: "PUT",
     body: JSON.stringify(data),
   });
 

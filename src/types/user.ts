@@ -45,12 +45,10 @@ export interface UserPostRequest {
 
 // PUT
 export interface UserPutRequest {
-  userName: string;
-  email: string;
-  fullName: string;
-  phoneNumber: string;
-  twoFactorEnabled: boolean;
-  phoneNumberConfirmed: boolean;
+  userName?: string | null;
+  email?: string | null;
+  fullName?: string | null;
+  phoneNumber?: string | null;
 }
 
 export interface UserPutPasswordRequest {
