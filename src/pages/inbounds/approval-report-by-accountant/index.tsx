@@ -39,6 +39,7 @@ import {
   InboundReportStatusAsString,
 } from "../../../types/inboundReport";
 import { useUpdateInboundStatusMutation } from "../../../hooks/api/inbound/updateInboundStatusMutation";
+import { queryClient } from "../../../lib/queryClient";
 
 interface LotData extends InboundDetail {
   updateQuantity: number;
@@ -173,6 +174,9 @@ const ApprovalInboundReportList = () => {
     setSelectedRecord(null);
     setIsCalculated(false);
     setLotData(null);
+    queryClient.invalidateQueries({
+      predicate: (query) => query.queryKey.includes("inboundReport"),
+    });
   };
 
   const handleOnChangeCalculate = () => {
@@ -227,6 +231,7 @@ const ApprovalInboundReportList = () => {
       inboundId: selectedRecord.inboundId,
       providerId: selectedRecord.providerDetails.providerId,
       note: selectedRecord.note,
+      warehouseId: selectedRecord.warehouseId,
       providerOrderCode: selectedRecord.providerOrderCode,
       inboundDetails: inboundDetailsUpdated,
     };

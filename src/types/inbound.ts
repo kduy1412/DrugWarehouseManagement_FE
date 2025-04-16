@@ -29,6 +29,7 @@ export interface InboundPutRequest {
   inboundId: number;
   providerOrderCode: string;
   providerId: number;
+  warehouseId: number;
   note: string;
   inboundDetails: InboundDetailPutRequest[];
 }
@@ -89,13 +90,13 @@ export interface Inbound {
   inboundId: number;
   inboundCode: string;
   providerOrderCode: string;
-  providerName: string;
   createBy: string;
   note: string;
   inboundDate: string;
   status: InboundStatus | string;
   inboundDetails: InboundDetail[];
   warehouseName: string;
+  warehouseId: number;
   providerDetails: Provider;
   report: InboundReport | null;
 }

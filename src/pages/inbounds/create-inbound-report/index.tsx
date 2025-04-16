@@ -30,15 +30,13 @@ import { parseInboundStatusToVietnamese } from "../../../utils/translateInboundS
 import { formatDateTime } from "../../../utils/timeHelper";
 import { useCreateInboundReportMutation } from "../../../hooks/api/inboundReport/createInboundReportMutation";
 import styled from "styled-components";
-import {
-  InboundReportStatus,
-  InboundReportStatusAsString,
-} from "../../../types/inboundReport";
+import { InboundReportStatusAsString } from "../../../types/inboundReport";
 
 type DataType = Inbound;
 const initialData: InboundGetRequestParams = {
   Page: 1,
   PageSize: 50,
+  IsReportPendingExist: false,
   InboundStatus: InboundStatus.Pending,
 };
 
