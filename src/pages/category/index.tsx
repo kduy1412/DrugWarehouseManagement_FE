@@ -95,6 +95,7 @@ const CategoryPage = () => {
           removeDiacritics(debouncedSearchTermMainCategory)
         )
       ) || [];
+      
   const subCategories = selectedMainCategory
     ? data?.items
         .filter(

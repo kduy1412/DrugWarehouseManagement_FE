@@ -8,7 +8,13 @@ import {
 } from "antd";
 import React from "react";
 import styled from "styled-components";
-import { Product, ProductStatus } from "../../../../types/product";
+import {
+  Product,
+  ProductStatus,
+  ProductStatusAsString,
+  ProductStatusColors,
+} from "../../../../types/product";
+import { parseProductStatusToVietNamese } from "../../../../utils/translateProductStatus";
 
 interface ComponentProps {
   isModalOpen: boolean;
@@ -61,10 +67,10 @@ const DetailsModal = ({
       label: "Trạng Thái",
       span: "filled",
       children: (
-        <Tag color={item.status === ProductStatus.Active ? "green" : "red"}>
-          {item.status === ProductStatus.Active
-            ? "Hoạt động"
-            : "Không hoạt động"}
+        <Tag
+          color={ProductStatusColors[ProductStatusAsString[item.status] - 1]}
+        >
+          {parseProductStatusToVietNamese(ProductStatusAsString[item.status])}
         </Tag>
       ),
     },

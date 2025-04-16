@@ -85,6 +85,7 @@ const CreateUserPage: React.FC = () => {
           <Select placeholder="Chọn vai trò">
             {Object.keys(Roles)
               .filter((key) => isNaN(Number(key)))
+              .filter((key) => key !== "Public")
               .map((roleName) => {
                 const roleValue = Roles[roleName as keyof typeof Roles];
                 return (

@@ -38,6 +38,7 @@ export interface InboundDetailPutRequest {
   manufacturingDate: Date;
   expiryDate: Date;
   quantity: number;
+  productId: number;
   unitPrice: number;
   totalPrice: number;
 }
@@ -104,6 +105,7 @@ export interface InboundDetail {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
+  productId: number;
   productName: string | null;
   expiryDate: Date;
   manufacturingDate: Date;

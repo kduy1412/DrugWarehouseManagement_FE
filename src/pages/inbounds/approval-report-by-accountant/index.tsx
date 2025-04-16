@@ -6,7 +6,6 @@ import {
   InboundGetRequestParams,
   InboundPutRequest,
   InboundPutStatusRequest,
-  InboundStatus,
   InboundStatusAsNum,
   InboundStatusColors,
 } from "../../../types/inbound";
@@ -16,8 +15,10 @@ import { useGetInboundReportAssetQuery } from "../../../hooks/api/asset/getInbou
 import {
   Button,
   Checkbox,
+  Descriptions,
   Divider,
   Flex,
+  Input,
   Modal,
   notification,
   Table,
@@ -28,7 +29,6 @@ import {
 import { parseInboundStatusToVietnamese } from "../../../utils/translateInboundStatus";
 import { formatDateTime } from "../../../utils/timeHelper";
 import AssetPreview from "../../../components/AssetsPreview";
-import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
 import InboundReport from "./InboundReport";
 import styled from "styled-components";
 import { useApprovedReportMutation } from "../../../hooks/api/inbound/updateInboundMutationMutation";
@@ -36,6 +36,7 @@ import { useUpdateInboundPendingMutation } from "../../../hooks/api/inboundRepor
 import {
   InboundReportPutRequest,
   InboundReportStatus,
+  InboundReportStatusAsString,
 } from "../../../types/inboundReport";
 import { useUpdateInboundStatusMutation } from "../../../hooks/api/inbound/updateInboundStatusMutation";
 
@@ -103,8 +104,8 @@ const ApprovalInboundReportList = () => {
     },
     {
       title: "Nhà cung cấp",
-      dataIndex: "providerName",
       key: "providerName",
+      render: (_, record) => record.providerDetails.providerName,
     },
     {
       title: "Mã đơn NCC",
@@ -212,6 +213,7 @@ const ApprovalInboundReportList = () => {
         totalPrice: item.totalPrice,
         unitPrice: item.unitPrice,
         quantity: item.updateQuantity,
+        productId: item.productId,
       }));
 
     if (isCalculated) {
@@ -223,7 +225,7 @@ const ApprovalInboundReportList = () => {
 
     const updateModel: InboundPutRequest = {
       inboundId: selectedRecord.inboundId,
-      providerId: 1,
+      providerId: selectedRecord.providerDetails.providerId,
       note: selectedRecord.note,
       providerOrderCode: selectedRecord.providerOrderCode,
       inboundDetails: inboundDetailsUpdated,
@@ -231,7 +233,8 @@ const ApprovalInboundReportList = () => {
 
     const updateInboundReportModel: InboundReportPutRequest = {
       InboundReportId: selectedRecord.report.inboundReportId,
-      InboundReportStatus: InboundReportStatus.Completed,
+      InboundReportStatus: InboundReportStatusAsString.Completed,
+      ProblemDescription: selectedRecord.report.problemDescription,
     };
 
     approvedReport(updateModel, {
@@ -267,7 +270,8 @@ const ApprovalInboundReportList = () => {
 
     const updateInboundReportModel: InboundReportPutRequest = {
       InboundReportId: selectedRecord.report.inboundReportId,
-      InboundReportStatus: InboundReportStatus.Completed,
+      InboundReportStatus: InboundReportStatusAsString.Completed,
+      ProblemDescription: selectedRecord.report.problemDescription,
     };
 
     updateInboundStatus(
@@ -338,50 +342,56 @@ const ApprovalInboundReportList = () => {
           wrapClassName="wrap-confirm"
         >
           <div>
-            <Divider />
-            <h2>Thông tin nhà cung cấp</h2>
-            <p>
-              <strong>Tên NCC: </strong>
-              {selectedRecord.providerDetails.providerName}
-            </p>
-            <p>
-              <strong>Quốc gia:</strong>{" "}
-              {selectedRecord.providerDetails.nationality || "Đang để trống?"}
-            </p>
-            <p>
-              <strong>MST:</strong> {selectedRecord.providerDetails.taxCode}
-            </p>
-            <p>
-              <strong>Email: </strong>
-              {selectedRecord.providerDetails.email}
-            </p>
-            <p>
-              <strong>SĐT: </strong>
-              {selectedRecord.providerDetails.phoneNumber}
-            </p>
-            <Divider />
-            <h2>Thông tin phiếu nhập hàng</h2>
-            <p>
-              <strong>Mã phiếu:</strong> {selectedRecord.inboundCode}
-            </p>
-            <p>
-              <strong>Ngày tạo:</strong> {parseDate(selectedRecord.inboundDate)}
-            </p>
-            <p>
-              <strong>Người tạo:</strong> {selectedRecord.createBy}
-            </p>
-            <p>
-              <strong>Nhà kho:</strong> {selectedRecord.warehouseName}
-            </p>
-            <p>
-              <strong>Trạng thái:</strong>{" "}
-              {renderTag(selectedRecord.status as string)}
-            </p>
-            <p>
-              <strong>Ghi chú</strong>
-              {selectedRecord.note}
-            </p>
-            <Divider />
+            <StyledDivider orientation="left">
+              Thông tin nhà cung cấp
+            </StyledDivider>
+            <Descriptions column={1} bordered>
+              <Descriptions.Item label="Tên NCC">
+                {selectedRecord.providerDetails.providerName}
+              </Descriptions.Item>
+              <Descriptions.Item label="Quốc gia">
+                {selectedRecord.providerDetails.nationality || "Đang để trống"}
+              </Descriptions.Item>
+              <Descriptions.Item label="MST">
+                {selectedRecord.providerDetails.taxCode}
+              </Descriptions.Item>
+              <Descriptions.Item label="Email">
+                {selectedRecord.providerDetails.email}
+              </Descriptions.Item>
+              <Descriptions.Item label="SĐT">
+                {selectedRecord.providerDetails.phoneNumber}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <StyledDivider orientation="left">
+              Thông tin phiếu nhập hàng
+            </StyledDivider>
+            <Descriptions column={1} bordered>
+              <Descriptions.Item label="Mã phiếu">
+                {selectedRecord.inboundCode}
+              </Descriptions.Item>
+              <Descriptions.Item label="Ngày tạo">
+                {parseDate(selectedRecord.inboundDate)}
+              </Descriptions.Item>
+              <Descriptions.Item label="Người tạo">
+                {selectedRecord.createBy}
+              </Descriptions.Item>
+              <Descriptions.Item label="Nhà kho">
+                {selectedRecord.warehouseName}
+              </Descriptions.Item>
+              <Descriptions.Item label="Trạng thái">
+                {renderTag(selectedRecord.status as string)}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <StyledDivider orientation="left">Lỗi được báo cáo</StyledDivider>
+            <Input.TextArea
+              disabled
+              value={selectedRecord.report?.problemDescription}
+              rows={4}
+              style={{ marginTop: 16 }}
+            />
+            <StyledDivider orientation="left">Đơn hàng</StyledDivider>
             <Checkbox
               checked={isCalculated}
               onChange={(e) => handleOnChangeCalculate()}
@@ -394,7 +404,7 @@ const ApprovalInboundReportList = () => {
             />
             {assetsUrl.length > 0 && (
               <>
-                <Divider />
+                <StyledDivider />
                 <AssetPreview assetUrls={assetsUrl} isPending={isPending} />
               </>
             )}
@@ -429,7 +439,7 @@ const ApprovalInboundReportList = () => {
           </div>
         </Modal>
       )}
-      
+
       {confirmModal.visible && confirmModal.type === "approve" && (
         <ConfirmModal
           visible={confirmModal.visible && confirmModal.type === "approve"}
@@ -533,6 +543,12 @@ const parseDate = (date: string) => {
 
   return formatDateTime(parsedDate);
 };
+
+const StyledDivider = styled(Divider)`
+  border-color: var(--color-placeholder) !important;
+  color: var(--color-secondary-600) !important;
+  font-weight: var(--font-weight-semibold) !important;
+`;
 
 const CtaButton = styled(Button)`
   &:not(:disabled) {

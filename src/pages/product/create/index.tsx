@@ -1,5 +1,14 @@
-import React, { useCallback, useState } from "react";
-import { Form, Input, Button, Card, Select, notification, Space } from "antd";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Select,
+  notification,
+  Space,
+  SelectProps,
+} from "antd";
 import {
   ProductCategoriesPostRequest,
   ProductCategoriesPutRequest,
@@ -15,8 +24,9 @@ import {
   CategoryStatusArray,
 } from "../../../types/category";
 import { CreateProductMutation } from "../../../hooks/api/product/createProductMutation";
-
-const { Option } = Select;
+import { removeDiacritics } from "../../../utils/removeDiacritics";
+import { useGetCategoryForSKUQuery } from "../../../hooks/api/category/getCategoryByIdQuery";
+import { isSystemCategory } from "../../../types/constants";
 
 const CreateProductPage: React.FC = () => {
   const [form] = Form.useForm();
@@ -31,6 +41,7 @@ const CreateProductPage: React.FC = () => {
   >([]);
 
   const { mutate, isPending } = CreateProductMutation();
+  const { data: SKUCategory, refetch } = useGetCategoryForSKUQuery();
   const { data, isLoading } = useGetCategoriesQuery(categoryFilterParams);
 
   const handleFinish = (values: ProductPostRequest) => {
@@ -47,6 +58,7 @@ const CreateProductPage: React.FC = () => {
           categoriesId: item.categoriesId,
         })),
     };
+
     mutate(payload, {
       onSuccess: () => {
         form.resetFields();
@@ -57,7 +69,8 @@ const CreateProductPage: React.FC = () => {
 
   const subCategory = data?.items.filter(
     (item) =>
-      item.subCategories.length > 0 &&
+      item.parentCategoryId !== null &&
+      !isSystemCategory(item.parentCategoryId!) &&
       item.status !== CategoryStatusArray[CategoryStatus.Inactive - 1]
   );
 
@@ -93,6 +106,17 @@ const CreateProductPage: React.FC = () => {
     );
     setSelectedProductCategories(updateCategory);
   };
+
+  useEffect(() => {
+    refetch();
+  });
+
+  const optionType = useMemo(() => {
+    return SKUCategory?.subCategories.map((item) => ({
+      value: item.categoryName,
+      label: item.categoryName,
+    }));
+  }, [SKUCategory]);
 
   return (
     <StyledCard title="Tạo Mặt hàng Mới">
@@ -138,7 +162,16 @@ const CreateProductPage: React.FC = () => {
             { max: 50, message: "SKU không được dài quá 50 ký tự" },
           ]}
         >
-          <Input placeholder="Nhập SKU" />
+          <Select
+            showSearch
+            placeholder="Chọn đơn vị tính"
+            filterOption={(input, option) =>
+              (!option?.label ? "" : removeDiacritics(option.label))
+                .toLowerCase()
+                .includes(removeDiacritics(input.toLowerCase()))
+            }
+            options={optionType}
+          />
         </Form.Item>
 
         <Form.Item

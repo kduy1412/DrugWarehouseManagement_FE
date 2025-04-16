@@ -6,6 +6,23 @@ export interface CategoryGetResponse extends PaginationModelResponse {
   items: Category[];
 }
 
+// GET-ID
+export interface CategoryGetByIdResponse {
+  categoriesId:       number;
+  categoryName:       string;
+  parentCategoryId:   null;
+  parentCategoryName: null;
+  description:        string;
+  status:             string;
+  subCategories:      SubCategoryGetByIdResponse[];
+}
+
+export interface SubCategoryGetByIdResponse {
+  categoriesId: number;
+  categoryName: string;
+}
+
+
 // GET-PARAMS
 export interface CategoryGetRequestParams
   extends CategoryFilterParams,

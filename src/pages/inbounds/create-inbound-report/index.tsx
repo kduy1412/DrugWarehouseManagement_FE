@@ -10,38 +10,36 @@ import {
   Checkbox,
   Flex,
   Form,
+  Descriptions,
+  Divider,
+  Tooltip,
 } from "antd";
 import InboundReport from "./InboundReport";
 import UploadReport from "./UploadFile";
 import { useGetInboundQuery } from "../../../hooks/api/inbound/getInboundQuery";
 import {
-  InboundDetail,
+  Inbound,
+  InboundGetRequestParams,
   InboundStatus,
   InboundStatusAsNum,
   InboundStatusColors,
 } from "../../../types/inbound";
 import { useUpdateInboundStatusMutation } from "../../../hooks/api/inbound/updateInboundStatusMutation";
-import { Provider } from "../../../types/provider";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
 import { parseInboundStatusToVietnamese } from "../../../utils/translateInboundStatus";
 import { formatDateTime } from "../../../utils/timeHelper";
 import { useCreateInboundReportMutation } from "../../../hooks/api/inboundReport/createInboundReportMutation";
+import styled from "styled-components";
+import {
+  InboundReportStatus,
+  InboundReportStatusAsString,
+} from "../../../types/inboundReport";
 
-interface DataType {
-  key: number;
-  maphieu: string;
-  ngaytao: string;
-  nguoitao: string;
-  tongtien: number;
-  ncc: Provider;
-  nhakho: string;
-  trangthai: InboundStatus | string;
-  mst: string;
-  lo: InboundDetail[];
-}
-const initialData = {
+type DataType = Inbound;
+const initialData: InboundGetRequestParams = {
   Page: 1,
   PageSize: 50,
+  InboundStatus: InboundStatus.Pending,
 };
 
 const CreateInboundReport: React.FC = () => {
@@ -92,7 +90,7 @@ const CreateInboundReport: React.FC = () => {
         ? `${problemDescription}${note ?? ""}`
         : "Đơn không có hàng lỗi";
 
-    formData.append("InboundId", selectedRecord.key.toString());
+    formData.append("InboundId", selectedRecord.inboundId.toString());
     formData.append("ProblemDescription", finalNote);
     uploadedFiles.forEach((file) => {
       if (file.originFileObj) {
@@ -101,6 +99,15 @@ const CreateInboundReport: React.FC = () => {
     });
 
     if (isFulfilled) {
+      if (
+        selectedRecord.report !== null &&
+        selectedRecord.report.status !== InboundReportStatusAsString.Completed
+      ) {
+        notification.error({
+          message: `Không thể tạo vì báo cáo chưa được duyệt`,
+        });
+        return;
+      }
       // Create inbound report
       createInboundReport(formData, {
         onSuccess: () => {
@@ -108,7 +115,7 @@ const CreateInboundReport: React.FC = () => {
           updateInboundStatus(
             {
               data: {
-                inboundId: selectedRecord.key,
+                inboundId: selectedRecord.inboundId,
                 inboundStatus: "Completed",
               },
             },
@@ -134,21 +141,16 @@ const CreateInboundReport: React.FC = () => {
 
   // Table columns
   const columns = [
-    { title: "Mã đơn hàng", dataIndex: "maphieu" },
+    { title: "Mã đơn hàng", dataIndex: "inboundCode" },
     {
       title: "Ngày tạo",
-      dataIndex: "ngaytao",
+      dataIndex: "inboundDate",
       render: (date: string) => parseDate(date),
     },
-    { title: "Người tạo", dataIndex: "nguoitao" },
-    {
-      title: "Tổng tiền",
-      dataIndex: "tongtien",
-      render: (price: number) => renderPrice(price),
-    },
+    { title: "Người tạo", dataIndex: "createBy" },
     {
       title: "Trạng thái",
-      dataIndex: "trangthai",
+      dataIndex: "status",
       render: (status: string) => renderTag(status),
     },
     {
@@ -161,44 +163,19 @@ const CreateInboundReport: React.FC = () => {
     },
   ];
 
-  const transformedData: DataType[] = Array.isArray(data?.items)
-    ? data.items
-        .map((item) => ({
-          key: item.inboundId,
-          ngaytao: item.inboundDate,
-          maphieu: item.inboundCode,
-          nguoitao: item.createBy,
-          tongtien: Array.isArray(item.inboundDetails)
-            ? item.inboundDetails.reduce((total, currentValue) => {
-                return Number(total) + currentValue.totalPrice;
-              }, 0)
-            : 0,
-          trangthai: item.status,
-          ncc: item.providerDetails,
-          nhakho: item.warehouseName,
-          mst: item.providerOrderCode,
-          lo: item.inboundDetails,
-        }))
-        .filter((item) => item.trangthai === "Pending")
-    : [];
-
-  React.useEffect(() => {
-    console.log("Data transformedData:", selectedRecord);
-  }, [selectedRecord]);
-
   return (
     <>
       {/* Table Component */}
       <Table<DataType>
         columns={columns}
-        dataSource={transformedData}
+        dataSource={data?.items}
         size="middle"
         pagination={{
           current: data?.currentPage,
           pageSize: data?.pageSize,
           pageSizeOptions: [10, 20, 50, 100],
           showSizeChanger: true,
-          total: transformedData.length || 0,
+          total: data?.totalCount || 0,
           onChange: (page, pageSize) =>
             handleTableChange({ current: page, pageSize }),
           onShowSizeChange: (_, size) =>
@@ -219,45 +196,50 @@ const CreateInboundReport: React.FC = () => {
           wrapClassName="wrap-confirm"
         >
           <div>
-            <h2>Thông tin nhà cung cấp</h2>
-            <p>
-              <strong>Tên NCC: </strong>
-              {selectedRecord.ncc.providerName}
-            </p>
-            <p>
-              <strong>Quốc gia:</strong>{" "}
-              {selectedRecord.ncc.nationality || "Đang để trống?"}
-            </p>
-            <p>
-              <strong>MST:</strong> {selectedRecord.ncc.taxCode}
-            </p>
-            <p>
-              <strong>Email: </strong>
-              {selectedRecord.ncc.email}
-            </p>
-            <p>
-              <strong>SĐT: </strong>
-              {selectedRecord.ncc.phoneNumber}
-            </p>
-            <h2>Thông tin phiếu nhập hàng</h2>
-            <p>
-              <strong>Mã phiếu:</strong> {selectedRecord.maphieu}
-            </p>
-            <p>
-              <strong>Ngày tạo:</strong> {selectedRecord.ngaytao}
-            </p>
-            <p>
-              <strong>Người tạo:</strong> {selectedRecord.nguoitao}
-            </p>
-            <p>
-              <strong>Tổng tiền:</strong> {selectedRecord.tongtien}
-            </p>
-            <p>
-              <strong>Nhà kho:</strong> {selectedRecord.nhakho}
-            </p>
-            <p>
-              <strong>Trạng thái:</strong> {selectedRecord.trangthai}
-            </p>
+            <StyledDivider orientation="left">
+              Thông tin nhà cung cấp
+            </StyledDivider>
+            <Descriptions column={1} bordered>
+              <Descriptions.Item label="Tên NCC">
+                {selectedRecord.providerDetails.providerName}
+              </Descriptions.Item>
+              <Descriptions.Item label="Mã phiếu của NCC">
+                {selectedRecord.providerOrderCode}
+              </Descriptions.Item>
+              <Descriptions.Item label="Quốc gia">
+                {selectedRecord.providerDetails.nationality || "Đang để trống"}
+              </Descriptions.Item>
+              <Descriptions.Item label="MST">
+                {selectedRecord.providerDetails.taxCode}
+              </Descriptions.Item>
+              <Descriptions.Item label="Email">
+                {selectedRecord.providerDetails.email}
+              </Descriptions.Item>
+              <Descriptions.Item label="SĐT">
+                {selectedRecord.providerDetails.phoneNumber}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <StyledDivider orientation="left">
+              Thông tin phiếu nhập hàng
+            </StyledDivider>
+            <Descriptions column={1} bordered>
+              <Descriptions.Item label="Mã phiếu">
+                {selectedRecord.inboundCode}
+              </Descriptions.Item>
+              <Descriptions.Item label="Ngày tạo">
+                {parseDate(selectedRecord.inboundDate)}
+              </Descriptions.Item>
+              <Descriptions.Item label="Người tạo">
+                {selectedRecord.createBy}
+              </Descriptions.Item>
+              <Descriptions.Item label="Nhà kho">
+                {selectedRecord.warehouseName}
+              </Descriptions.Item>
+              <Descriptions.Item label="Trạng thái">
+                {renderTag(selectedRecord.status as string)}
+              </Descriptions.Item>
+            </Descriptions>
             <Flex justify="space-between" align="center">
               <h2>Chi tiết lô hàng</h2>
               <Checkbox
@@ -267,12 +249,12 @@ const CreateInboundReport: React.FC = () => {
                 Hàng không có lỗi
               </Checkbox>
             </Flex>
-            <InboundReport record={selectedRecord} />
+            <InboundReport record={{ lo: selectedRecord.inboundDetails }} />
             {!isFulfilled && (
               <>
                 <h2>Báo cáo lỗi</h2>
                 <InboundReport
-                  record={selectedRecord}
+                  record={{ lo: selectedRecord.inboundDetails }}
                   isFulfilled={false}
                   setProblemDescription={setProblemDescription}
                 />
@@ -298,14 +280,29 @@ const CreateInboundReport: React.FC = () => {
                 flexDirection: "column",
               }}
             >
-              <Button
-                type="primary"
-                style={{ width: "50%", marginTop: 20 }}
-                onClick={handleSubmit}
-                block
+              <Tooltip
+                title={
+                  selectedRecord.report !== null &&
+                  selectedRecord.report.status !==
+                    InboundReportStatusAsString.Completed
+                    ? "Không thể tạo vì báo cáo chưa được duyệt"
+                    : ""
+                }
               >
-                Tạo
-              </Button>
+                <Button
+                  type="primary"
+                  style={{ width: "50%", marginTop: 20 }}
+                  onClick={handleSubmit}
+                  block
+                  disabled={
+                    selectedRecord.report !== null &&
+                    selectedRecord.report.status !==
+                      InboundReportStatusAsString.Completed
+                  }
+                >
+                  Tạo
+                </Button>
+              </Tooltip>
             </div>
           </div>
         </Modal>
@@ -336,3 +333,9 @@ const parseDate = (date: string) => {
 
   return <p>{formatDateTime(parsedDate)}</p>;
 };
+
+const StyledDivider = styled(Divider)`
+  border-color: var(--color-placeholder) !important;
+  color: var(--color-secondary-600) !important;
+  font-weight: var(--font-weight-semibold) !important;
+`;

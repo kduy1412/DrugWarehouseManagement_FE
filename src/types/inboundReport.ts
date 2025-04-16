@@ -2,7 +2,8 @@ import { Asset } from "./inboundRequest";
 
 export interface InboundReportPutRequest {
   InboundReportId: number;
-  InboundReportStatus: InboundReportStatus;
+  InboundReportStatus: InboundReportStatusAsString;
+  ProblemDescription: string;
 }
 
 export interface InboundReport {
@@ -17,4 +18,10 @@ export enum InboundReportStatus {
   Pending = 1,
   Completed = 2,
   Cancelled = 3,
+}
+
+export enum InboundReportStatusAsString {
+  Pending = "Pending",
+  Completed = "Completed",
+  Cancelled = "Cancelled",
 }

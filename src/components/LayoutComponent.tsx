@@ -23,6 +23,7 @@ import { filterMenuByRole } from "../utils/menuUtils.js";
 import { getEnumKeyNameByValue } from "../utils/getEnumKeyNameByValue";
 import { Roles } from "../types/enums/roles";
 import styled from "styled-components";
+import { parseRoleName } from "../utils/translateRolesName";
 
 const { Sider } = Layout;
 const vietnameseTranslations = getVietnameseTranslations(privateRoutes);
@@ -116,11 +117,8 @@ const LayoutComponent = () => {
                 <StyledSpace>
                   <StyledAvatar size="large">{user?.fullName[0]}</StyledAvatar>
                   <UserContainer>
-                    <UserInformation>{`${
-                      user?.fullName
-                    } (${getEnumKeyNameByValue(
-                      Roles,
-                      role
+                    <UserInformation>{`${user?.fullName} (${parseRoleName(
+                      getEnumKeyNameByValue(Roles, role) as string
                     )})`}</UserInformation>
                   </UserContainer>
                   <DownOutlined />

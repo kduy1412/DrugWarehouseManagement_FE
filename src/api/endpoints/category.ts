@@ -14,6 +14,9 @@ export const searchCategories = (
   });
 };
 
+export const getCategoryById = (id: number) =>
+  apiClient(`/api/Categories/${id}`);
+
 export const createCategory = (data: CategoryPostRequest) =>
   apiClient("/api/Categories", {
     method: "POST",
