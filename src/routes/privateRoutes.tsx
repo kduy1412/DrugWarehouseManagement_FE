@@ -35,6 +35,7 @@ import CreateProductPage from "../pages/product/create";
 import ProviderListPage from "../pages/provider/list";
 import CreateProviderPage from "../pages/provider/create";
 import ProfilePage from "../pages/profile";
+import ReturnedLotsPage from "../pages/inbounds/returned-lots";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -92,6 +93,13 @@ export const privateRoutes: MenuRoutes[] = [
         label: `Tạo báo cáo nhập`,
         url: `/inbound/create-inbound-report`,
         element: <CreateInboundReport />,
+        allowedroles: [Roles.InventoryManager],
+      },
+      {
+        key: `/inbound/returned-lots`,
+        label: `Chờ nhập kho (Hàng trả về)`,
+        url: `/inbound/returned-lots`,
+        element: <ReturnedLotsPage />,
         allowedroles: [Roles.InventoryManager],
       },
     ],

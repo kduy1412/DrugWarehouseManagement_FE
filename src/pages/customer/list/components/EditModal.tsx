@@ -219,13 +219,6 @@ const EditModal = ({
 
 export default EditModal;
 
-const CloseButton = styled(Button)`
-  &:hover {
-    border-color: var(--color-secondary-600) !important;
-    color: var(--color-secondary-600) !important;
-  }
-`;
-
 const StyledModal = styled(Modal)`
   width: 70vw !important;
   padding-bottom: 0 !important;
@@ -241,6 +234,13 @@ const StyledModal = styled(Modal)`
 
   .ant-descriptions-item-label {
     font-weight: var(--font-weight-semibold);
+  }
+`;
+
+const CloseButton = styled(Button)`
+  &:hover {
+    border-color: var(--color-secondary-600) !important;
+    color: var(--color-secondary-600) !important;
   }
 `;
 

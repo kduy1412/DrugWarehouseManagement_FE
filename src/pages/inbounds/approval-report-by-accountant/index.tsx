@@ -39,19 +39,10 @@ import {
 import { useUpdateInboundStatusMutation } from "../../../hooks/api/inbound/updateInboundStatusMutation";
 import { queryClient } from "../../../lib/queryClient";
 import InboundReport from "./InboundReport";
+import ConfirmModal from "../../../components/ConfirmModal";
 
 interface LotData extends InboundDetail {
   updateQuantity: number;
-}
-
-interface ConfirmModalProps {
-  visible: boolean;
-  title: string;
-  content: React.ReactNode;
-  onConfirm: () => void;
-  onCancel: () => void;
-  confirmText?: string;
-  cancelText?: string;
 }
 
 const ApprovalInboundReportList = () => {
@@ -574,28 +565,3 @@ const CloseButton = styled(Button)`
   }
 `;
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({
-  visible,
-  title,
-  content,
-  onConfirm,
-  onCancel,
-  confirmText = "Xác nhận",
-  cancelText = "Hủy",
-}) => (
-  <Modal
-    title={title}
-    open={visible}
-    onCancel={onCancel}
-    footer={null}
-    width={500}
-  >
-    <div>
-      {content}
-      <Flex gap={8} justify="flex-end" style={{ marginTop: 20 }}>
-        <CloseButton onClick={onCancel}>{cancelText}</CloseButton>
-        <CtaButton onClick={onConfirm}>{confirmText}</CtaButton>
-      </Flex>
-    </div>
-  </Modal>
-);

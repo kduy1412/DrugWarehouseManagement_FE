@@ -52,7 +52,7 @@ export interface InboundPutStatusRequest {
 
 // POST-LOT-TRANSFER
 export interface LotTransferPostRequest {
-  lotTransferCode: string;
+  lotTransferCode?: string | null;
   fromWareHouseId: number | null;
   toWareHouseId: number | null;
   lotTransferDetails: LotTransferDetail[];

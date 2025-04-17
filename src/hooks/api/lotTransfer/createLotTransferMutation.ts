@@ -4,6 +4,11 @@ import { createLotTransfer } from "../../../api/endpoints/lotTransfer";
 import { notification } from "antd";
 import { queryClient } from "../../../lib/queryClient";
 
+interface CreateApproveLotTransferMutationProps {
+  returnedData: LotTransferPostRequest;
+  cancelledData: LotTransferPostRequest;
+}
+
 export const useCreateLotTransferMutation = () =>
   useMutation<unknown, Error, LotTransferPostRequest>({
     mutationFn: (data: LotTransferPostRequest) => createLotTransfer(data),
