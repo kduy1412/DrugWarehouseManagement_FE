@@ -32,7 +32,7 @@ import PreviewModal from "./components/PreviewModal";
 /**Types */
 type DataType = OutboundGetView;
 
-const initialData = {
+const initialData: OutboundGetRequestParams = {
   Page: 1,
   PageSize: 10,
 };
@@ -188,6 +188,7 @@ const OutBoundHistory = () => {
       {data && (
         <>
           <Table<DataType>
+            bordered
             pagination={false}
             dataSource={data.items}
             columns={columns}
@@ -209,31 +210,32 @@ const OutBoundHistory = () => {
           <Spin />
         </Flex>
       )}
-      {selectedItem && (
-        <>
-          {/* Details Modal */}
-          <DetailsModal
-            isModalOpen={isDetailModalOpen}
-            item={selectedItem}
-            setIsModalOpen={setIsDetailModalOpen}
-          />
+      {selectedItem &&
+        (isEditModalOpen || isDetailModalOpen || isPreviewModalOpen) && (
+          <>
+            {/* Details Modal */}
+            <DetailsModal
+              isModalOpen={isDetailModalOpen}
+              item={selectedItem}
+              setIsModalOpen={setIsDetailModalOpen}
+            />
 
-          {/* Edit Modal */}
-          <EditModal
-            isModalOpen={isEditModalOpen}
-            item={selectedItem}
-            setIsModalOpen={setIsEditModalOpen}
-            queryParam={initParams}
-          />
+            {/* Edit Modal */}
+            <EditModal
+              isModalOpen={isEditModalOpen}
+              item={selectedItem}
+              setIsModalOpen={setIsEditModalOpen}
+              queryParam={initParams}
+            />
 
-          {/* Preivew Modal */}
-          <PreviewModal
-            isPreviewModalOpen={isPreviewModalOpen}
-            selectedItem={selectedItem}
-            setIsPreviewModalOpen={setIsPreviewModalOpen}
-          />
-        </>
-      )}
+            {/* Preivew Modal */}
+            <PreviewModal
+              isPreviewModalOpen={isPreviewModalOpen}
+              selectedItem={selectedItem}
+              setIsPreviewModalOpen={setIsPreviewModalOpen}
+            />
+          </>
+        )}
     </>
   );
 };

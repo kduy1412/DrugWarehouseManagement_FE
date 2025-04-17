@@ -16,6 +16,8 @@ import { useGetInboundRequestQuery } from "../../../hooks/api/inboundRequest/get
 import { useUpdateInboundRequestMutation } from "../../../hooks/api/inboundRequest/updateInboundRequestMutation";
 import {
   InboundRequest,
+  InboundRequestGetRequestParams,
+  InboundRequestStatus,
   InboundRequestStatusAsNum,
   InboundRequestStatusColors,
 } from "../../../types/inboundRequest";
@@ -28,11 +30,6 @@ import ApprovalInboundReportList from "../approval-report-by-accountant";
 
 type DataType = InboundRequest;
 
-const initialInboundDataParams = {
-  Page: 1,
-  PageSize: 10,
-};
-
 enum approvalType {
   InboundRequest = "Yêu cầu nhập kho",
   InboundReport = "Báo cáo nhập kho",
@@ -42,9 +39,12 @@ const ApprovalInboundRequestList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"edit" | "detail">("detail");
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
-  const [inboundInitParams, setInboundInitParams] = useState(
-    initialInboundDataParams
-  );
+  const [inboundInitParams, setInboundInitParams] =
+    useState<InboundRequestGetRequestParams>({
+      Page: 1,
+      PageSize: 10,
+      InboundRequestStatus: InboundRequestStatus.WaitingForAccountantApproval,
+    });
   const [currentType, setCurrentType] = useState<approvalType>(
     approvalType.InboundRequest
   );
@@ -77,10 +77,11 @@ const ApprovalInboundRequestList: React.FC = () => {
   }, [currentType]);
 
   const handleTableChange = (pagination: any) => {
-    setInboundInitParams({
+    setInboundInitParams((prev) => ({
+      ...prev,
       Page: pagination.current,
       PageSize: pagination.pageSize,
-    });
+    }));
   };
 
   const handleOpenModal = (record: DataType, type: "edit" | "detail") => {
@@ -144,23 +145,6 @@ const ApprovalInboundRequestList: React.FC = () => {
     },
   ];
 
-  const transformedData: DataType[] = Array.isArray(data?.items)
-    ? data.items
-        .filter(
-          (item) => item.status.toString() === "WaitingForAccountantApproval"
-        )
-        .map<DataType>((item) => ({
-          inboundRequestId: item.inboundRequestId,
-          inboundRequestCode: item.inboundRequestCode,
-          createDate: item.createDate,
-          price: item.price,
-          note: item.note || "Không có ghi chú",
-          status: item.status.toString(),
-          inboundRequestDetails: item.inboundRequestDetails || [],
-          assets: item.assets || [],
-        }))
-    : [];
-
   return (
     <div style={{ width: "100%" }}>
       <StyledSegmented<string>
@@ -172,15 +156,16 @@ const ApprovalInboundRequestList: React.FC = () => {
       {currentType === approvalType.InboundRequest && (
         <>
           <Table<DataType>
+            bordered
             columns={columns}
-            dataSource={transformedData}
+            dataSource={data?.items}
             size="middle"
             pagination={{
               current: data?.currentPage,
               pageSize: data?.pageSize,
               pageSizeOptions: [10, 20, 50, 100],
               showSizeChanger: true,
-              total: transformedData.length || 0,
+              total: data?.totalCount || 0,
               onChange: (page, pageSize) =>
                 handleTableChange({ current: page, pageSize }),
               onShowSizeChange: (_, size) =>

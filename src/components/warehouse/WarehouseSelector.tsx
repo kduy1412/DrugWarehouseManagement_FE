@@ -81,6 +81,7 @@ const WarehouseSelector = ({
         if (warehouses && warehouses.length > 0) {
           return (
             <Table
+              bordered
               columns={columns}
               dataSource={warehouses}
               rowKey="warehouseId"

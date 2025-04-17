@@ -81,7 +81,8 @@ const ProductInformationStep = ({
     useState<LotGetRequestParams>(initialQueryParams);
   const { data: lotData, isLoading: isLotFetching } =
     useGetLotQuery(queryParams);
-  const { mutate: lotTransferMutate,isPending } = useCreateLotTransferMutation();
+  const { mutate: lotTransferMutate, isPending } =
+    useCreateLotTransferMutation();
   const [selectedLotRowKeys, setSelectedLotRowKeys] = useState<React.Key[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<
     ProductsSelectedProps[]
@@ -398,6 +399,7 @@ const ProductInformationStep = ({
           </StyledDivider>
           {/* Lot tables */}
           <Table<LotGetView>
+            bordered
             pagination={false}
             dataSource={lotData?.items}
             columns={lotColumns}
@@ -441,6 +443,7 @@ const ProductInformationStep = ({
               Mặt hàng đã chọn
             </StyledDivider>
             <Table<ProductsSelectedProps>
+              bordered
               columns={selectedProductColumn}
               dataSource={selectedProduct}
               rowKey="lotId"

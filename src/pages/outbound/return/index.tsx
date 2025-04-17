@@ -394,6 +394,7 @@ const ReturnOutboundPage = () => {
       {data && currentStep === 1 && (
         <>
           <Table<DataType>
+            bordered
             pagination={false}
             dataSource={data.items}
             columns={outboundColumns}
@@ -441,6 +442,7 @@ const ReturnOutboundPage = () => {
             Danh sách lô đã hoàn trả
           </StyledDivider>
           <Table
+            bordered
             columns={outboundDetailsReturnedColumns({
               onRemove: handleRemove,
               onQuantityChange: handleQuantityChange,

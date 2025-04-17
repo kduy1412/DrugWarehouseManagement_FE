@@ -71,6 +71,7 @@ const CustomerSelector = ({
         if (customers && customers.length > 0) {
           return (
             <Table
+              bordered
               columns={columns}
               dataSource={customers}
               rowKey="warehouseId"

@@ -1,7 +1,9 @@
 import {
   Avatar,
   Breadcrumb,
+  Button,
   Dropdown,
+  Flex,
   Layout,
   Menu,
   MenuProps,
@@ -15,6 +17,7 @@ import { useAuth } from "../hooks/useAuth";
 import {
   DownOutlined,
   LogoutOutlined,
+  MenuOutlined,
   SettingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -24,27 +27,9 @@ import { getEnumKeyNameByValue } from "../utils/getEnumKeyNameByValue";
 import { Roles } from "../types/enums/roles";
 import styled from "styled-components";
 import { parseRoleName } from "../utils/translateRolesName";
+import { useState } from "react";
 
 const { Sider } = Layout;
-const vietnameseTranslations = getVietnameseTranslations(privateRoutes);
-const generateBreadcrumbItems = (path: string) => {
-  const pathSegments = path.split("/").filter((segment) => segment);
-  const startsWithHome = pathSegments[0] === "home";
-
-  const items = pathSegments.map((segment, index) => {
-    const url = `/${pathSegments.slice(0, index + 1).join("/")}`;
-    return {
-      title:
-        vietnameseTranslations[segment.toLowerCase()] ||
-        segment.charAt(0).toUpperCase() + segment.slice(1),
-      href: url,
-    };
-  });
-
-  return startsWithHome
-    ? items
-    : [{ title: vietnameseTranslations["home"], href: "/home" }, ...items];
-};
 
 const LayoutComponent = () => {
   const {
@@ -53,6 +38,7 @@ const LayoutComponent = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, role, logout } = useAuth();
+  const [collapsed, setCollapsed] = useState(false);
 
   const handleMenuClick = ({ key }: { key: string }) => {
     navigate(key, { replace: true, flushSync: true });
@@ -89,7 +75,11 @@ const LayoutComponent = () => {
   return (
     <Layout>
       <Layout>
-        <StyledSider width={270} $colorBgContainer={colorBgContainer}>
+        <StyledSider
+          width={270}
+          $colorBgContainer={colorBgContainer}
+          collapsed={collapsed}
+        >
           <ImageWrapper>
             <Image src={logo} alt="Sidebar Banner" />
           </ImageWrapper>
@@ -101,9 +91,14 @@ const LayoutComponent = () => {
             onClick={handleMenuClick}
           />
         </StyledSider>
-        <StyledLayout>
+        <Layout>
           <PageHeader>
-            <StyledBreadcrumb items={breadcrumbItems} />
+            <StyledFlex align="center">
+              <CloseButton onClick={() => setCollapsed((prev) => !prev)}>
+                <MenuOutlined />
+              </CloseButton>
+              <StyledBreadcrumb items={breadcrumbItems} />
+            </StyledFlex>
             {role && (
               <Dropdown
                 menu={{ items }}
@@ -126,13 +121,35 @@ const LayoutComponent = () => {
               </Dropdown>
             )}
           </PageHeader>
-          <Outlet />
-        </StyledLayout>
+          <StyledLayout>
+            <Outlet />
+          </StyledLayout>
+        </Layout>
       </Layout>
     </Layout>
   );
 };
 export default LayoutComponent;
+
+const vietnameseTranslations = getVietnameseTranslations(privateRoutes);
+const generateBreadcrumbItems = (path: string) => {
+  const pathSegments = path.split("/").filter((segment) => segment);
+  const startsWithHome = pathSegments[0] === "home";
+
+  const items = pathSegments.map((segment, index) => {
+    const url = `/${pathSegments.slice(0, index + 1).join("/")}`;
+    return {
+      title:
+        vietnameseTranslations[segment.toLowerCase()] ||
+        segment.charAt(0).toUpperCase() + segment.slice(1),
+      href: url,
+    };
+  });
+
+  return startsWithHome
+    ? items
+    : [{ title: vietnameseTranslations["home"], href: "/home" }, ...items];
+};
 
 const StyledSider = styled(Sider)<{ $colorBgContainer: string }>`
   width: 270px;
@@ -143,6 +160,7 @@ const StyledSider = styled(Sider)<{ $colorBgContainer: string }>`
   left: 0;
   display: flex;
   flex-direction: column;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
 `;
 
 const ImageWrapper = styled.div`
@@ -168,15 +186,24 @@ const StyledMenu = styled(Menu)`
   scrollbar-gutter: "stable";
 `;
 
+const StyledFlex = styled(Flex)``;
+
 const StyledLayout = styled(Layout)`
   padding: 0 1.5rem 1.5rem;
 `;
 
 const PageHeader = styled.div`
+  position: sticky;
+  top: 0;
+  right: 0;
+  z-index: 20;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: var(--line-width-light) 0;
+  margin-bottom: var(--line-width-regular);
+  padding: var(--line-width-light) var(--line-width-thin);
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  background-color: white;
 `;
 
 const StyledBreadcrumb = styled(Breadcrumb)`
@@ -201,4 +228,14 @@ const UserContainer = styled.div`
 
 const UserInformation = styled.span`
   font-weight: var(--font-weight-medium);
+`;
+
+const CloseButton = styled(Button)`
+  width: 2.5rem;
+  border: none;
+  box-shadow: none;
+  &:not(:disabled):hover {
+    border-color: var(--color-secondary-600) !important;
+    color: var(--color-secondary-600) !important;
+  }
 `;

@@ -179,5 +179,5 @@ export default FilterComponent;
 
 const StyledSpace = styled(Space)`
   flex-wrap: wrap;
-  max-width: 90%;
+  max-width: 100%;
 `;

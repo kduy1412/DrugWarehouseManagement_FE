@@ -113,7 +113,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
                 form.setFieldsValue({
                   name: selectedOption.label,
-                  productId: selectedOption.value, // ✅ Cập nhật productId
+                  productId: selectedOption.value,
                 });
 
                 save();
@@ -174,7 +174,7 @@ const CreateInboundRequest: React.FC = () => {
     if (data?.items) {
       setProductOptions(
         data.items.map((product) => ({
-          label: product.productName,
+          label: `${product.productName} | Loại(${product.sku} )`,
           value: product.productId,
         }))
       );

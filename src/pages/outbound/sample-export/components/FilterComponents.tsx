@@ -14,6 +14,7 @@ import { useGetWarehouseQuery } from "../../../../hooks/api/warehouse/getWarehou
 import ProductSelector from "../../../../components/product/ProductSelector";
 import WarehouseSelector from "../../../../components/warehouse/WarehouseSelector";
 import styled from "styled-components";
+import { SystemWarehouseConfigEnum } from "../../../../types/enums/system";
 
 interface ComponentProps {
   setQuery: React.Dispatch<React.SetStateAction<LotGetRequestParams>>;
@@ -23,13 +24,6 @@ interface ComponentProps {
 const initialFilterParams: LotGetRequestParams = {
   Page: 1,
   PageSize: 10,
-  DateFrom: null,
-  DateTo: null,
-  Search: null,
-  Availablle: null,
-  ProductId: null,
-  ProviderId: null,
-  WarehouseId: null,
 };
 
 const FilterComponent = ({
@@ -146,6 +140,12 @@ const FilterComponent = ({
     setFilterParam(initialFilterParams);
   };
 
+  const filteredWarehouse = queryWarehouse?.items.filter(
+    (item) =>
+      item.warehouseId !== SystemWarehouseConfigEnum.CancelWarehouse &&
+      item.warehouseId !== SystemWarehouseConfigEnum.ReturnedWarehouse
+  );
+
   return (
     <StyledSpace
       direction="horizontal"
@@ -196,7 +196,7 @@ const FilterComponent = ({
         value={query.WarehouseId}
         onSearchValueChange={onSearchWarehouseChange}
         onSelectedWarehouseChange={onSelectedWarehouse}
-        warehouses={queryWarehouse?.items}
+        warehouses={filteredWarehouse}
         loading={warehouseQueryLoading}
       />
       <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
@@ -211,5 +211,5 @@ export default FilterComponent;
 
 const StyledSpace = styled(Space)`
   flex-wrap: wrap;
-  max-width: 90%;
+  max-width: 100%;
 `;

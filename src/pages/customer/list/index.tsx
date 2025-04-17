@@ -157,6 +157,7 @@ const CustomerListPage = () => {
       {data && (
         <>
           <Table<CustomerGetView>
+            bordered
             pagination={false}
             dataSource={data.items}
             columns={columns}

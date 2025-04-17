@@ -35,6 +35,7 @@ export type InboundRequestFilterParams = {
   Search?: string | null;
   DateFrom?: Dayjs | null | string;
   DateTo?: Dayjs | null | string;
+  InboundRequestStatus?: InboundRequestStatus | null
 };
 
 //Model

@@ -84,6 +84,7 @@ const InboundReport: React.FC<InboundReportProps> = ({ lot, setLot }) => {
 
   return (
     <Table<Lot>
+      bordered
       dataSource={data}
       columns={columns}
       rowKey="inboundId"

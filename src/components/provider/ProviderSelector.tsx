@@ -75,6 +75,7 @@ const ProviderSelector = ({
         if (providers && providers.length > 0) {
           return (
             <Table
+              bordered
               columns={columns}
               dataSource={providers}
               rowKey="providerId"

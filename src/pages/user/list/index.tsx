@@ -265,6 +265,7 @@ const UserListPage = () => {
       {data && (
         <>
           <Table<User>
+            bordered
             pagination={false}
             dataSource={data.items}
             columns={columns}

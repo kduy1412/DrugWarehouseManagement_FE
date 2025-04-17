@@ -85,6 +85,7 @@ const CategorySelectorMultiple = ({
         if (categories && categories.length > 0) {
           return (
             <Table
+              bordered
               columns={columns}
               dataSource={categories}
               rowKey="categoriesId"

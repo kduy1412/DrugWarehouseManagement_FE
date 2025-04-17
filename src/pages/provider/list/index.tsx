@@ -141,6 +141,7 @@ const ProviderListPage = () => {
       {data && (
         <>
           <Table<Provider>
+            bordered
             pagination={false}
             dataSource={data.items}
             columns={columns}

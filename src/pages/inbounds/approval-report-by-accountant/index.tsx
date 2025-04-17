@@ -29,17 +29,16 @@ import {
 import { parseInboundStatusToVietnamese } from "../../../utils/translateInboundStatus";
 import { formatDateTime } from "../../../utils/timeHelper";
 import AssetPreview from "../../../components/AssetsPreview";
-import InboundReport from "./InboundReport";
 import styled from "styled-components";
 import { useApprovedReportMutation } from "../../../hooks/api/inbound/updateInboundMutationMutation";
 import { useUpdateInboundPendingMutation } from "../../../hooks/api/inboundReport/updateInboundPendingMutation";
 import {
   InboundReportPutRequest,
-  InboundReportStatus,
   InboundReportStatusAsString,
 } from "../../../types/inboundReport";
 import { useUpdateInboundStatusMutation } from "../../../hooks/api/inbound/updateInboundStatusMutation";
 import { queryClient } from "../../../lib/queryClient";
+import InboundReport from "./InboundReport";
 
 interface LotData extends InboundDetail {
   updateQuantity: number;
@@ -324,12 +323,14 @@ const ApprovalInboundReportList = () => {
   return (
     <>
       <Table
+        bordered
         columns={columns}
         dataSource={data?.items}
         pagination={{
           current: initParams.Page,
           pageSizeOptions: [10, 20, 50, 70, 100],
           pageSize: initParams.PageSize,
+          total: data?.totalCount,
           onChange: (page, pageSize) =>
             handleTableChange({ current: page, pageSize }),
           onShowSizeChange: (_, size) =>

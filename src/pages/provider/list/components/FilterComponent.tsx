@@ -5,7 +5,10 @@ import dayjs, { Dayjs } from "dayjs";
 
 import styled from "styled-components";
 import { cleanFilterParams } from "../../../../utils/cleanNullOrEmpty";
-import { ProviderFilterParams, ProviderGetRequestParams } from "../../../../types/provider";
+import {
+  ProviderFilterParams,
+  ProviderGetRequestParams,
+} from "../../../../types/provider";
 
 interface ComponentProps {
   setQuery: React.Dispatch<React.SetStateAction<ProviderGetRequestParams>>;
@@ -100,5 +103,5 @@ export default FilterComponent;
 
 const StyledSpace = styled(Space)`
   flex-wrap: wrap;
-  max-width: 90%;
+  max-width: 100%;
 `;

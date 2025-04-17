@@ -176,6 +176,7 @@ const InboundReport: React.FC<InboundReportProps> = ({
   return (
     <>
       <Table<Lot | InboundDetail>
+        bordered
         dataSource={!isFulfilled ? data : record.lo}
         columns={columns}
         rowKey="inboundId"

@@ -119,6 +119,7 @@ const WarehouseListPage: React.FC = () => {
       {data && (
         <>
           <Table<Warehouse>
+            bordered
             pagination={false}
             dataSource={data.items}
             columns={columns}

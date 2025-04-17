@@ -65,6 +65,7 @@ const ApprovalTableInboundRequest: React.FC<ApprovalTableProps> = ({
 
   return (
     <Table<DataType>
+      bordered
       columns={columns}
       dataSource={data}
       summary={() => (

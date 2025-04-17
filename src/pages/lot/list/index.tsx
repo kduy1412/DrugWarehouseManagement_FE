@@ -111,6 +111,7 @@ const LotListPage = () => {
       {data && (
         <>
           <Table<DataType>
+            bordered
             pagination={false}
             dataSource={data.items}
             columns={columns}

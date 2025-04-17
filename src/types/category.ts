@@ -8,20 +8,19 @@ export interface CategoryGetResponse extends PaginationModelResponse {
 
 // GET-ID
 export interface CategoryGetByIdResponse {
-  categoriesId:       number;
-  categoryName:       string;
-  parentCategoryId:   null;
+  categoriesId: number;
+  categoryName: string;
+  parentCategoryId: null;
   parentCategoryName: null;
-  description:        string;
-  status:             string;
-  subCategories:      SubCategoryGetByIdResponse[];
+  description: string;
+  status: string;
+  subCategories: SubCategoryGetByIdResponse[];
 }
 
 export interface SubCategoryGetByIdResponse {
   categoriesId: number;
   categoryName: string;
 }
-
 
 // GET-PARAMS
 export interface CategoryGetRequestParams
@@ -33,6 +32,7 @@ export interface CategoryFilterParams {
   Search?: string | null;
   DateFrom?: string | null;
   DateTo?: string | null;
+  IsMainCategory?: boolean | null;
 }
 
 // POST

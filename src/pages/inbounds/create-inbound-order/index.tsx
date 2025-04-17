@@ -3,6 +3,8 @@ import { Table, Modal, Button, Tag } from "antd";
 import CreateInbound from "./CreateInboundOrder"; // Import CreateInbound component
 import {
   InboundRequestDetail,
+  InboundRequestGetRequestParams,
+  InboundRequestStatus,
   InboundRequestStatusAsNum,
   InboundRequestStatusColors,
 } from "../../../types/inboundRequest";
@@ -21,27 +23,37 @@ interface DataType {
   sanpham: InboundRequestDetail[];
 }
 
-const initialData = {
+const initialData: InboundRequestGetRequestParams = {
   Page: 1,
   PageSize: 100,
+  InboundRequestStatus: InboundRequestStatus.InProgress,
 };
 
 const CreateInboundOrderList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null); // State to store the selected record
+  const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
+  const [initialParams, setInitialParams] = useState(initialData);
+
+  // Data fetching
+  const { data } = useGetInboundRequestQuery(initialParams);
 
   const handleOpenModal = (record: DataType) => {
-    setSelectedRecord(record); // Set the selected record
-    setIsModalOpen(true); // Open the modal
+    setSelectedRecord(record);
+    setIsModalOpen(true);
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false); // Close the modal
-    setSelectedRecord(null); // Reset the selected record
+    setIsModalOpen(false);
+    setSelectedRecord(null);
   };
 
-  const { data } = useGetInboundRequestQuery(initialData);
-
+  const handleTableChange = (pagination: any) => {
+    setInitialParams((prev) => ({
+      ...prev,
+      Page: pagination.current,
+      PageSize: pagination.pageSize,
+    }));
+  };
   // Table columns
   const columns = [
     { title: "Mã phiếu", dataIndex: "maphieu" },
@@ -74,26 +86,35 @@ const CreateInboundOrderList: React.FC = () => {
   ];
 
   const transformedData: DataType[] = Array.isArray(data?.items)
-    ? data.items
-        .filter((item) => item.status.toString() === "InProgress")
-        .map((item) => ({
-          key: item.inboundRequestId,
-          maphieu: item.inboundRequestCode,
-          ngaytao: item.createDate,
-          tongtien: item.price,
-          ghichu: item.note || "Không có ghi chú",
-          trangthai: item.status.toString(),
-          sanpham: item.inboundRequestDetails || [],
-        }))
+    ? data.items.map((item) => ({
+        key: item.inboundRequestId,
+        maphieu: item.inboundRequestCode,
+        ngaytao: item.createDate,
+        tongtien: item.price,
+        ghichu: item.note || "Không có ghi chú",
+        trangthai: item.status.toString(),
+        sanpham: item.inboundRequestDetails || [],
+      }))
     : [];
 
   return (
     <>
       <Table<DataType>
+        bordered
         columns={columns}
         dataSource={transformedData}
         size="middle"
-        pagination={{ pageSize: 50 }}
+        pagination={{
+          current: data?.currentPage,
+          pageSize: data?.pageSize,
+          pageSizeOptions: [10, 20, 50, 100],
+          showSizeChanger: true,
+          total: data?.totalCount || 0,
+          onChange: (page, pageSize) =>
+            handleTableChange({ current: page, pageSize }),
+          onShowSizeChange: (_, size) =>
+            handleTableChange({ current: 1, pageSize: size }),
+        }}
       />
       {isModalOpen && (
         <Modal

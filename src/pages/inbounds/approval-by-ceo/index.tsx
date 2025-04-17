@@ -7,6 +7,8 @@ import { useGetInboundRequestQuery } from "../../../hooks/api/inboundRequest/get
 import { useUpdateInboundRequestMutation } from "../../../hooks/api/inboundRequest/updateInboundRequestMutation";
 import {
   InboundRequest,
+  InboundRequestGetRequestParams,
+  InboundRequestStatus,
   InboundRequestStatusAsNum,
   InboundRequestStatusColors,
 } from "../../../types/inboundRequest";
@@ -18,21 +20,26 @@ import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurre
 
 type DataType = InboundRequest;
 
-const initialData = {
+const initialData: InboundRequestGetRequestParams = {
   Page: 1,
   PageSize: 100,
+  InboundRequestStatus: InboundRequestStatus.WaitingForDirectorApproval,
 };
 
 const ApprovalInboundRequestListByCEO: React.FC = () => {
+  // Component states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"edit" | "detail">("detail");
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
-  const { data, refetch } = useGetInboundRequestQuery(initialData);
-  const { mutate } = useUpdateInboundRequestMutation();
-  const { mutate: getAsset, isPending } = useGetInboundRequestAssetQuery();
   const [assetUrls, setAssetUrls] = useState<
     { url: string; isImage: boolean; fileName: string }[]
   >([]);
+  const [initialParams, setInitialParams] = useState(initialData);
+
+  // Data fetching
+  const { data, refetch } = useGetInboundRequestQuery(initialParams);
+  const { mutate } = useUpdateInboundRequestMutation();
+  const { mutate: getAsset, isPending } = useGetInboundRequestAssetQuery();
 
   const handleCEOChangeStatus = (inboundId: number, status: string) => {
     mutate(
@@ -116,30 +123,45 @@ const ApprovalInboundRequestListByCEO: React.FC = () => {
     },
   ];
 
+  const handleTableChange = (pagination: any) => {
+    setInitialParams((prev) => ({
+      ...prev,
+      Page: pagination.current,
+      PageSize: pagination.pageSize,
+    }));
+  };
+
   const transformedData: DataType[] = Array.isArray(data?.items)
-    ? data.items
-        .filter(
-          (item) => item.status.toString() === "WaitingForDirectorApproval"
-        )
-        .map<DataType>((item) => ({
-          inboundRequestId: item.inboundRequestId,
-          inboundRequestCode: item.inboundRequestCode,
-          createDate: item.createDate,
-          price: item.price,
-          note: item.note || "Không có ghi chú",
-          status: item.status.toString(),
-          inboundRequestDetails: item.inboundRequestDetails || [],
-          assets: item.assets || [],
-        }))
+    ? data.items.map<DataType>((item) => ({
+        inboundRequestId: item.inboundRequestId,
+        inboundRequestCode: item.inboundRequestCode,
+        createDate: item.createDate,
+        price: item.price,
+        note: item.note || "Không có ghi chú",
+        status: item.status.toString(),
+        inboundRequestDetails: item.inboundRequestDetails || [],
+        assets: item.assets || [],
+      }))
     : [];
 
   return (
     <>
       <Table<DataType>
+        bordered
         columns={columns}
         dataSource={transformedData}
         size="middle"
-        pagination={{ pageSize: 50 }}
+        pagination={{
+          current: data?.currentPage,
+          pageSize: data?.pageSize,
+          pageSizeOptions: [10, 20, 50, 100],
+          showSizeChanger: true,
+          total: data?.totalCount || 0,
+          onChange: (page, pageSize) =>
+            handleTableChange({ current: page, pageSize }),
+          onShowSizeChange: (_, size) =>
+            handleTableChange({ current: 1, pageSize: size }),
+        }}
       />
 
       <Modal

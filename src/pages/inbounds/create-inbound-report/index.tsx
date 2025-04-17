@@ -165,6 +165,7 @@ const CreateInboundReport: React.FC = () => {
     <>
       {/* Table Component */}
       <Table<DataType>
+        bordered
         columns={columns}
         dataSource={data?.items}
         size="middle"

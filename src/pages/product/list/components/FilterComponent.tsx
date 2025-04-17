@@ -11,6 +11,7 @@ import CategorySelector from "../../../../components/category/CategorySelector";
 import styled from "styled-components";
 import { Category, CategoryGetRequestParams } from "../../../../types/category";
 import { useGetCategoriesQuery } from "../../../../hooks/api/category/getCategoriesQuery";
+import { SystemCategoryConfigEnum } from "../../../../types/enums/system";
 
 interface ComponentProps {
   setQuery: React.Dispatch<React.SetStateAction<ProductGetRequestParams>>;
@@ -24,9 +25,9 @@ const initialFilterParams: ProductFilterParams = {
 };
 
 const initialCategoryFilterParams: CategoryGetRequestParams = {
-  Search: null,
   Page: 1,
-  PageSize: 5000,
+  PageSize: 100,
+  IsMainCategory: false,
 };
 
 const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
@@ -87,7 +88,10 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
   };
 
   const subCategory = data?.items.filter(
-    (item) => item.parentCategoryId !== null && item.subCategories.length === 0
+    (item) =>
+      item.parentCategoryId !== SystemCategoryConfigEnum.SKUId &&
+      item.parentCategoryId !== SystemCategoryConfigEnum.ReportId &&
+      item.parentCategoryId !== SystemCategoryConfigEnum.OtherId
   );
 
   return (

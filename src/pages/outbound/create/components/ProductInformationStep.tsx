@@ -446,6 +446,7 @@ const ProductInformationStep = ({
         Danh sách hàng tồn kho
       </StyledDivider>
       <Table<LotGetView>
+        bordered
         pagination={false}
         dataSource={data?.items}
         columns={lotColumns}
@@ -481,18 +482,19 @@ const ProductInformationStep = ({
         title={null}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        footer={null} // Removes OK/Cancel buttons
+        footer={null}
         wrapClassName="ant-modal-fullscreen"
       >
         <StyledDivider orientation="left" orientationMargin={0}>
           Mặt hàng đã chọn
         </StyledDivider>
         <Table<ProductsSelectedProps>
+          bordered
           columns={productColumn}
           dataSource={selectedProduct}
           rowKey="lotId"
           pagination={false}
-          style={{ height: "calc(100vh - 14rem)", overflowY: "auto" }}
+          style={{ maxHeight: "95vh", overflowY: "auto" }}
         />
       </StyledModal>
     </>

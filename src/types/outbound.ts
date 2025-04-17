@@ -29,9 +29,8 @@ export interface OutboundPutRequest {
   address?: string | null;
   phoneNumber?: string | null;
   outboundOrderCode?: string | null;
-  trackingNumber?: string | null;
   note?: string | null;
-  status?: string | null;
+  status?: OutboundStatus | string | null;
 }
 
 // POST-SAMPLE-EXPORT
@@ -89,7 +88,8 @@ export type OutboundFilterParams = {
   Search?: string | null;
   DateFrom?: Dayjs | null | string;
   DateTo?: Dayjs | null | string;
-  Status?: OutboundStatus;
+  Status?: OutboundStatus | null;
+  CustomerId?: number | null;
 };
 
 //Model
@@ -100,6 +100,7 @@ export interface Outbound {
   receiverName: string;
   receiverAddress: string;
   receiverPhone: string;
+  note?: string | null;
   outboundOrderCode?: string | null;
   outboundDate?: Date | null;
   status: OutboundStatus;
@@ -127,6 +128,14 @@ export enum OutboundStatus {
   Completed = 4,
   Returned = 5,
 }
+
+export const OutboundStatusAsString = {
+  [OutboundStatus.Pending]: "Pending",
+  [OutboundStatus.InProgress]: "InProgress",
+  [OutboundStatus.Cancelled]: "Cancelled",
+  [OutboundStatus.Completed]: "Completed",
+  [OutboundStatus.Returned]: "Returned",
+};
 
 export const OutboundStatusColors = [
   "var(--status-pending)",

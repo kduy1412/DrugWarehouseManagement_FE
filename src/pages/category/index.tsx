@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button, Card, Flex, Input, Segmented, Spin } from "antd";
 import styled from "styled-components";
 import { useGetCategoriesQuery } from "../../hooks/api/category/getCategoriesQuery";
@@ -12,16 +12,26 @@ import {
   CategoryGetRequestParams,
   CategoryStatus,
   CategoryStatusArray,
+  SubCategoryResponse,
 } from "../../types/category";
-
-const initialParams: CategoryGetRequestParams = {
-  Page: 1,
-  PageSize: 100000,
-};
+import { useGetCategoryById } from "../../hooks/api/category/getCategoryByIdQuery";
 
 const CategoryPage = () => {
+  // Component State
+  const initialParamsValue: CategoryGetRequestParams = useMemo(
+    () => ({
+      Page: 1,
+      PageSize: 100,
+      IsMainCategory: true,
+    }),
+    []
+  );
+  const [initParams, setInitParams] = useState(initialParamsValue);
+  const [subCategories, setSubCategories] = useState<SubCategoryResponse[]>([]);
+
   // Data Fetching
-  const { data, isLoading } = useGetCategoriesQuery(initialParams);
+  const { data, isLoading } = useGetCategoriesQuery(initParams);
+  const { mutate, isPending } = useGetCategoryById();
 
   //   Selected Category
   const [selectedMainCategory, setSelectedMainCategory] = useState<
@@ -95,20 +105,6 @@ const CategoryPage = () => {
           removeDiacritics(debouncedSearchTermMainCategory)
         )
       ) || [];
-      
-  const subCategories = selectedMainCategory
-    ? data?.items
-        .filter(
-          (category) =>
-            category.parentCategoryId === selectedMainCategory &&
-            category.status !== CategoryStatusArray[CategoryStatus.Inactive - 1]
-        )
-        .filter((category) =>
-          removeDiacritics(category.categoryName).includes(
-            removeDiacritics(debouncedSearchTermSubCategory)
-          )
-        ) || []
-    : [];
 
   const selectedMainCategoryData = mainCategories.find(
     (category) => category.categoriesId === selectedMainCategory
@@ -117,9 +113,45 @@ const CategoryPage = () => {
     (category) => category.categoriesId === selectedSubCategory
   );
 
+  // Render option
+  const options = useMemo(() => {
+    if (isPending) return [{ label: <Spin />, value: 0 }];
+    if (subCategories.length === 0)
+      return [{ label: "Không có danh mục con", value: 0 }];
+    return subCategories
+      .filter((category) =>
+        removeDiacritics(category.categoryName).includes(
+          removeDiacritics(debouncedSearchTermSubCategory)
+        )
+      )
+      .map((category) => ({
+        label: (
+          <div style={{ padding: 4 }}>
+            <StyledName>{category.categoryName}</StyledName>
+          </div>
+        ),
+        value: category.categoriesId,
+      }));
+  }, [subCategories, debouncedSearchTermSubCategory, isPending]);
+
   useEffect(() => {
-    setSelectedSubCategory(null);
+    if (selectedMainCategory) {
+      mutate({
+        id: selectedMainCategory,
+        onSuccessCallback: (response) =>
+          setSubCategories(response.subCategories),
+      });
+    }
+    setSearchSubCategoryTerm("");
   }, [selectedMainCategory]);
+
+  useEffect(() => {
+    setInitParams({
+      ...initialParamsValue,
+      Search: debouncedSearchTermMainCategory,
+    });
+    setSelectedMainCategory(null);
+  }, [debouncedSearchTermMainCategory]);
 
   return (
     <>
@@ -201,21 +233,7 @@ const CategoryPage = () => {
                 onChange={(e) => setSearchSubCategoryTerm(e.target.value)}
               />
               <Segmented
-                options={
-                  subCategories.length === 0
-                    ? [{ label: "Không có danh mục con", value: 0 }]
-                    : subCategories.map((category) => ({
-                        label: (
-                          <div style={{ padding: 4 }}>
-                            <StyledName>{category.categoryName}</StyledName>
-                            <StyledDescription>
-                              {category.description}
-                            </StyledDescription>
-                          </div>
-                        ),
-                        value: category.categoriesId,
-                      }))
-                }
+                options={options}
                 vertical={true}
                 value={selectedSubCategory}
                 onChange={setSelectedSubCategory}
@@ -231,7 +249,7 @@ const CategoryPage = () => {
           parentCategoryId={selectedMainCategory}
           isMainCategory={isActionOnMainCategory}
           isOpen={setIsCreateModalOpen}
-          params={initialParams}
+          params={initialParamsValue}
         />
       )}
       {isEditModalOpen && selectedMainCategory && (
@@ -248,12 +266,12 @@ const CategoryPage = () => {
                   categoriesId: selectedSubCategory!,
                   categoryName: selectedSubCategoryData?.categoryName ?? "",
                   parentCategoryId: selectedMainCategory,
-                  description: selectedSubCategoryData?.description ?? "",
+                  description: "",
                 }
           }
           isMainCategory={isActionOnMainCategory}
           isOpen={setIsEditModalOpen}
-          params={initialParams}
+          params={initialParamsValue}
         />
       )}
       {isRemoveModalOpen && (selectedMainCategory || selectedSubCategory) && (
@@ -264,7 +282,7 @@ const CategoryPage = () => {
               : selectedSubCategory!
           }
           isOpen={setIsRemoveModalOpen}
-          params={initialParams}
+          params={initialParamsValue}
         />
       )}
     </>

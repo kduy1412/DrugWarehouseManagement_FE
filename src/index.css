@@ -148,11 +148,11 @@ code {
     height: 100vh;
     max-height: none;
     padding: 0px;
-    width: 50vw !important;
+    width: 70vw !important;
   }
   .ant-modal-content {
     height: 100vh;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 }
 

@@ -144,6 +144,7 @@ const ProductListPage = () => {
       {data && (
         <>
           <Table<Product>
+            bordered
             pagination={false}
             dataSource={data.items}
             columns={columns}

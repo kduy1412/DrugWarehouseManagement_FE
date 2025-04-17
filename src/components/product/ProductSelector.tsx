@@ -70,6 +70,7 @@ const ProductSelector = ({
         if (products && products.length > 0) {
           return (
             <Table
+              bordered
               columns={columns}
               dataSource={products}
               rowKey="productId"

@@ -9,11 +9,18 @@ import ProductSelector from "../../../../components/product/ProductSelector";
 import WarehouseSelector from "../../../../components/warehouse/WarehouseSelector";
 import styled from "styled-components";
 import { ProviderGetRequestParams } from "../../../../types/provider";
-import { ProductGetRequestParams } from "../../../../types/product";
-import { WarehouseGetRequestParams } from "../../../../types/warehouse";
+import {
+  ProductGetRequestParams,
+  ProductStatus,
+} from "../../../../types/product";
+import {
+  WarehouseGetRequestParams,
+  WarehouseStatus,
+} from "../../../../types/warehouse";
 import { useGetProviderQuery } from "../../../../hooks/api/provider/getProviderQuery";
 import { useGetProductQuery } from "../../../../hooks/api/product/getProductQuery";
 import { useGetWarehouseQuery } from "../../../../hooks/api/warehouse/getWarehouseQuery";
+import { SystemWarehouseConfigEnum } from "../../../../types/enums/system";
 
 interface ComponentProps {
   setQuery: React.Dispatch<React.SetStateAction<LotGetRequestParams>>;
@@ -47,14 +54,15 @@ const FilterComponent = ({
   const [productFilterParams, setProductFilterParams] =
     useState<ProductGetRequestParams>({
       Page: 1,
-      PageSize: 1000,
+      PageSize: 100,
       Search: null,
+      Status: ProductStatus.Active,
     });
   const [warehouseFilterParams, setWarehouseFilterParams] =
     useState<WarehouseGetRequestParams>({
       Page: 1,
-      PageSize: 1000,
-      Search: null,
+      PageSize: 100,
+      Status: WarehouseStatus.Active,
     });
 
   const { data: queryProvider, isLoading: providerQueryLoading } =
@@ -131,6 +139,8 @@ const FilterComponent = ({
     setFilterParam(initialFilterParams);
   };
 
+  const filteredWarehouse = queryWarehouse?.items;
+
   return (
     <StyledSpace
       direction="horizontal"
@@ -181,7 +191,7 @@ const FilterComponent = ({
         value={query.WarehouseId}
         onSearchValueChange={onSearchWarehouseChange}
         onSelectedWarehouseChange={onSelectedWarehouse}
-        warehouses={queryWarehouse?.items}
+        warehouses={filteredWarehouse}
         loading={warehouseQueryLoading}
       />
       <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
@@ -196,5 +206,5 @@ export default FilterComponent;
 
 const StyledSpace = styled(Space)`
   flex-wrap: wrap;
-  max-width: 90%;
+  max-width: 100%;
 `;

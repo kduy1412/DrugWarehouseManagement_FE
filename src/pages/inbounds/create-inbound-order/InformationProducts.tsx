@@ -205,6 +205,7 @@ const InformationProduct: React.FC<ProductProps> = ({
         Tạo lô Hàng
       </Button>
       <Table
+        bordered
         dataSource={transformedProductList}
         columns={productColumns}
         pagination={false}
@@ -213,6 +214,7 @@ const InformationProduct: React.FC<ProductProps> = ({
 
       <Typography.Title level={4}>Danh sách lô hàng</Typography.Title>
       <Table
+        bordered
         dataSource={batches}
         columns={batchColumns}
         pagination={false}

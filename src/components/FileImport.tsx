@@ -124,6 +124,7 @@ const FileImport: React.FC<FileImportProps> = ({ fileList, setFileList }) => {
         <div style={{ marginTop: 16 }}>
           <div style={{ marginBottom: 8, fontWeight: "bold" }}>Tệp đã chọn</div>
           <Table
+            bordered
             columns={columns}
             dataSource={fileList}
             rowKey={(record) => record.name}

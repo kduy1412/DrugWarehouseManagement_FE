@@ -17,6 +17,8 @@ import {
   OutboundGetRequestParams,
   OutboundGetView,
   OutboundPutRequest,
+  OutboundStatus,
+  OutboundStatusAsString,
   OutboundStatusColors,
 } from "../../../../types/outbound";
 import { formatDateTime } from "../../../../utils/timeHelper";
@@ -24,6 +26,7 @@ import { RefTable } from "antd/es/table/interface";
 import { parseOutboundStatusToVietnamese } from "../../../../utils/translateOutboundStatus";
 import { useUpdateOutboundMutation } from "../../../../hooks/api/outbound/updateOutboundMutation";
 import { queryClient } from "../../../../lib/queryClient";
+import { parseToVietNameseCurrency } from "../../../../utils/parseToVietNameseCurrency";
 
 interface ComponentProps {
   isModalOpen: boolean;
@@ -38,7 +41,14 @@ const EditModal = ({
   item,
   queryParam,
 }: ComponentProps) => {
-  const [editData, setEditData] = useState<OutboundPutRequest | null>(null);
+  const [editData, setEditData] = useState<OutboundPutRequest | null>({
+    customerName: item.receiverName,
+    address: item.receiverAddress,
+    note: item.note,
+    outboundOrderCode: item.outboundOrderCode,
+    phoneNumber: item.receiverPhone,
+    status: item.status,
+  });
   const { mutate, isPending, isSuccess } = useUpdateOutboundMutation();
   const outboundInformationItems: DescriptionsProps["items"] = [
     {
@@ -94,17 +104,29 @@ const EditModal = ({
       span: "filled",
       children: (
         <Select
-          value={editData?.status ?? item.status}
+          value={editData?.status as OutboundStatus}
           onChange={(value) => handleChange("status", value)}
           style={{ width: "fit-content" }}
         >
-          {OutboundStatusColors.map((color, index) => (
-            <Select.Option key={index + 1} value={index + 1}>
-              <Tag color={color}>
-                {parseOutboundStatusToVietnamese(index + 1)}
-              </Tag>
-            </Select.Option>
-          ))}
+          {Object.keys(OutboundStatus)
+            .filter((key) => isNaN(Number(key)))
+            .filter((key) => key !== "Public")
+            .map((outboundStatusName) => {
+              const outboundStatusValue =
+                OutboundStatus[
+                  outboundStatusName as keyof typeof OutboundStatus
+                ];
+              return (
+                <Select.Option
+                  key={outboundStatusValue}
+                  value={outboundStatusValue}
+                >
+                  <Tag color={OutboundStatusColors[outboundStatusValue - 1]}>
+                    {parseOutboundStatusToVietnamese(outboundStatusValue)}
+                  </Tag>
+                </Select.Option>
+              );
+            })}
         </Select>
       ),
     },
@@ -120,6 +142,7 @@ const EditModal = ({
           onChange={(e) => handleChange("customerName", e.target.value)}
         />
       ),
+      span: "filled",
     },
     {
       key: "address",
@@ -130,6 +153,7 @@ const EditModal = ({
           onChange={(e) => handleChange("address", e.target.value)}
         />
       ),
+      span: "filled",
     },
 
     {
@@ -141,6 +165,7 @@ const EditModal = ({
           onChange={(e) => handleChange("phoneNumber", e.target.value)}
         />
       ),
+      span: "filled",
     },
   ];
 
@@ -163,13 +188,13 @@ const EditModal = ({
       title: "Đơn Giá",
       dataIndex: "unitPrice",
       key: "unitPrice",
-      render: (price: number) => `$${price}`,
+      render: (price: number) => parseToVietNameseCurrency(price),
     },
     {
       title: "Thành Tiền",
       dataIndex: "totalPrice",
       key: "totalPrice",
-      render: (price: number) => `$${price}`,
+      render: (price: number) => parseToVietNameseCurrency(price),
     },
     { title: "Loại", dataIndex: "unitType", key: "unitType" },
     { title: "Tên Mặt Hàng", dataIndex: "productName", key: "productName" },
@@ -199,7 +224,12 @@ const EditModal = ({
     if (editData)
       mutate({
         id: item.outboundId,
-        data: editData,
+        data: {
+          ...editData,
+          status:
+            OutboundStatusAsString[editData.status as OutboundStatus] ??
+            editData.status,
+        },
       });
   };
   const handleOnComplete = () => {
