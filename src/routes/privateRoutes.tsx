@@ -29,13 +29,16 @@ import UserListPage from "../pages/user/list";
 import WarehouseListPage from "../pages/warehouse/list";
 import CreateWarehousePage from "../pages/warehouse/create";
 import CategoryPage from "../pages/category";
-import { TagsOutlined } from "@ant-design/icons";
+import { TagsOutlined, SnippetsOutlined } from "@ant-design/icons";
 import ProductListPage from "../pages/product/list";
 import CreateProductPage from "../pages/product/create";
 import ProviderListPage from "../pages/provider/list";
 import CreateProviderPage from "../pages/provider/create";
 import ProfilePage from "../pages/profile";
 import ReturnedLotsPage from "../pages/inbounds/returned-lots";
+import CreateInventoryCheckPage from "../pages/inventory-check/create";
+import InventoryCheckPage from "../pages/inventory-check";
+import InventoryCheckListPage from "../pages/inventory-check/list";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -183,6 +186,48 @@ export const privateRoutes: MenuRoutes[] = [
       Roles.SaleAdmin,
     ],
     element: <ReportPage />,
+  },
+  {
+    key: `/reports-stocks-gap`,
+    icon: <SnippetsOutlined />,
+    label: `Kiểm kê`,
+    url: `/reports-stocks-gap`,
+    allowedroles: [
+      Roles.Admin,
+      Roles.Accountant,
+      Roles.Director,
+      Roles.InventoryManager,
+      Roles.SaleAdmin,
+    ],
+    children: [
+      {
+        key: `/reports-stocks-gap/create-stock-gap`,
+        label: `Tạo báo cáo kiểm kê`,
+        url: `/reports-stocks-gap/create-stock-gap`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <CreateInventoryCheckPage />,
+      },
+      {
+        key: `/reports-stocks-gap/list-stock-gap`,
+        label: `Danh sách báo cáo kiểm kê`,
+        url: `/reports-stocks-gap/list-stock-gap`,
+        allowedroles: [
+          Roles.Admin,
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
+        element: <InventoryCheckListPage />,
+      },
+    ],
+    element: <InventoryCheckPage />,
   },
   {
     key: `/account-management`,

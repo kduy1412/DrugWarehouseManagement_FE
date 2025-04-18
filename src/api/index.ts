@@ -37,6 +37,7 @@ const apiClient = async (
     const refreshData = queryClient.getQueryData<AuthResponse>(AUTH_QUERY_KEY);
     if (!refreshData?.refreshToken) {
       queryClient.setQueryData(AUTH_QUERY_KEY, null);
+      localStorage.removeItem("auth_data");
       redirect("/login");
       notification.error({
         message: "Session Expired!",
@@ -52,6 +53,17 @@ const apiClient = async (
         token: refreshResponse.token,
       }));
 
+      localStorage.removeItem("auth_data");
+      localStorage.setItem(
+        "auth_data",
+        JSON.stringify({
+          token: refreshResponse.token,
+          refreshToken: refreshData.refreshToken,
+          role: refreshData.role,
+          user: refreshData.user,
+        } as AuthResponse)
+      );
+
       config.headers.Authorization = `Bearer ${refreshResponse.token}`;
       response = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}${endpoint}`,
@@ -59,8 +71,23 @@ const apiClient = async (
       );
     } catch {
       queryClient.setQueryData(AUTH_QUERY_KEY, null);
+      localStorage.removeItem("auth_data");
+      redirect("/login");
       throw new Error("Session expired. Please log in again.");
     }
+  }
+
+  /**Access forbidden */
+  if (response.status === 403) {
+    throw new Error("Không có quyền thực hiện!");
+  }
+
+  /**Two Account */
+  if (response.status === 409) {
+    queryClient.setQueryData(AUTH_QUERY_KEY, null);
+    localStorage.removeItem("auth_data");
+    redirect("/login");
+    throw new Error("Session expired. Please log in again.");
   }
 
   /**Other Errors */

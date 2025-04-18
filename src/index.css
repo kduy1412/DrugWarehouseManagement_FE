@@ -105,7 +105,6 @@ body {
   --status-approved: var(--color-success-500);
   --status-rejected: var(--color-danger-600);
   --status-deleted: #8c8c8c;
-  --status-damaged: var(--color-danger-400);
   --status-expired: #ff4d4f;
   --status-missing: #f5222d;
   --status-out-of-stock: #fa8c16;
@@ -121,6 +120,10 @@ body {
   --status-waiting-for-accountant-approval: var(--status-waiting-for-approval);
   --status-waiting-for-director-approval: var(--status-waiting-for-approval);
   --status-waiting-for-sale-admin-approval: var(--status-waiting-for-approval);
+  --status-damaged: var(--color-danger-400);
+  --status-excess: var(--color-success-300);
+  --status-found: var(--color-success-500); 
+  --status-lost: var(--color-danger-600);
 }
 
 code {
@@ -154,6 +157,10 @@ code {
     height: 100vh;
     overflow-y: auto;
   }
+}
+
+.root-select-width-full {
+  width: 100%;
 }
 
 .wrap-confirm {

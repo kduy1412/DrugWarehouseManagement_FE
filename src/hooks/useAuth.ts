@@ -55,12 +55,12 @@ export function useAuth() {
       queryClient.setQueryData(AUTH_QUERY_KEY, data);
       setAuthData(data);
       notification.success({
-        message: "Login Success",
+        message: "Đăng nhập thành công",
       });
     },
     onError: (error) => {
       notification.error({
-        message: "Login Failed",
+        message: "Đăng nhập thất bại",
         description: error.message,
       });
     },

@@ -11,6 +11,7 @@ interface WarehouseSelectorProps {
   warehouses: WarehouseGetView[] | undefined;
   loading?: boolean;
   placeholder?: string;
+  rootClassName?: string;
 }
 
 const WarehouseSelector = ({
@@ -20,6 +21,7 @@ const WarehouseSelector = ({
   warehouses,
   loading = false,
   placeholder = "Chọn vị trí kho",
+  rootClassName = "",
 }: WarehouseSelectorProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 400);
@@ -69,6 +71,7 @@ const WarehouseSelector = ({
       onFocus={() => setDropdownOpen(true)}
       onClear={() => onSelectedWarehouseChange(null)}
       onBlur={() => !isHovered && setDropdownOpen(false)}
+      rootClassName={rootClassName ?? ""}
       open={dropdownOpen}
       dropdownRender={() => {
         if (loading) {
