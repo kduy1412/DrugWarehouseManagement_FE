@@ -38,7 +38,7 @@ const LayoutComponent = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, role, logout } = useAuth();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   const handleMenuClick = ({ key }: { key: string }) => {
     navigate(key, { replace: true, flushSync: true });
@@ -86,7 +86,8 @@ const LayoutComponent = () => {
 
           <StyledMenu
             mode="inline"
-            defaultSelectedKeys={[location.pathname ?? "/home"]}
+            defaultSelectedKeys={[location.pathname]}
+            selectedKeys={[location.pathname]}
             items={filteredMenu}
             onClick={handleMenuClick}
           />

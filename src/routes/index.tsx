@@ -10,6 +10,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import LoginPage from "../pages/auth/login";
 import { MenuRoutes } from "../types/menuRoutes";
 import { privateRoutes } from "./privateRoutes";
+import HomePage from "../pages/HomePage";
+import ErrorPage from "../error";
 
 const generateRoutes = (menu: MenuRoutes[]) => {
   return menu.map((route) => (
@@ -34,7 +36,8 @@ export const router = createBrowserRouter(
         <Route path="/" element={<LayoutComponent />}>
           <Route index element={<RootPage />} />
           {generateRoutes(privateRoutes)}
-          <Route path="*" element={<RootPage />} />
+          <Route index element={<HomePage />} />
+          <Route path="*" element={<ErrorPage />} />
         </Route>
       </Route>
     </>

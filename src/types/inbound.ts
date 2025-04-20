@@ -55,7 +55,7 @@ export interface LotTransferPostRequest {
   lotTransferCode?: string | null;
   fromWareHouseId: number | null;
   toWareHouseId: number | null;
-  lotTransferDetails: LotTransferDetail[];
+  lotTransferDetails: `LotTransferDetail`[];
 }
 
 export interface LotTransferDetail {
