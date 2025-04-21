@@ -110,7 +110,7 @@ const EditModal = ({
         >
           {Object.keys(OutboundStatus)
             .filter((key) => isNaN(Number(key)))
-            .filter((key) => key !== "Public")
+            .filter((key) => key !== "Returned")
             .map((outboundStatusName) => {
               const outboundStatusValue =
                 OutboundStatus[
