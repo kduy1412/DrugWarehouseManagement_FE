@@ -26,3 +26,8 @@ export const updateCustomer = (customerId: number, data: CustomerPutRequest) =>
     method: "PUT",
     body: JSON.stringify(data),
   });
+
+export const removeCustomer = (customerId: number) =>
+  apiClient(`/api/Customer/${customerId}`, {
+    method: "DELETE",
+  });

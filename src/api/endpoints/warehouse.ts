@@ -28,3 +28,8 @@ export const updateWarehouse = (
     method: "PUT",
     body: JSON.stringify(data),
   });
+
+export const removeWarehouse = (warehouseId: number) =>
+  apiClient(`/api/Warehouse/${warehouseId}`, {
+    method: "DELETE",
+  });

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Upload, Button, Input, Modal, Table } from "antd";
+import { Upload, Button, Input, Modal, Table, message } from "antd"; // Added 'message' for notifications
 import {
   UploadOutlined,
   FileFilled,
@@ -40,6 +40,17 @@ const FileImport: React.FC<FileImportProps> = ({ fileList, setFileList }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingFile, setPendingFile] = useState<RcFile | null>(null);
   const [newFileName, setNewFileName] = useState("");
+  const [fileExtension, setFileExtension] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const beforeUpload = (file: RcFile) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("Chỉ được phép tải lên tệp hình ảnh!");
+      return false;
+    }
+    return true;
+  };
 
   const handleUploadChange = (info: { fileList: UploadFile[] }) => {
     const newFiles = info.fileList.filter(
@@ -47,37 +58,65 @@ const FileImport: React.FC<FileImportProps> = ({ fileList, setFileList }) => {
     );
     if (newFiles.length > 0) {
       const file = newFiles[0].originFileObj as RcFile;
+      const extension = file.name.split(".").pop()?.toLowerCase() || "";
       setPendingFile(file);
       setNewFileName(file.name);
       setIsModalOpen(true);
+      setFileExtension(extension);
     }
   };
 
   const handleRenameOk = () => {
-    if (pendingFile) {
-      const renamedFile = new File([pendingFile], newFileName, {
+    if (pendingFile && newFileName.trim()) {
+      const dotCount = (newFileName.match(/\./g) || []).length;
+      if (dotCount > 1) {
+        setErrorMessage("Tên tệp không được chứa nhiều hơn một dấu chấm.");
+        return;
+      }
+
+      setErrorMessage("");
+      const hasExtension = /\.[a-zA-Z0-9]+$/.test(newFileName);
+      const newFileNameWithExtension = hasExtension
+        ? newFileName
+        : `${newFileName}.${fileExtension}`;
+
+      const renamedFile = new File([pendingFile], newFileNameWithExtension, {
         type: pendingFile.type,
         lastModified: pendingFile.lastModified,
       }) as CustomFile;
-      renamedFile.customName = newFileName;
+      renamedFile.customName = newFileNameWithExtension;
       setFileList([...fileList, renamedFile]);
     }
     setIsModalOpen(false);
     setNewFileName("");
     setPendingFile(null);
+    setFileExtension("");
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewFileName(value);
+    const dotCount = (value.match(/\./g) || []).length;
+    if (dotCount > 0) {
+      setErrorMessage("Tên tệp không được chứa dấu chấm.");
+    } else {
+      setErrorMessage("");
+    }
   };
 
   const handleRenameCancel = () => {
     setIsModalOpen(false);
     setNewFileName("");
     setPendingFile(null);
+    setFileExtension("");
   };
 
   const uploadProps: UploadProps = {
-    beforeUpload: () => false,
+    beforeUpload,
     onChange: handleUploadChange,
     fileList: [],
     multiple: true,
+    accept: "image/*",
   };
 
   const columns = [
@@ -98,11 +137,7 @@ const FileImport: React.FC<FileImportProps> = ({ fileList, setFileList }) => {
       dataIndex: "type",
       key: "type",
       render: (type: string) => {
-        if (type.includes("pdf")) return "pdf";
         if (type.includes("image")) return "image";
-        if (type.includes("excel") || type.includes("spreadsheet"))
-          return "excel";
-        if (type.includes("word")) return "word";
         return type.split("/")[1] || type;
       },
     },
@@ -139,6 +174,7 @@ const FileImport: React.FC<FileImportProps> = ({ fileList, setFileList }) => {
         open={isModalOpen}
         onOk={handleRenameOk}
         onCancel={handleRenameCancel}
+        onClose={handleRenameCancel}
         style={{ width: "fit-content" }}
         footer={[
           <CloseButton key="close" onClick={handleRenameCancel}>
@@ -147,7 +183,7 @@ const FileImport: React.FC<FileImportProps> = ({ fileList, setFileList }) => {
           <CtaButton
             key="save"
             onClick={handleRenameOk}
-            disabled={!newFileName.trim()}
+            disabled={!newFileName.trim() || !!errorMessage}
           >
             Xác nhận
           </CtaButton>,
@@ -155,9 +191,13 @@ const FileImport: React.FC<FileImportProps> = ({ fileList, setFileList }) => {
       >
         <Input
           value={newFileName}
-          onChange={(e) => setNewFileName(e.target.value)}
+          onChange={handleInputChange}
           placeholder="Nhập tên tệp"
+          status={errorMessage ? "error" : undefined}
         />
+        {errorMessage && (
+          <div style={{ color: "red", marginTop: 8 }}>{errorMessage}</div>
+        )}
       </Modal>
     </Container>
   );

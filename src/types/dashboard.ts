@@ -4,14 +4,14 @@ export interface DashBoardGetResponse {
   totalLotTransferOrders: number;
   totalInboundValue: number;
   totalOutboundValue: number;
-  bestStockedProduct: ProductStatisticDto;
+  bestStockedProduct?: ProductStatisticDto | null;
   outboundCancelledCount: number;
   outboundSampleCount: number;
   outboundReturnedCount: number;
-  bestExportedProduct: ProductStatisticDto;
-  bestImportedProduct: ProductStatisticDto;
+  bestExportedProduct?: ProductStatisticDto | null;
+  bestImportedProduct?: ProductStatisticDto | null;
   inboundClassification: InboundClassificationDto;
-  lowStockProducts: ProductLowStockDto[];
+  lowStockProducts?: ProductLowStockDto[] | null;
   orderSummary: OrderSummaryDto | null;
   newDocuments: DocumentStatusDto[];
 }

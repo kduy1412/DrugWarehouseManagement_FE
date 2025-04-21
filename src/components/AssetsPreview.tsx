@@ -29,20 +29,14 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
           }}
         >
           {assetUrls.map((asset, index) => (
-            <div key={index}>
-              {asset.isImage ? (
-                <Image
-                  src={asset.url}
-                  alt={asset.fileName}
-                  width={100}
-                  height={100}
-                  style={{ objectFit: "cover" }}
-                />
-              ) : (
-                <a href={asset.url} download={asset.fileName}>
-                  Tải xuống {asset.fileName}
-                </a>
-              )}
+            <div key={index + "-image"}>
+              <Image
+                src={asset.url}
+                alt={asset.fileName}
+                width={100}
+                height={100}
+                style={{ objectFit: "cover" }}
+              />
             </div>
           ))}
         </div>

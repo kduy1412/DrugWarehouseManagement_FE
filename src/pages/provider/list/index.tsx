@@ -1,5 +1,7 @@
 import {
   Flex,
+  Modal,
+  notification,
   Pagination,
   PaginationProps,
   Spin,
@@ -21,6 +23,7 @@ import FilterComponent from "./components/FilterComponent";
 import DetailsModal from "./components/DetailsModal";
 import EditModal from "./components/EditModal";
 import { parseProviderStatusToVietnamese } from "../../../utils/translateProviderStatus";
+import { useDeleteProviderMutation } from "../../../hooks/api/provider/deleteProviderMutation";
 
 const initialData: ProviderGetRequestParams = {
   Page: 1,
@@ -35,6 +38,8 @@ const ProviderListPage = () => {
     Page: 1,
     PageSize: 10,
   });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { mutate, isPending } = useDeleteProviderMutation();
 
   const { data, isLoading } = useGetProviderQuery(initParams);
 
@@ -95,7 +100,8 @@ const ProviderListPage = () => {
         };
 
         const handleOnClickDelete = () => {
-          console.log("Delete: " + JSON.stringify(item));
+          setIsDeleteModalOpen(true);
+          setSelectedItem(item);
         };
 
         return (
@@ -124,6 +130,23 @@ const ProviderListPage = () => {
       ...prev,
       PageSize: pageSize,
     }));
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedItem?.providerId) {
+      mutate(selectedItem.providerId, {
+        onSuccess: () => handleCancelDelete(),
+      });
+    } else {
+      notification.error({
+        message: "Nhà cung cấp không được trống",
+      });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedItem(null);
   };
 
   useEffect(() => {
@@ -176,6 +199,22 @@ const ProviderListPage = () => {
             setIsModalOpen={setIsEditModalOpen}
             queryParam={initParams}
           />
+
+          <Modal
+            title="Xác nhận xóa"
+            open={isDeleteModalOpen}
+            onOk={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+            okText="Xóa"
+            cancelText="Hủy"
+            okButtonProps={{ danger: true }}
+            loading={isPending}
+          >
+            <p>
+              Bạn có chắc chắn muốn xóa nhà cung cấp{" "}
+              {selectedItem?.providerName}?
+            </p>
+          </Modal>
         </>
       )}
     </>

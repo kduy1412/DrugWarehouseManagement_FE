@@ -27,14 +27,7 @@ export const updateProvider = (data: ProviderPutRequest, providerId: number) =>
     body: JSON.stringify(data),
   });
 
-// export const createCustomer = (data: CustomerPostRequest) =>
-//   apiClient("/api/Customer", {
-//     method: "POST",
-//     body: JSON.stringify(data),
-//   });
-
-// export const updateCustomer = (customerId: number, data: CustomerPutRequest) =>
-//   apiClient(`/api/Customer/${customerId}`, {
-//     method: "PUT",
-//     body: JSON.stringify(data),
-//   });
+export const removeProvider = (providerId: number) =>
+  apiClient(`/api/Provider/${providerId}`, {
+    method: "DELETE",
+  });

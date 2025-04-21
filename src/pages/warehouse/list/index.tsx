@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import {
   Flex,
+  Modal,
+  notification,
   Pagination,
   PaginationProps,
   Spin,
@@ -21,6 +23,7 @@ import EditModal from "./components/EditModal"; // Adapted for Warehouse
 import FilterComponent from "./components/FilterComponent"; // Adapted for Warehouse
 import { useGetWarehouseQuery } from "../../../hooks/api/warehouse/getWarehouseQuery";
 import { parseWarehouseStatusToVietnamese } from "../../../utils/translateWarehouseStatus";
+import { useDeleteWarehouseMutation } from "../../../hooks/api/warehouse/deleteWarehouseMutation";
 
 const initialData: WarehouseGetRequestParams = {
   Page: 1,
@@ -33,7 +36,9 @@ const WarehouseListPage: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<Warehouse | null>(null);
   const [initParams, setInitParams] =
     useState<WarehouseGetRequestParams>(initialData);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  const { mutate, isPending } = useDeleteWarehouseMutation();
   const { data, isLoading } = useGetWarehouseQuery(initParams);
 
   const columns: TableProps<Warehouse>["columns"] = [
@@ -79,7 +84,8 @@ const WarehouseListPage: React.FC = () => {
         };
 
         const handleOnClickDelete = () => {
-          console.log("Delete: " + JSON.stringify(item.warehouseId));
+          setIsDeleteModalOpen(true);
+          setSelectedItem(item);
         };
 
         return (
@@ -108,6 +114,23 @@ const WarehouseListPage: React.FC = () => {
       ...prev,
       PageSize: pageSize,
     }));
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedItem?.warehouseId) {
+      mutate(selectedItem.warehouseId, {
+        onSuccess: () => handleCancelDelete(),
+      });
+    } else {
+      notification.error({
+        message: "Kho phải được chọn, không được trống",
+      });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedItem(null);
   };
 
   return (
@@ -154,6 +177,19 @@ const WarehouseListPage: React.FC = () => {
             setIsModalOpen={setIsEditModalOpen}
             queryParam={initParams}
           />
+
+          <Modal
+            title="Xác nhận xóa"
+            open={isDeleteModalOpen}
+            onOk={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+            okText="Xóa"
+            cancelText="Hủy"
+            okButtonProps={{ danger: true }}
+            loading={isPending}
+          >
+            <p>Bạn có chắc chắn muốn xóa kho: {selectedItem?.warehouseName}?</p>
+          </Modal>
         </>
       )}
     </>

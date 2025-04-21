@@ -112,11 +112,13 @@ const DashboardPage = ({ data }: DashboardPageProps) => {
     { type: "Giá trị xuất kho", value: Number(data.totalOutboundValue) || 0 },
   ];
 
-  const lowStockChartData = data.lowStockProducts.slice(0, 3).map((item) => ({
-    product: item.productName,
-    currentStock: Number(item.currentStock) || 0,
-    threshold: Number(item.threshold) || 0,
-  }));
+  const lowStockChartData = data?.lowStockProducts
+    ? data.lowStockProducts.slice(0, 3).map((item) => ({
+        product: item.productName,
+        currentStock: Number(item.currentStock) || 0,
+        threshold: Number(item.threshold) || 0,
+      }))
+    : [];
 
   const orderSummaryChartData = [
     { type: "Đơn hàng mới", value: data.orderSummary?.newOrders.length },

@@ -1,5 +1,7 @@
 import {
   Flex,
+  Modal,
+  notification,
   Pagination,
   PaginationProps,
   Spin,
@@ -21,6 +23,7 @@ import EditModal from "./components/EditModal";
 import styled from "styled-components";
 import FilterComponent from "./components/FilterComponent";
 import { useGetCustomerQuery } from "../../../hooks/api/customer/getCustomerQuery";
+import { useDeleteCustomerMutation } from "../../../hooks/api/customer/deleteCustomerMutation";
 
 const initialData: CustomerGetRequestParams = {
   Page: 1,
@@ -30,6 +33,7 @@ const initialData: CustomerGetRequestParams = {
 const CustomerListPage = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Customer | null>(null);
   const [initParams, setInitParams] = useState<CustomerGetRequestParams>({
     Page: 1,
@@ -37,6 +41,7 @@ const CustomerListPage = () => {
   });
   /** Data Fetching */
   const { data, isLoading } = useGetCustomerQuery(initParams);
+  const { mutate, isPending } = useDeleteCustomerMutation();
 
   /** Column Def */
   const columns: TableProps<CustomerGetView>["columns"] = [
@@ -118,7 +123,8 @@ const CustomerListPage = () => {
         };
 
         const handleOnClickDelete = () => {
-          console.log("Delete: " + JSON.stringify(item));
+          setIsDeleteModalOpen(true);
+          setSelectedItem(item);
         };
 
         return (
@@ -148,6 +154,24 @@ const CustomerListPage = () => {
       PageSize: pageSize,
     }));
   };
+
+  const handleConfirmDelete = () => {
+    if (selectedItem?.customerId) {
+      mutate(selectedItem.customerId, {
+        onSuccess: () => handleCancelDelete(),
+      });
+    } else {
+      notification.error({
+        message: "Khách hàng không được trống",
+      });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedItem(null);
+  };
+
   return (
     <>
       <FilterComponent
@@ -195,6 +219,21 @@ const CustomerListPage = () => {
             setIsModalOpen={setIsEditModalOpen}
             queryParam={initParams}
           />
+
+          <Modal
+            title="Xác nhận xóa"
+            open={isDeleteModalOpen}
+            onOk={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+            okText="Xóa"
+            cancelText="Hủy"
+            okButtonProps={{ danger: true }}
+            loading={isPending}
+          >
+            <p>
+              Bạn có chắc chắn muốn xóa khách hàng {selectedItem?.customerName}?
+            </p>
+          </Modal>
         </>
       )}
     </>

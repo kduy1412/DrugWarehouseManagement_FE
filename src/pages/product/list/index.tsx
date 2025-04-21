@@ -1,5 +1,7 @@
 import {
   Flex,
+  Modal,
+  notification,
   Pagination,
   PaginationProps,
   Spin,
@@ -11,7 +13,6 @@ import React, { useEffect, useState } from "react";
 import {
   Product,
   ProductGetRequestParams,
-  ProductStatus,
   ProductStatusAsString,
   ProductStatusColors,
 } from "../../../types/product";
@@ -22,6 +23,7 @@ import ActionDropdown from "./components/DropdownActionOptions";
 import DetailsModal from "./components/DetailsModal";
 import EditModal from "./components/EditModal";
 import { parseProductStatusToVietNamese } from "../../../utils/translateProductStatus";
+import { useDeleteProductMutation } from "../../../hooks/api/product/deleteProductMutation";
 
 const initialData: ProductGetRequestParams = {
   Page: 1,
@@ -36,8 +38,10 @@ const ProductListPage = () => {
     Page: 1,
     PageSize: 10,
   });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const { data, isLoading } = useGetProductQuery(initParams);
+  const { mutate, isPending } = useDeleteProductMutation();
 
   const columns: TableProps<Product>["columns"] = [
     {
@@ -98,7 +102,8 @@ const ProductListPage = () => {
         };
 
         const handleOnClickDelete = () => {
-          console.log("Delete: " + JSON.stringify(item));
+          setIsDeleteModalOpen(true);
+          setSelectedItem(item);
         };
 
         return (
@@ -127,6 +132,23 @@ const ProductListPage = () => {
       ...prev,
       PageSize: pageSize,
     }));
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedItem?.productId) {
+      mutate(selectedItem.productId, {
+        onSuccess: () => handleCancelDelete(),
+      });
+    } else {
+      notification.error({
+        message: "Mặt hàng không được trống",
+      });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedItem(null);
   };
 
   useEffect(() => {
@@ -179,6 +201,21 @@ const ProductListPage = () => {
             setIsModalOpen={setIsEditModalOpen}
             queryParam={initParams}
           />
+
+          <Modal
+            title="Xác nhận xóa"
+            open={isDeleteModalOpen}
+            onOk={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+            okText="Xóa"
+            cancelText="Hủy"
+            okButtonProps={{ danger: true }}
+            loading={isPending}
+          >
+            <p>
+              Bạn có chắc chắn muốn xóa mặt hàng {selectedItem?.productName}?
+            </p>
+          </Modal>
         </>
       )}
     </>

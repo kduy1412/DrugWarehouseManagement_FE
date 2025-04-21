@@ -26,3 +26,8 @@ export const UpdateProduct = (data: ProductPutRequest, productId: number) =>
     method: "PUT",
     body: JSON.stringify(data),
   });
+
+export const removeProduct = (productId: number) =>
+  apiClient(`/api/Product/${productId}`, {
+    method: "DELETE",
+  });

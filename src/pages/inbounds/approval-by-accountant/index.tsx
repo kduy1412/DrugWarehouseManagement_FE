@@ -224,6 +224,7 @@ const ApprovalInboundRequestList: React.FC = () => {
               </CloseButton>,
             ]}
             onCancel={() => handleCancel()}
+            onClose={() => handleCancel()}
           >
             {selectedRecord && (
               <div>

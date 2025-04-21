@@ -5,6 +5,8 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
+import { useAuth } from "../../../../hooks/useAuth";
+import { Roles } from "../../../../types/enums/roles";
 
 interface ActionDropdownProps {
   onDetail?: () => void;
@@ -17,6 +19,8 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { role } = useAuth();
+  const allowedRoles = [Roles.SaleAdmin];
   const menuItems: MenuProps["items"] = [
     {
       key: "detail",
@@ -39,8 +43,14 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
     },
   ].filter((item) => item.onClick);
 
+  const filteredMenu = allowedRoles.includes(role as Roles)
+    ? menuItems
+    : menuItems.filter(
+        (item) => item?.key !== "edit" && item?.key !== "delete"
+      );
+
   return (
-    <Dropdown menu={{ items: menuItems }} trigger={["click"]}>
+    <Dropdown menu={{ items: filteredMenu }} trigger={["click"]}>
       <Button type="text" icon={<MoreOutlined />} />
     </Dropdown>
   );
