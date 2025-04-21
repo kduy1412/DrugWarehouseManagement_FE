@@ -388,6 +388,13 @@ const ApprovalInboundReportList = () => {
               rows={4}
               style={{ marginTop: 16 }}
             />
+            <StyledDivider orientation="left">Ghi chú báo cáo</StyledDivider>
+            <Input.TextArea
+              disabled
+              value={selectedRecord.note}
+              rows={4}
+              style={{ marginTop: 16 }}
+            />
             <StyledDivider orientation="left">Đơn hàng</StyledDivider>
             <Checkbox
               checked={isCalculated}
@@ -530,15 +537,7 @@ const renderTag = (status: string) => {
 };
 
 const parseDate = (date: string) => {
-  const [day, month, year, hours, minutes] = date.split(/[/\s:]/).map(Number);
-
-  const parsedDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
-
-  if (isNaN(parsedDate.getTime())) {
-    return <p>Invalid Date</p>;
-  }
-
-  return formatDateTime(parsedDate);
+  return formatDateTime(new Date(date));
 };
 
 const StyledDivider = styled(Divider)`
@@ -564,4 +563,3 @@ const CloseButton = styled(Button)`
     color: var(--color-secondary-600) !important;
   }
 `;
-

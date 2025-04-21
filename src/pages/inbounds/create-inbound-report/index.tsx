@@ -46,8 +46,10 @@ const CreateInboundReport: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadFile[]>([]);
   const [problemDescription, setProblemDescription] = useState("");
-  const { mutate: updateInboundStatus } = useUpdateInboundStatusMutation();
-  const { mutate: createInboundReport } = useCreateInboundReportMutation();
+  const { mutate: updateInboundStatus, isPending: updateInboundStatusPending } =
+    useUpdateInboundStatusMutation();
+  const { mutate: createInboundReport, isPending: createInboundReportPending } =
+    useCreateInboundReportMutation();
   const [initialParams, setInitialParams] = useState(initialData);
 
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
@@ -297,6 +299,9 @@ const CreateInboundReport: React.FC = () => {
                     selectedRecord.report !== null &&
                     selectedRecord.report.status !==
                       InboundReportStatusAsString.Completed
+                  }
+                  loading={
+                    updateInboundStatusPending || createInboundReportPending
                   }
                 >
                   Tạo
