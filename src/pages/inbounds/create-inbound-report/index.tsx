@@ -322,15 +322,7 @@ const renderTag = (status: string) => {
 };
 
 const parseDate = (date: string) => {
-  const [day, month, year, hours, minutes] = date.split(/[/\s:]/).map(Number);
-
-  const parsedDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
-
-  if (isNaN(parsedDate.getTime())) {
-    return <p>Invalid Date</p>;
-  }
-
-  return <p>{formatDateTime(parsedDate)}</p>;
+  return <p>{formatDateTime(new Date(date))}</p>;
 };
 
 const StyledDivider = styled(Divider)`
