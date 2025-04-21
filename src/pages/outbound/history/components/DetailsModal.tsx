@@ -3,6 +3,7 @@ import {
   Descriptions,
   DescriptionsProps,
   Divider,
+  Input,
   Modal,
   Table,
   TableProps,
@@ -62,6 +63,12 @@ const DetailsModal = ({
       ) : (
         <Tag color="warning">Chưa xác định</Tag>
       ),
+    },
+    {
+      key: "notes",
+      label: "Ghi chú",
+      span: "filled",
+      children: <Input.TextArea value={item.note ?? ""} disabled />,
     },
     {
       key: "status",
