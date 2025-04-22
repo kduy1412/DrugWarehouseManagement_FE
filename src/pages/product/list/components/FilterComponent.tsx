@@ -72,6 +72,7 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
     setQuery((prev) => ({
       ...prev,
       CategoryId: record?.categoriesId,
+      Page: 1,
     }));
 
   const handleSearch = () => {
@@ -79,6 +80,7 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
     setQuery((prev) => ({
       ...prev,
       ...cleanParams,
+      Page: 1,
     }));
   };
 

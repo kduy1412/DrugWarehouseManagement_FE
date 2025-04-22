@@ -55,6 +55,7 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
     setQuery((prev) => ({
       ...prev,
       ...cleanParams,
+      Page: 1,
     }));
   };
 
@@ -62,10 +63,12 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
     setQuery((prev) => ({
       ...prev,
       InboundStatus: value,
+      Page: 1,
     }));
     setFilterParam((prev) => ({
       ...prev,
       InboundStatus: value,
+      Page: 1,
     }));
   };
 
@@ -81,6 +84,7 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
         ...prev,
         IsReportPendingExist: !prev.IsReportPendingExist,
         InboundStatus: InboundStatus.Pending,
+        Page: 1,
       }));
     } else {
       setFilterParam((prev) => ({
@@ -93,6 +97,7 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
         ...prev,
         IsReportPendingExist: !prev.IsReportPendingExist,
         InboundStatus: null,
+        Page: 1,
       }));
     }
   };

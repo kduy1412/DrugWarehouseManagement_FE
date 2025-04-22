@@ -83,7 +83,7 @@ const ApprovalInboundReportList = () => {
       key: "inboundCode",
     },
     {
-      title: "Ngày nhập",
+      title: "Ngày tạo",
       dataIndex: "inboundDate",
       key: "inboundDate",
       render: (text: string) => parseDate(text),

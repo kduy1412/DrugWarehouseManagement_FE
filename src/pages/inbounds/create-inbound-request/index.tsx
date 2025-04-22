@@ -9,12 +9,14 @@ import {
   Select,
   Modal,
   notification,
+  Typography,
 } from "antd";
 import { useGetProductQuery } from "../../../hooks/api/product/getProductQuery";
 import { useCreateInboundRequestMutation } from "../../../hooks/api/inboundRequest/createInboundRequestMutation";
 import FileImport from "../../../components/FileImport";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
 import styled from "styled-components";
+import { InboundRequestPostRequest } from "../../../types/inboundRequest";
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
 const EditableContext = React.createContext<FormInstance<Item> | null>(null);
@@ -170,11 +172,12 @@ const CreateInboundRequest: React.FC = () => {
   const [file, setFile] = useState<File[]>([]);
 
   const [count, setCount] = useState(2);
+
   useEffect(() => {
     if (data?.items) {
       setProductOptions(
         data.items.map((product) => ({
-          label: `${product.productName} | Loại(${product.sku} )`,
+          label: `${product.productName} | ${product.sku}`,
           value: product.productId,
         }))
       );
@@ -276,8 +279,65 @@ const CreateInboundRequest: React.FC = () => {
         totalPrice: Number(item.totalprice),
       })),
       Images: file,
-    };
+    } as InboundRequestPostRequest;
+
+    const validation = validateSubmitData(submitData);
+    if (!validation.isValid) {
+      notification.error({
+        message: "Lỗi Xác Thực",
+        description: validation.message,
+        placement: "topRight",
+      });
+      return;
+    }
     mutate(submitData);
+  };
+
+  const validateSubmitData = (src: InboundRequestPostRequest) => {
+    if (
+      !Array.isArray(src.inboundRequestDetails) ||
+      src.inboundRequestDetails.length === 0
+    ) {
+      return {
+        isValid: false,
+        message: "Cần ít nhất một sản phẩm.",
+      };
+    }
+
+    for (const item of src.inboundRequestDetails) {
+      if (!item.productId || item.productId.toString().trim() === "") {
+        return {
+          isValid: false,
+          message: "Mã sản phẩm là bắt buộc cho tất cả các mục.",
+        };
+      }
+
+      const quantity = Number(item.quantity);
+      if (isNaN(quantity) || quantity <= 0) {
+        return {
+          isValid: false,
+          message: "Số lượng phải là số dương cho tất cả các mục.",
+        };
+      }
+
+      const unitPrice = Number(item.unitPrice);
+      if (isNaN(unitPrice) || unitPrice <= 0) {
+        return {
+          isValid: false,
+          message: "Đơn giá phải là số dương cho tất cả các mục.",
+        };
+      }
+
+      const totalPrice = Number(item.totalPrice);
+      if (isNaN(totalPrice) || totalPrice <= 0) {
+        return {
+          isValid: false,
+          message: "Tổng giá phải là số dương cho tất cả các mục.",
+        };
+      }
+    }
+
+    return { isValid: true };
   };
 
   const handleCancelSubmit = () => {
@@ -289,7 +349,12 @@ const CreateInboundRequest: React.FC = () => {
     body: {
       row: EditableRow,
       cell: (props: EditableCellProps) => (
-        <EditableCell {...props} productOptions={productOptions} />
+        <EditableCell
+          {...props}
+          productOptions={productOptions.filter((item) =>
+            dataSource.every((data) => data.productId !== item.value)
+          )}
+        />
       ),
     },
   };

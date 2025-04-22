@@ -97,6 +97,7 @@ const FilterComponent = ({
     setQuery((prev) => ({
       ...prev,
       ProviderId: record?.providerId,
+      Page: 1,
     }));
   };
 
@@ -104,6 +105,7 @@ const FilterComponent = ({
     setQuery((prev) => ({
       ...prev,
       ProductId: record?.productId,
+      Page: 1,
     }));
   };
 
@@ -112,6 +114,7 @@ const FilterComponent = ({
     setQuery((prev) => ({
       ...prev,
       ...cleanParams,
+      Page: 1,
     }));
   };
 

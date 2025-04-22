@@ -15,6 +15,8 @@ import {
 import moment from "moment";
 import { InboundRequestDetail } from "../../../types/inboundRequest";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
+import dayjs from "dayjs";
+import styled from "styled-components";
 
 interface Batch {
   key: string;
@@ -93,6 +95,12 @@ const InformationProduct: React.FC<ProductProps> = ({
   const batchColumns = [
     { title: "Mã lô", dataIndex: "lotNumber", key: "lotNumber" },
     { title: "Tên sản phẩm", dataIndex: "productName", key: "productName" },
+    {
+      title: "Ngày sản xuất",
+      dataIndex: "manufacturingDate",
+      key: "manufacturingDate",
+    },
+    { title: "Hạn sử dụng", dataIndex: "expiryDate", key: "expiryDate" },
     { title: "Số Lượng", dataIndex: "quantity", key: "quantity" },
     {
       title: "Tổng tiền",
@@ -273,6 +281,11 @@ const InformationProduct: React.FC<ProductProps> = ({
               format="DD/MM/YYYY"
               placeholder="Chọn hạn sử dụng"
               style={{ width: "100%" }}
+              disabledDate={(current) =>
+                productionDate && current
+                  ? current.isBefore(dayjs(productionDate.toDate()), "day")
+                  : false
+              }
             />
           </Form.Item>
         </Form>

@@ -17,6 +17,8 @@ import { useGetInboundRequestAssetQuery } from "../../../hooks/api/asset/getInbo
 import { parseInboundRequestStatusToVietnamese } from "../../../utils/translateInboundRequestStatus";
 import AssetPreview from "../../../components/AssetsPreview";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
+import { formatDateTime } from "../../../utils/timeHelper";
+import dayjs from "dayjs";
 
 type DataType = InboundRequest;
 
@@ -89,7 +91,12 @@ const ApprovalInboundRequestListByCEO: React.FC = () => {
 
   const columns: TableColumnsType<DataType> = [
     { title: "Mã phiếu", dataIndex: "inboundRequestCode" },
-    { title: "Ngày tạo", dataIndex: "createDate" },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createDate",
+      render: (date: string) =>
+        formatDateTime(dayjs.utc(date, "DD/MM/YYYY HH:mm").toDate()),
+    },
     {
       title: "Tổng tiền",
       dataIndex: "price",

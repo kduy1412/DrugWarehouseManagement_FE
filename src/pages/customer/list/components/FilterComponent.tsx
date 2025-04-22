@@ -49,6 +49,7 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
     setQuery((prev) => ({
       ...prev,
       ...cleanParams,
+      Page: 1,
     }));
   };
 

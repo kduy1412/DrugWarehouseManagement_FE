@@ -12,6 +12,7 @@ import { useGetInboundRequestQuery } from "../../../hooks/api/inboundRequest/get
 import { parseInboundRequestStatusToVietnamese } from "../../../utils/translateInboundRequestStatus";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
 import { formatDateTime } from "../../../utils/timeHelper";
+import styled from "styled-components";
 
 interface DataType {
   key: number;
@@ -118,7 +119,7 @@ const CreateInboundOrderList: React.FC = () => {
         }}
       />
       {isModalOpen && (
-        <Modal
+        <StyledModal
           title="Tạo Inbound Order"
           open={isModalOpen}
           onCancel={handleCancel}
@@ -130,7 +131,7 @@ const CreateInboundOrderList: React.FC = () => {
               <CreateInbound record={selectedRecord} onClose={handleCancel} />
             )}
           </div>
-        </Modal>
+        </StyledModal>
       )}
     </>
   );
@@ -145,6 +146,12 @@ const renderTag = (status: string) => {
     <Tag color={color}>{parseInboundRequestStatusToVietnamese(status)}</Tag>
   );
 };
+
+const StyledModal = styled(Modal)`
+  width: auto !important;
+  margin: 0 auto;
+  min-width: 25rem;
+`;
 
 const renderPrice = (price: number) => {
   return <p>{parseToVietNameseCurrency(price)}</p>;

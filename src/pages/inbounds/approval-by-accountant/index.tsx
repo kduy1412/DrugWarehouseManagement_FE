@@ -27,6 +27,8 @@ import { parseInboundRequestStatusToVietnamese } from "../../../utils/translateI
 import AssetPreview from "../../../components/AssetsPreview";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
 import ApprovalInboundReportList from "../approval-report-by-accountant";
+import { formatDateTime } from "../../../utils/timeHelper";
+import dayjs from "dayjs";
 
 type DataType = InboundRequest;
 
@@ -112,7 +114,12 @@ const ApprovalInboundRequestList: React.FC = () => {
 
   const columns: TableColumnsType<DataType> = [
     { title: "Mã phiếu", dataIndex: "inboundRequestCode" },
-    { title: "Ngày tạo", dataIndex: "createDate" },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createDate",
+      render: (date: string) =>
+        formatDateTime(dayjs.utc(date, "DD/MM/YYYY HH:mm").toDate()),
+    },
     {
       title: "Tổng tiền",
       dataIndex: "price",
