@@ -11,5 +11,8 @@ export const useGetInboundQuery = (params: InboundGetRequestParams) => {
   return useQuery<InboundGetResponse, Error, InboundGetResponse>({
     queryKey: ["inbound", clearedParams],
     queryFn: () => searchInbound(clearedParams),
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+    gcTime: 0,
   });
 };

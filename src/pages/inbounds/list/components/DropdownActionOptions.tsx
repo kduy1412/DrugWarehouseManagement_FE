@@ -1,0 +1,25 @@
+import { Button, Dropdown, MenuProps } from "antd";
+import { MoreOutlined, EyeOutlined } from "@ant-design/icons";
+
+interface ActionDropdownProps {
+  onDetail?: () => void;
+}
+
+const ActionDropdown: React.FC<ActionDropdownProps> = ({ onDetail }) => {
+  const menuItems: MenuProps["items"] = [
+    {
+      key: "detail",
+      label: "Chi tiết",
+      icon: <EyeOutlined />,
+      onClick: onDetail,
+    },
+  ];
+
+  return (
+    <Dropdown menu={{ items: menuItems }} trigger={["click"]}>
+      <Button type="text" icon={<MoreOutlined />} />
+    </Dropdown>
+  );
+};
+
+export default ActionDropdown;

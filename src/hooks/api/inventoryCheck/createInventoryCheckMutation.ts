@@ -13,7 +13,9 @@ export const useCreateInventoryCheckMutation = () => {
         description: "Đơn báo cáo kiểm kê đã được tạo thành công.",
       });
       queryClient.invalidateQueries({
-        predicate: (query) => query.queryKey.includes("inventoryCheck"),
+        predicate: (query) =>
+          query.queryKey.includes("inventoryCheck") ||
+          query.queryKey.includes("lot"),
       });
     },
     onError: (error) => {

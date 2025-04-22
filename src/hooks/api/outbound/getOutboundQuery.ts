@@ -11,5 +11,8 @@ export const useGetOutBoundQuery = (params: OutboundGetRequestParams) => {
   return useQuery<OutboundGetResponse, Error, OutboundGetResponse>({
     queryKey: ["outbound", clearedParams],
     queryFn: () => searchOutbound(clearedParams),
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+    gcTime: 0,
   });
 };

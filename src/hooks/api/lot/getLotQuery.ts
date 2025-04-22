@@ -8,5 +8,8 @@ export const useGetLotQuery = (params: LotGetRequestParams) => {
   return useQuery<LotGetResponse, Error, LotGetResponse>({
     queryKey: ["lot", cleanedParams],
     queryFn: () => searchLot(cleanedParams),
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+    gcTime: 0,
   });
 };

@@ -161,7 +161,6 @@ const ReturnedLotsPage = () => {
     const data: LotTransferPostRequest = {
       fromWareHouseId: SystemWarehouseConfigEnum.ReturnedWarehouse,
       toWareHouseId: SystemWarehouseConfigEnum.CancelWarehouse,
-      lotTransferCode: null,
       lotTransferDetails: [
         {
           lotId: selectedItem.lotId,
@@ -200,7 +199,6 @@ const ReturnedLotsPage = () => {
     const returnedData: LotTransferPostRequest = {
       fromWareHouseId: SystemWarehouseConfigEnum.ReturnedWarehouse,
       toWareHouseId: selectedWarehouse,
-      lotTransferCode: null,
       lotTransferDetails: [
         {
           lotId: selectedItem.lotId,

@@ -54,11 +54,7 @@ const CreateInboundReport: React.FC = () => {
 
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
   const [isFulfilled, setIsFulfilled] = useState(true);
-  const { data, refetch } = useGetInboundQuery(initialParams);
-
-  React.useEffect(() => {
-    console.log("Dữ liệu file upload Create trả về:", uploadedFiles);
-  }, [uploadedFiles]);
+  const { data, refetch, isLoading } = useGetInboundQuery(initialParams);
 
   const handleOpenModal = (record: DataType) => {
     setSelectedRecord(record); // Set the selected record to show its details
@@ -171,6 +167,7 @@ const CreateInboundReport: React.FC = () => {
         columns={columns}
         dataSource={data?.items}
         size="middle"
+        loading={isLoading}
         pagination={{
           current: data?.currentPage,
           pageSize: data?.pageSize,
@@ -316,10 +313,6 @@ const CreateInboundReport: React.FC = () => {
 };
 
 export default CreateInboundReport;
-
-const renderPrice = (price: number) => {
-  return <p>{parseToVietNameseCurrency(price)}</p>;
-};
 
 const renderTag = (status: string) => {
   const color = InboundStatusColors[InboundStatusAsNum[status] - 1];

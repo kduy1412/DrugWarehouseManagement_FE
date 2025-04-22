@@ -11,4 +11,7 @@ export const useGetInventoryCheckQuery = (
   useQuery<InventoryCheckGetResponse, Error, InventoryCheckGetResponse>({
     queryFn: () => getInventoryCheck(query),
     queryKey: ["inventoryCheck", query],
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+    gcTime: 0,
   });

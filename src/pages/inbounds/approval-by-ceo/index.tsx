@@ -37,7 +37,7 @@ const ApprovalInboundRequestListByCEO: React.FC = () => {
   const [initialParams, setInitialParams] = useState(initialData);
 
   // Data fetching
-  const { data, refetch } = useGetInboundRequestQuery(initialParams);
+  const { data, refetch, isLoading } = useGetInboundRequestQuery(initialParams);
   const { mutate } = useUpdateInboundRequestMutation();
   const { mutate: getAsset, isPending } = useGetInboundRequestAssetQuery();
 
@@ -151,6 +151,7 @@ const ApprovalInboundRequestListByCEO: React.FC = () => {
         columns={columns}
         dataSource={transformedData}
         size="middle"
+        loading={isLoading}
         pagination={{
           current: data?.currentPage,
           pageSize: data?.pageSize,

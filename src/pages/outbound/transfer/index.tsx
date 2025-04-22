@@ -10,7 +10,6 @@ import images from "../../../assets";
 const TransferLotPage = () => {
   const [currentStep, setCurrentStep] = useState("1");
   const [formData, setFormData] = useState<LotTransferPostRequest>({
-    lotTransferCode: "",
     fromWareHouseId: null,
     toWareHouseId: null,
     lotTransferDetails: [],

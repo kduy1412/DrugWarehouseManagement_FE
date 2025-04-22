@@ -229,7 +229,6 @@ const FormModal = ({
       notes: "",
       warehouseId: selectedWarehouse,
     });
-    // Reset form fields when selectedLots or selectedWarehouse changes
     form.resetFields();
   }, [selectedLots, selectedWarehouse, form]);
 
@@ -300,7 +299,6 @@ const FormModal = ({
 
 export default FormModal;
 
-// Styled components remain unchanged
 const StyledModal = styled(Modal)`
   width: auto !important;
   margin: 0 4rem;

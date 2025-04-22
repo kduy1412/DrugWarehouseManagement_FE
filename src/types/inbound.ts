@@ -110,15 +110,15 @@ export interface InboundDetail {
   productName: string | null;
   expiryDate: Date;
   manufacturingDate: Date;
-  openingStock: string;
+  openingStock?: string | null;
 }
 
 //Status
 export enum InboundStatus {
   Pending = 1,
   InProgress = 2,
-  Completed = 3,
-  Cancelled = 4,
+  Cancelled = 3,
+  Completed = 4,
 }
 
 export const InboundStatusAsString = {
@@ -131,8 +131,8 @@ export const InboundStatusAsString = {
 export const InboundStatusAsNum: Record<string, number> = {
   Pending: 1,
   InProgress: 2,
-  Completed: 3,
-  Cancelled: 4,
+  Cancelled: 3,
+  Completed: 4,
 };
 
 export const InboundStatusColors = [
@@ -140,5 +140,4 @@ export const InboundStatusColors = [
   "var(--status-in-progress)",
   "var(--status-cancelled)",
   "var(--status-completed)",
-  "var(--status-returned)",
 ];

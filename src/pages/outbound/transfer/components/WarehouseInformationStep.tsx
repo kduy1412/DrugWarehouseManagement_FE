@@ -26,7 +26,6 @@ const WarehouseInformationStep: React.FC<WarehouseInformationStepProps> = ({
   const [form] = Form.useForm<WarehouseInformationStepFormProps>();
   const [initialFormData] = useState<WarehouseInformationStepFormProps>({
     toWareHouseId: formData.toWareHouseId,
-    lotTransferCode: formData.lotTransferCode,
   });
 
   // Search and Data Fetching
@@ -79,15 +78,6 @@ const WarehouseInformationStep: React.FC<WarehouseInformationStepProps> = ({
             warehouses={data?.items}
             loading={isLoading}
           />
-        </Form.Item>
-
-        <StyledDivider orientation="center">Thông tin phiếu</StyledDivider>
-        <Form.Item
-          name="lotTransferCode"
-          label="Mã Phiếu"
-          rules={[{ required: true, message: "Vui lòng nhập mã phiếu" }]}
-        >
-          <StyleInput placeholder="Nhập mã phiếu" />
         </Form.Item>
       </Space>
       <Flex justify="end" style={{ marginTop: "var(--line-width-medium)" }}>

@@ -39,6 +39,7 @@ import ReturnedLotsPage from "../pages/inbounds/returned-lots";
 import CreateInventoryCheckPage from "../pages/inventory-check/create";
 import InventoryCheckPage from "../pages/inventory-check";
 import InventoryCheckListPage from "../pages/inventory-check/list";
+import InboundListPage from "../pages/inbounds/list";
 
 export const privateRoutes: MenuRoutes[] = [
   {
@@ -104,6 +105,18 @@ export const privateRoutes: MenuRoutes[] = [
         url: `/inbound/returned-lots`,
         element: <ReturnedLotsPage />,
         allowedroles: [Roles.InventoryManager],
+      },
+      {
+        key: `/inbound/inbound-history`,
+        label: `Lịch sử nhập hàng`,
+        url: `/inbound/inbound-history`,
+        element: <InboundListPage />,
+        allowedroles: [
+          Roles.Accountant,
+          Roles.Director,
+          Roles.InventoryManager,
+          Roles.SaleAdmin,
+        ],
       },
     ],
     allowedroles: [

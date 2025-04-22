@@ -67,7 +67,6 @@ const validationMessage: Partial<Record<keyof LotTransferPostRequest, string>> =
   {
     fromWareHouseId: "Vui Lòng Chọn kho chứa mặt hàng bạn muốn chuyển",
     toWareHouseId: "Vui Lòng Chọn Kho bạn muốn lưu giữ mặt hàng",
-    lotTransferCode: "Vui Lòng Nhập Mã Chuyển Kho",
     lotTransferDetails: "Vui lòng chọn sản phẩm bạn muốn chuyển",
   };
 
@@ -100,7 +99,6 @@ const ProductInformationStep = ({
   };
 
   const onClickAddProduct = () => {
-    /* Checks if lotData is falsy (e.g., undefined, null). */
     if (!lotData) {
       notification.error({
         message: "Không tồn tại dữ liệu",

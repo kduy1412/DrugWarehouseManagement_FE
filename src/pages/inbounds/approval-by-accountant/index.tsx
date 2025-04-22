@@ -48,7 +48,8 @@ const ApprovalInboundRequestList: React.FC = () => {
   const [currentType, setCurrentType] = useState<approvalType>(
     approvalType.InboundRequest
   );
-  const { data, refetch } = useGetInboundRequestQuery(inboundInitParams);
+  const { data, refetch, isLoading } =
+    useGetInboundRequestQuery(inboundInitParams);
   const { mutate } = useUpdateInboundRequestMutation();
   const { mutate: getAsset, isPending } = useGetInboundRequestAssetQuery();
   const [assetUrls, setAssetUrls] = useState<
@@ -160,6 +161,7 @@ const ApprovalInboundRequestList: React.FC = () => {
             columns={columns}
             dataSource={data?.items}
             size="middle"
+            loading={isLoading}
             pagination={{
               current: data?.currentPage,
               pageSize: data?.pageSize,

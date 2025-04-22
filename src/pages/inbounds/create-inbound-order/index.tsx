@@ -35,7 +35,7 @@ const CreateInboundOrderList: React.FC = () => {
   const [initialParams, setInitialParams] = useState(initialData);
 
   // Data fetching
-  const { data } = useGetInboundRequestQuery(initialParams);
+  const { data, isLoading } = useGetInboundRequestQuery(initialParams);
 
   const handleOpenModal = (record: DataType) => {
     setSelectedRecord(record);
@@ -104,6 +104,7 @@ const CreateInboundOrderList: React.FC = () => {
         columns={columns}
         dataSource={transformedData}
         size="middle"
+        loading={isLoading}
         pagination={{
           current: data?.currentPage,
           pageSize: data?.pageSize,
