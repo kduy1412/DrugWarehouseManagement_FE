@@ -177,7 +177,6 @@ export const privateRoutes: MenuRoutes[] = [
     label: `Hàng Tồn Kho`,
     url: `/lots`,
     allowedroles: [
-      Roles.Admin,
       Roles.Accountant,
       Roles.Director,
       Roles.InventoryManager,
@@ -376,9 +375,9 @@ export const privateRoutes: MenuRoutes[] = [
     element: <WarehousePage />,
     children: [
       {
-        key: `/warehouse-system/list-product`,
+        key: `/warehouse-system/list-warehouse`,
         label: `Danh Sách Kho`,
-        url: `/warehouse-system/list-product`,
+        url: `/warehouse-system/list-warehouse`,
         allowedroles: [
           Roles.Admin,
           Roles.Accountant,

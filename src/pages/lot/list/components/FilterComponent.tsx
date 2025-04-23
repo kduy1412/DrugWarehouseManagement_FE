@@ -210,7 +210,7 @@ const FilterComponent = ({
         checked={query.Availablle ?? true}
         onChange={(e) => onCheckedAvailable(e.target.checked)}
       >
-        Còn tồn kho
+        Chỉ hiện lô còn tồn
       </Checkbox>
       <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
         Tìm kiếm

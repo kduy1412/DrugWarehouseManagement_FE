@@ -131,6 +131,7 @@ const ProductListPage = () => {
     setInitParams((prev) => ({
       ...prev,
       PageSize: pageSize,
+      Page: 1,
     }));
   };
 

@@ -35,6 +35,7 @@ const CreateProductPage: React.FC = () => {
       Page: 1,
       PageSize: 100,
       Search: "",
+      IsMainCategory: false,
     });
   const [selectedProductCategories, setSelectedProductCategories] = useState<
     ProductCategoriesPutRequest[]
@@ -50,7 +51,9 @@ const CreateProductPage: React.FC = () => {
         message: "Không thể tạo Mặt hàng",
         description: "vui lòng chọn danh mục cho Mặt hàng đó",
       });
+      return;
     }
+
     const payload = {
       ...values,
       productCategories:

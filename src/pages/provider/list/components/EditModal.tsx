@@ -47,7 +47,7 @@ const EditModal = ({
   const [form] = Form.useForm<ProviderPutRequest>();
   const [loading, setLoading] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
-  const { mutate } = useUpdateProviderMutation();
+  const { mutate, isPending } = useUpdateProviderMutation();
 
   const providerInformationProps: DescriptionsProps["items"] = [
     {
@@ -207,7 +207,7 @@ const EditModal = ({
         <CtaButton
           key="save"
           onClick={handleSave}
-          loading={loading}
+          loading={isPending}
           disabled={!isEdited}
         >
           Lưu
@@ -242,7 +242,7 @@ const CloseButton = styled(Button)`
 `;
 
 const StyledModal = styled(Modal)`
-  width: 70vw !important;
+  width: auto !important;
   padding-bottom: 0 !important;
 
   .ant-modal-body {

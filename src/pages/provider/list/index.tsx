@@ -129,6 +129,7 @@ const ProviderListPage = () => {
     setInitParams((prev) => ({
       ...prev,
       PageSize: pageSize,
+      Page: 1,
     }));
   };
 

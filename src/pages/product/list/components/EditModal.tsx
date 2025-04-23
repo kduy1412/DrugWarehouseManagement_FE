@@ -63,7 +63,7 @@ const EditModal = ({
       Search: "",
     });
   const { data, isLoading } = useGetCategoriesQuery(categoryFilterParams);
-  const { mutate } = useUpdateProductMutation();
+  const { mutate, isPending } = useUpdateProductMutation();
 
   const onSearchCategoryChange = useCallback((value: string) => {
     setCategoryFilterParams((prev) => ({
@@ -237,7 +237,7 @@ const EditModal = ({
         <CtaButton
           key="save"
           onClick={handleSave}
-          loading={loading}
+          loading={isPending}
           disabled={!isEdited}
         >
           Lưu

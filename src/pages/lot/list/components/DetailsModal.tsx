@@ -69,19 +69,21 @@ const DetailsModal = ({
       key: "quantity",
       label: "Số Lượng",
       children: <span>{item.quantity}</span>,
-      span: 2,
+      span: "filled",
     },
     {
       key: "manufacturingDate",
       label: "Ngày Sản Xuất",
-      children: <span>{formatDateTime(new Date(item.manufacturingDate))}</span>,
+      children: (
+        <span>{formatDateTime(new Date(item.manufacturingDate), false)}</span>
+      ),
       span: 2,
     },
     {
       key: "expiryDate",
       label: "Ngày Hết Hạn",
-      children: <span>{formatDateTime(new Date(item.expiryDate))}</span>,
-      span: 3,
+      children: <span>{formatDateTime(new Date(item.expiryDate), false)}</span>,
+      span: 2,
     },
   ];
 
