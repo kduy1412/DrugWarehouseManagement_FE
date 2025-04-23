@@ -133,6 +133,14 @@ const InformationProduct: React.FC<ProductProps> = ({
 
     const newQuantity = selectedProduct.quantity - selectedQuantity;
 
+    if (!batchId) {
+      notification.error({
+        message: "Thiếu thông tin",
+        description: "Vui lòng nhập mã lô.",
+      });
+      return;
+    }
+
     if (newQuantity < 0) {
       notification.error({
         message: "Không đủ số lượng",

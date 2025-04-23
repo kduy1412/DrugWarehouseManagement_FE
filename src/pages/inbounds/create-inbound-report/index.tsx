@@ -13,6 +13,7 @@ import {
   Descriptions,
   Divider,
   Tooltip,
+  TableColumnsType,
 } from "antd";
 import InboundReport from "./InboundReport";
 import UploadReport from "./UploadFile";
@@ -30,7 +31,10 @@ import { parseInboundStatusToVietnamese } from "../../../utils/translateInboundS
 import { formatDateTime } from "../../../utils/timeHelper";
 import { useCreateInboundReportMutation } from "../../../hooks/api/inboundReport/createInboundReportMutation";
 import styled from "styled-components";
-import { InboundReportStatusAsString } from "../../../types/inboundReport";
+import {
+  InboundReportStatus,
+  InboundReportStatusAsString,
+} from "../../../types/inboundReport";
 
 type DataType = Inbound;
 const initialData: InboundGetRequestParams = {
@@ -136,7 +140,7 @@ const CreateInboundReport: React.FC = () => {
   };
 
   // Table columns
-  const columns = [
+  const columns: TableColumnsType<DataType> = [
     { title: "Mã đơn hàng", dataIndex: "inboundCode" },
     {
       title: "Ngày tạo",
@@ -148,6 +152,16 @@ const CreateInboundReport: React.FC = () => {
       title: "Trạng thái",
       dataIndex: "status",
       render: (status: string) => renderTag(status),
+    },
+    {
+      title: "Báo cáo",
+      key: "report",
+      render: (_, record) => {
+        if (record.report === null) return "_";
+        if (record.report.status === InboundReportStatusAsString.Pending)
+          return <Tag color="var(--status-other)">Đang chờ duyệt</Tag>;
+        return <Tag color="var(--status-found)">Đã duyệt</Tag>;
+      },
     },
     {
       key: "action",
