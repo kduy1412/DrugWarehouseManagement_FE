@@ -142,18 +142,15 @@ const OutBoundHistory = () => {
           setSelectedItem(item);
         };
 
-        const handleOnClickDelete = () => {
-          console.log("Delete: " + JSON.stringify(item));
-        };
 
         return (
           <div key={`action-${item.outboundId}`}>
             <ActionDropdown
               onDetail={handleOnClickDetail}
               onEdit={handleOnClickEdit}
-              onDelete={handleOnClickDelete}
               onPreview={handleOnPreview}
               isDisablePreview={item.status !== OutboundStatus.Completed}
+              isDisableEdit={item.status === OutboundStatus.Returned}
             />
           </div>
         );

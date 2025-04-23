@@ -33,17 +33,11 @@ import { useGetWarehouseQuery } from "../../../../hooks/api/warehouse/getWarehou
 import WarehouseSelector from "../../../../components/warehouse/WarehouseSelector";
 import { validateObjectProperties } from "../../../../utils/validateObjectProperties";
 import { useCreateLotTransferMutation } from "../../../../hooks/api/lotTransfer/createLotTransferMutation";
+import { SystemWarehouseConfigEnum } from "../../../../types/enums/system";
 
 const initialQueryParams: LotGetRequestParams = {
   Page: 1,
   PageSize: 10,
-  DateFrom: null,
-  DateTo: null,
-  Search: null,
-  Availablle: null,
-  ProductId: null,
-  ProviderId: null,
-  WarehouseId: null,
 };
 
 const initialFormData: FromWarehouseProps = {
@@ -51,7 +45,7 @@ const initialFormData: FromWarehouseProps = {
 };
 
 type ProductsSelectedProps = LotTransferDetail &
-  Pick<OutboundDetail, "lotNumber" | "productName">;
+  Pick<OutboundDetail, "lotNumber" | "productName"> & { maxQuantity: number };
 
 interface ProductInformationStepProps {
   formData: LotTransferPostRequest;
@@ -141,6 +135,7 @@ const ProductInformationStep = ({
           unitPrice: 1,
           lotNumber: product.lotNumber,
           productName: product.productName,
+          maxQuantity: product.quantity,
           discount: 0,
         })
       );
@@ -217,7 +212,7 @@ const ProductInformationStep = ({
       key: "manufacturingDate",
       render: (_, { manufacturingDate }) => {
         if (manufacturingDate) {
-          return <p>{formatDateTime(new Date(manufacturingDate))}</p>;
+          return <p>{formatDateTime(new Date(manufacturingDate), false)}</p>;
         }
         return <Tag color="warning">Chưa xác định</Tag>;
       },
@@ -228,7 +223,7 @@ const ProductInformationStep = ({
       key: "expiryDate",
       render: (_, { expiryDate }) => {
         if (expiryDate) {
-          return <p>{formatDateTime(new Date(expiryDate))}</p>;
+          return <p>{formatDateTime(new Date(expiryDate), false)}</p>;
         }
         return <Tag color="warning">Chưa xác định</Tag>;
       },
@@ -252,10 +247,11 @@ const ProductInformationStep = ({
       title: "Số Lượng",
       dataIndex: "quantity",
       key: "quantity",
-      render: (quantity, _, index) => (
+      render: (quantity, record, index) => (
         <InputNumber
           min={1}
           value={quantity}
+          max={record.maxQuantity}
           onChange={(value) =>
             handleSelectedProductDataChange(index, "quantity", value)
           }
@@ -287,6 +283,7 @@ const ProductInformationStep = ({
     setQueryParams((prev) => ({
       ...prev,
       PageSize: pageSize,
+      Page: 1,
     }));
   };
 
@@ -333,6 +330,7 @@ const ProductInformationStep = ({
       Search: value,
     }));
   }, []);
+
   const onSelectedWarehouseChange = (value: number | null) => {
     form.setFieldsValue({
       fromWareHouseId: value,
@@ -368,7 +366,10 @@ const ProductInformationStep = ({
                 onSelectedWarehouseChange={onSelectedWarehouseChange}
                 value={formData.fromWareHouseId}
                 warehouses={warehouseData?.items.filter(
-                  (w) => w.warehouseId !== formData.toWareHouseId
+                  (w) =>
+                    w.warehouseId !== formData.toWareHouseId &&
+                    w.warehouseId !==
+                      SystemWarehouseConfigEnum.ReturnedWarehouse
                 )}
                 loading={isWarehouseFetching}
               />
@@ -384,7 +385,10 @@ const ProductInformationStep = ({
               {`Mặt hàng đã chọn (${selectedProduct.length})`}
             </ListProductButton>
             <FilterComponent
-              initialQueryParams={initialQueryParams}
+              initialQueryParams={{
+                ...initialQueryParams,
+                WarehouseId: formData.fromWareHouseId,
+              }}
               setQuery={setQueryParams}
               query={queryParams}
             />

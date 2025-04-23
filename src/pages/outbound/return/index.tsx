@@ -291,6 +291,7 @@ const ReturnOutboundPage = () => {
     setInitParams((prev) => ({
       ...prev,
       PageSize: pageSize,
+      Page: 1,
     }));
   };
 

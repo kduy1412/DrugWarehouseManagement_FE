@@ -13,6 +13,7 @@ type DataType = LotGetView;
 const initialData: LotGetRequestParams = {
   Page: 1,
   PageSize: 10,
+  Availablle: true,
 };
 
 const LotListPage = () => {
@@ -66,13 +67,13 @@ const LotListPage = () => {
       title: "Ngày Sản Xuất",
       dataIndex: "manufacturingDate",
       key: "manufacturingDate",
-      render: (date) => formatDateTime(new Date(date)),
+      render: (date) => formatDateTime(new Date(date), false),
     },
     {
       title: "Ngày Hết Hạn",
       dataIndex: "expiryDate",
       key: "expiryDate",
-      render: (date) => formatDateTime(new Date(date)),
+      render: (date) => formatDateTime(new Date(date), false),
     },
     {
       key: "action",
@@ -98,6 +99,7 @@ const LotListPage = () => {
     setInitParams((prev) => ({
       ...prev,
       PageSize: pageSize,
+      Page: 1,
     }));
   };
 
@@ -114,6 +116,7 @@ const LotListPage = () => {
             bordered
             pagination={false}
             dataSource={data.items}
+            loading={isLoading}
             columns={columns}
             rowKey="lotId"
           />

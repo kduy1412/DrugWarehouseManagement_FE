@@ -65,7 +65,7 @@ const ProductInformationStep = ({
 }: ProductInformationStepProps) => {
   const [queryParams, setQueryParams] =
     useState<LotGetRequestParams>(initialQueryParams);
-  const { data } = useGetLotQuery(queryParams);
+  const { data, isLoading } = useGetLotQuery(queryParams);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<
     ProductsSelectedProps[] | []
@@ -118,14 +118,14 @@ const ProductInformationStep = ({
         (product) => ({
           lotId: product.lotId,
           quantity: 1,
-          unitPrice: 1,
+          unitPrice: 1000,
           lotNumber: product.lotNumber,
           productName: product.productName,
           discount: 0,
           maxQuantity: product.quantity,
           usePricingFormula: false,
-          profitMargin: 1,
-          taxPercentage: 1,
+          profitMargin: 0,
+          taxPercentage: 0,
         })
       );
       setSelectedProduct((prev) => [...prev, ...productsMapping]);
@@ -201,7 +201,7 @@ const ProductInformationStep = ({
       key: "manufacturingDate",
       render: (_, { manufacturingDate }) => {
         if (manufacturingDate) {
-          return <p>{formatDateTime(new Date(manufacturingDate))}</p>;
+          return <p>{formatDateTime(new Date(manufacturingDate), false)}</p>;
         }
         return <Tag color="warning">Chưa xác định</Tag>;
       },
@@ -212,7 +212,7 @@ const ProductInformationStep = ({
       key: "expiryDate",
       render: (_, { expiryDate }) => {
         if (expiryDate) {
-          return <p>{formatDateTime(new Date(expiryDate))}</p>;
+          return <p>{formatDateTime(new Date(expiryDate), false)}</p>;
         }
         return <Tag color="warning">Chưa xác định</Tag>;
       },
@@ -372,6 +372,7 @@ const ProductInformationStep = ({
     setQueryParams((prev) => ({
       ...prev,
       PageSize: pageSize,
+      Page: 1,
     }));
   };
 
@@ -449,6 +450,7 @@ const ProductInformationStep = ({
         bordered
         pagination={false}
         dataSource={data?.items}
+        loading={isLoading}
         columns={lotColumns}
         rowSelection={rowSelection}
         rowKey={(record) => record.lotId}

@@ -206,8 +206,8 @@ const ReturnedLotsPage = () => {
         },
       ],
     };
-    createLot(returnedData);
-    onFormClose();
+
+    createLot(returnedData, { onSuccess: () => onFormClose() });
   };
 
   const filteredWarehouse = queryWarehouse?.items.filter(
@@ -260,6 +260,7 @@ const ReturnedLotsPage = () => {
           title="Số lượng nhập kho & Vị trí"
           open={isReturnedModalOpen}
           onClose={onFormClose}
+          onCancel={onFormClose}
           footer={[
             <CloseButton key="close" onClick={onFormClose}>
               Đóng

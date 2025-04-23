@@ -12,11 +12,9 @@ import {
   InventoryCheck,
   InventoryCheckDetails,
   InventoryCheckGetRequestParams,
-  InventoryCheckStatus,
   InventoryCheckStatusAsString,
   InventoryCheckStatusColors,
 } from "../../../types/inventoryCheck";
-import dayjs from "dayjs";
 import { useGetInventoryCheckQuery } from "../../../hooks/api/inventoryCheck/getInventoryCheckQuery";
 import { formatDateTime } from "../../../utils/timeHelper";
 import FilterComponent from "./components/FilterComponent";

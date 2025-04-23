@@ -74,10 +74,11 @@ const CreateInboundReport: React.FC = () => {
   };
 
   const handleTableChange = (pagination: any) => {
-    setInitialParams({
+    setInitialParams((prev) => ({
+      ...prev,
       Page: pagination.current,
       PageSize: pagination.pageSize,
-    });
+    }));
   };
 
   const handleSubmit = async () => {

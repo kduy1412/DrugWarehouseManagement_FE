@@ -64,7 +64,7 @@ const ProductInformationStep = ({
 }: ProductInformationStepProps) => {
   const [queryParams, setQueryParams] =
     useState<LotGetRequestParams>(initialQueryParams);
-  const { data } = useGetLotQuery(queryParams);
+  const { data, isLoading } = useGetLotQuery(queryParams);
   const { mutate, isPending } = useCreateSampleExportMutation();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<
@@ -263,6 +263,7 @@ const ProductInformationStep = ({
     setQueryParams((prev) => ({
       ...prev,
       PageSize: pageSize,
+      Page: 1,
     }));
   };
 
@@ -331,6 +332,7 @@ const ProductInformationStep = ({
         pagination={false}
         dataSource={data?.items}
         columns={lotColumns}
+        loading={isLoading}
         rowSelection={rowSelection}
         rowKey={(record) => record.lotId}
       />

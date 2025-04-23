@@ -6,6 +6,8 @@ import {
   DeleteOutlined,
   FilePdfOutlined,
 } from "@ant-design/icons";
+import { useAuth } from "../../../../hooks/useAuth";
+import { Roles } from "../../../../types/enums/roles";
 
 // Types
 interface ActionDropdownProps {
@@ -14,15 +16,17 @@ interface ActionDropdownProps {
   onDelete?: () => void;
   onPreview?: () => void;
   isDisablePreview?: boolean;
+  isDisableEdit?: boolean;
 }
 
 const ActionDropdown: React.FC<ActionDropdownProps> = ({
   onDetail,
   onEdit,
-  onDelete,
   onPreview,
-  isDisablePreview = true,
+  isDisableEdit = true,
 }) => {
+  const { role } = useAuth();
+  const allowedRoles = [Roles.InventoryManager, Roles.SaleAdmin];
   const menuItems: MenuProps["items"] = [
     {
       key: "detail",
@@ -42,22 +46,16 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
       icon: <FilePdfOutlined />,
       onClick: onPreview,
     },
-    {
-      key: "delete",
-      label: "Xóa",
-      icon: <DeleteOutlined />,
-      onClick: onDelete,
-      danger: true,
-    },
   ].filter((item) => item.onClick);
 
+  const isAllowedEdit = isDisableEdit && allowedRoles.includes(role!);
+
+  const filteredItem = isAllowedEdit
+    ? menuItems.filter((item) => item?.key !== "edit")
+    : menuItems;
+
   return (
-    <Dropdown
-      menu={{
-        items: isDisablePreview ? menuItems : menuItems,
-      }}
-      trigger={["click"]}
-    >
+    <Dropdown menu={{ items: filteredItem }} trigger={["click"]}>
       <Button type="text" icon={<MoreOutlined />} />
     </Dropdown>
   );

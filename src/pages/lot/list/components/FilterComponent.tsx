@@ -1,4 +1,4 @@
-import { Button, DatePicker, Input, Space } from "antd";
+import { Button, Checkbox, DatePicker, Input, Space } from "antd";
 import React, { useCallback, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
@@ -129,6 +129,14 @@ const FilterComponent = ({
     }));
   };
 
+  const onCheckedAvailable = (value: boolean) => {
+    setQuery((prev) => ({
+      ...prev,
+      Page: 1,
+      Availablle: value,
+    }));
+  };
+
   const handleSearch = () => {
     const cleanParams = cleanFilterParams(filterParam);
     setQuery((prev) => ({
@@ -198,6 +206,12 @@ const FilterComponent = ({
         warehouses={filteredWarehouse}
         loading={warehouseQueryLoading}
       />
+      <Checkbox
+        checked={query.Availablle ?? true}
+        onChange={(e) => onCheckedAvailable(e.target.checked)}
+      >
+        Còn tồn kho
+      </Checkbox>
       <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
         Tìm kiếm
       </Button>

@@ -5,6 +5,7 @@ import { LotTransferPostRequest } from "../../../../types/outbound";
 import { WarehouseGetRequestParams } from "../../../../types/warehouse";
 import { useGetWarehouseQuery } from "../../../../hooks/api/warehouse/getWarehouseQuery";
 import WarehouseSelector from "../../../../components/warehouse/WarehouseSelector";
+import { SystemWarehouseConfigEnum } from "../../../../types/enums/system";
 
 interface WarehouseInformationStepProps {
   formData: LotTransferPostRequest;
@@ -75,7 +76,10 @@ const WarehouseInformationStep: React.FC<WarehouseInformationStepProps> = ({
             onSearchValueChange={onSearchValueChange}
             onSelectedWarehouseChange={onSelectedWarehouseChange}
             value={formData.fromWareHouseId}
-            warehouses={data?.items}
+            warehouses={data?.items.filter(
+              (item) =>
+                item.warehouseId !== SystemWarehouseConfigEnum.ReturnedWarehouse
+            )}
             loading={isLoading}
           />
         </Form.Item>
