@@ -11,14 +11,14 @@ import styled from "styled-components";
 interface EditCategoryModalProps {
   data: CategoryPutRequest;
   isMainCategory: boolean;
-  isOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   params: CategoryGetRequestParams;
 }
 
 const EditCategoryModal = ({
   data,
   isMainCategory,
-  isOpen,
+  setOpen,
   params,
 }: EditCategoryModalProps) => {
   const [form] = Form.useForm();
@@ -38,7 +38,7 @@ const EditCategoryModal = ({
       };
       updateCategory(updateData, {
         onSuccess: () => {
-          isOpen(false);
+          setOpen(false);
           form.resetFields();
           queryClient.invalidateQueries({ queryKey: ["categories", params] });
         },
@@ -47,7 +47,7 @@ const EditCategoryModal = ({
   };
 
   const handleCancel = () => {
-    isOpen(false);
+    setOpen(false);
     form.resetFields();
   };
 

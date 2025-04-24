@@ -113,6 +113,7 @@ const WarehouseListPage: React.FC = () => {
     setInitParams((prev) => ({
       ...prev,
       PageSize: pageSize,
+      Page: 1,
     }));
   };
 

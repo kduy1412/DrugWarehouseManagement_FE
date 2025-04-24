@@ -11,14 +11,14 @@ import styled from "styled-components";
 interface CreateCategoryModalProps {
   isMainCategory: boolean;
   parentCategoryId?: number | null;
-  isOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   params: CategoryGetRequestParams;
 }
 
 const CreateCategoryModal = ({
   isMainCategory,
   parentCategoryId,
-  isOpen,
+  setOpen,
   params,
 }: CreateCategoryModalProps) => {
   const initialData: CategoryPostRequest = {
@@ -38,7 +38,7 @@ const CreateCategoryModal = ({
       };
       createCategory(payload, {
         onSuccess: () => {
-          isOpen(false);
+          setOpen(false);
           form.resetFields();
           queryClient.invalidateQueries({ queryKey: ["categories", params] });
         },
@@ -47,7 +47,7 @@ const CreateCategoryModal = ({
   };
 
   const handleCancel = () => {
-    isOpen(false);
+    setOpen(false);
     form.resetFields();
   };
 
@@ -56,6 +56,9 @@ const CreateCategoryModal = ({
       title={isMainCategory ? "Tạo Danh Mục Chính" : "Tạo Danh Mục Phụ"}
       open={true}
       confirmLoading={isPending}
+      loading={isPending}
+      onCancel={handleCancel}
+      onClose={handleCancel}
       footer={[
         <CloseButton key="close" onClick={handleCancel}>
           Đóng

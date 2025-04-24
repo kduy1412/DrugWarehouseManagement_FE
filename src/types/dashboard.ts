@@ -14,7 +14,11 @@ export interface DashBoardGetResponse {
   lowStockProducts?: ProductLowStockDto[] | null;
   orderSummary: OrderSummaryDto | null;
   newDocuments: DocumentStatusDto[];
+  newInboundOrders: OrderDto[];
+  accountantInboundOrders: OrderDto[];
+  directorInboundOrders: OrderDto[];
 }
+
 
 export interface DashBoardGetRequestParams extends Record<any, any> {
   filter: DashboardGetRequestFilterParams;

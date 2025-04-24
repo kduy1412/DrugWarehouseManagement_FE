@@ -12,6 +12,7 @@ import { queryClient } from "../lib/queryClient";
 import { Roles } from "../types/enums/roles";
 import useLocalStorage from "./useLocalStorage";
 import { notification } from "antd";
+import { redirect } from "react-router-dom";
 
 export function useAuth() {
   const [authData, setAuthData] = useLocalStorage<AuthResponse | null>(
@@ -106,8 +107,6 @@ export function useAuth() {
 
   /*Logout mutation */
   const logout = () => {
-    queryClient.setQueryData(AUTH_QUERY_KEY, null);
-    queryClient.invalidateQueries({ queryKey: ["profile"] });
     setAuthData(null);
   };
 
@@ -117,7 +116,7 @@ export function useAuth() {
     refreshToken: authQuery.data?.refreshToken ?? null,
     isAuthenticated: !!authQuery.data?.token,
     login: loginMutation.mutate,
-    logout: logout,
+    logout: () => logout(),
     refresh: refreshMutation.mutate,
     role: authQuery.data?.role as Roles | null,
     isLoading: authQuery.isLoading || loginMutation.isPending,

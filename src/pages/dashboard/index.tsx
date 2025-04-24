@@ -1,9 +1,20 @@
 import React from "react";
 import styled from "styled-components";
-import { DashBoardGetResponse, DocumentStatusDto } from "../../types/dashboard";
-import { Row, Col, Card, List } from "antd";
-import { Column, Pie, Bar } from "@ant-design/charts";
+import {
+  DashBoardGetResponse,
+  OrderDto,
+  ProductLowStockDto,
+} from "../../types/dashboard";
+import { Row, Col, Card, List, Table, TableColumnsType, Tag } from "antd";
+import { Column, Pie } from "@ant-design/charts";
 import { formatDateTime } from "../../utils/timeHelper";
+import { InboundStatusAsNum, InboundStatusColors } from "../../types/inbound";
+import { parseInboundStatusToVietnamese } from "../../utils/translateInboundStatus";
+import {
+  InboundRequestStatusAsNum,
+  InboundRequestStatusColors,
+} from "../../types/inboundRequest";
+import { parseInboundRequestStatusToVietnamese } from "../../utils/translateInboundRequestStatus";
 
 interface DashboardPageProps {
   data: DashBoardGetResponse;
@@ -112,19 +123,102 @@ const DashboardPage = ({ data }: DashboardPageProps) => {
     { type: "Giá trị xuất kho", value: Number(data.totalOutboundValue) || 0 },
   ];
 
-  const lowStockChartData = data?.lowStockProducts
-    ? data.lowStockProducts.slice(0, 3).map((item) => ({
-        product: item.productName,
-        currentStock: Number(item.currentStock) || 0,
-        threshold: Number(item.threshold) || 0,
-      }))
-    : [];
+  const lowStockChartData = data.lowStockProducts ?? [];
+
+  const newInboundOrdersData = data.newInboundOrders;
+
+  const accountantInboundRequest = data.accountantInboundOrders;
+
+  const directorInboundRequest = data.directorInboundOrders;
 
   const orderSummaryChartData = [
     { type: "Đơn hàng mới", value: data.orderSummary?.newOrders.length },
     {
       type: "Đơn hàng đang xử lý",
       value: data.orderSummary?.processingOrders.length,
+    },
+  ];
+
+  const lowStockColumns: TableColumnsType<ProductLowStockDto> = [
+    {
+      title: "Mã sản phẩm",
+      dataIndex: "productId",
+      key: "productId-lowStokc",
+    },
+    {
+      title: "Tên sản phẩm",
+      dataIndex: "productName",
+      key: "productName-lowStokc",
+    },
+    {
+      title: "Tồn kho hiện tại",
+      dataIndex: "currentStock",
+      key: "currentStock-lowStokc",
+    },
+    {
+      title: "Ngưỡng tồn kho",
+      dataIndex: "threshold",
+      key: "threshold-lowStokc",
+    },
+  ];
+
+  const newInboundOrdersColumns: TableColumnsType<OrderDto> = [
+    {
+      title: "Mã tham chiếu",
+      dataIndex: "orderCode",
+      key: "orderCode-ibReport",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status-ibReport",
+      render: (status) => renderTagForInbound(status),
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      key: "createdAt-ibReport",
+      render: (createdAt: Date) => formatDateTime(new Date(createdAt)),
+    },
+  ];
+
+  const accountantInboundRequestColumns: TableColumnsType<OrderDto> = [
+    {
+      title: "Mã tham chiếu",
+      dataIndex: "orderCode-accReq",
+      key: "orderCode",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status-accReq",
+      render: (status) => renderTagForInboundRequest(status),
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      key: "createdAt-accReq",
+      render: (createdAt: Date) => formatDateTime(new Date(createdAt)),
+    },
+  ];
+
+  const directorInboundRequestColumns: TableColumnsType<OrderDto> = [
+    {
+      title: "Mã tham chiếu",
+      dataIndex: "orderCode",
+      key: "orderCode-dirReq",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status-dirReq",
+      render: (status) => renderTagForInboundRequest(status),
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      key: "createdAt-dirReq",
+      render: (createdAt: Date) => formatDateTime(new Date(createdAt)),
     },
   ];
 
@@ -138,31 +232,6 @@ const DashboardPage = ({ data }: DashboardPageProps) => {
     },
     tooltip: { show: true },
     legend: { position: "top" },
-  };
-
-  const barConfig = {
-    height: 220,
-    xField: "currentStock",
-    yField: "product",
-    label: {
-      position: "right",
-      style: { fill: "#000000", opacity: 0.8, fontSize: 12 },
-    },
-    annotations: lowStockChartData.map((item) => ({
-      type: "line",
-      xField: "currentStock",
-      yField: "product",
-      start: [0, item.product],
-      end: [item.threshold, item.product],
-      style: { stroke: "#EF4444", lineDash: [4, 4] },
-      text: {
-        content: `Ngưỡng: ${item.threshold}`,
-        position: ["100%", "0%"],
-        style: { fill: "#EF4444", fontSize: 12 },
-        offsetX: 15,
-      },
-    })),
-    tooltip: { show: true },
   };
 
   const pieConfig = {
@@ -246,25 +315,25 @@ const DashboardPage = ({ data }: DashboardPageProps) => {
           </StyledCard>
         </ColResponsive>
         <ColResponsive xs={24} sm={12} lg={8}>
-          <StyledCard title="Sản phẩm xuất/nhập khẩu nhiều nhất">
+          <StyledCard title="Sản phẩm xuất/nhập kho nhiều nhất">
             <ProductInfo>
               <ProductSection>
-                <h4>Xuất khẩu:</h4>
+                <h4>Xuất kho:</h4>
                 {data.bestExportedProduct?.productName ? (
                   <p>
                     {data.bestExportedProduct.productName}:{" "}
-                    <span>{data.bestExportedProduct.totalQuantity}</span>
+                    <strong>{data.bestExportedProduct.totalQuantity}</strong>
                   </p>
                 ) : (
                   <NoDataText>Không có dữ liệu</NoDataText>
                 )}
               </ProductSection>
               <ProductSection>
-                <h4>Nhập khẩu:</h4>
+                <h4>Nhập kho:</h4>
                 {data.bestImportedProduct?.productName ? (
                   <p>
                     {data.bestImportedProduct.productName}:{" "}
-                    <span>{data.bestImportedProduct.totalQuantity}</span>
+                    <strong>{data.bestImportedProduct.totalQuantity}</strong>
                   </p>
                 ) : (
                   <NoDataText>Không có dữ liệu</NoDataText>
@@ -281,7 +350,11 @@ const DashboardPage = ({ data }: DashboardPageProps) => {
             {lowStockChartData.length === 0 ? (
               <NoDataText>Không có dữ liệu</NoDataText>
             ) : (
-              <Bar {...barConfig} data={lowStockChartData} />
+              <Table<ProductLowStockDto>
+                dataSource={lowStockChartData}
+                columns={lowStockColumns}
+                pagination={{ pageSize: 5 }}
+              />
             )}
           </StyledCard>
         </ColResponsive>
@@ -299,19 +372,44 @@ const DashboardPage = ({ data }: DashboardPageProps) => {
       </RowWrapper>
 
       <RowWrapper gutter={[16, 16]}>
-        <Col xs={24}>
-          <StyledCard title="Tài liệu mới">
-            {data.newDocuments.length === 0 ? (
+        <Col lg={24}>
+          <StyledCard title="Đơn nhập kho (Chờ thủ kho báo cáo)">
+            {newInboundOrdersData.length <= 0 ? (
               <NoDataText>Không có dữ liệu</NoDataText>
             ) : (
-              <List
-                dataSource={data.newDocuments}
-                renderItem={(item: DocumentStatusDto) => (
-                  <ListItem>
-                    <span>{item.documentCode}</span> ({item.documentType}):{" "}
-                    {item.status} - {formatDateTime(new Date(item.createdAt))}
-                  </ListItem>
-                )}
+              <Table<OrderDto>
+                dataSource={newInboundOrdersData}
+                columns={newInboundOrdersColumns}
+                pagination={{ pageSize: 5 }}
+              />
+            )}
+          </StyledCard>
+        </Col>
+      </RowWrapper>
+
+      <RowWrapper gutter={[16, 16]}>
+        <Col xs={24} lg={12}>
+          <StyledCard title="Yêu cầu nhập kho (kế toán)">
+            {accountantInboundRequest.length <= 0 ? (
+              <NoDataText>Không có dữ liệu</NoDataText>
+            ) : (
+              <Table<OrderDto>
+                dataSource={accountantInboundRequest}
+                columns={accountantInboundRequestColumns}
+                pagination={{ pageSize: 5 }}
+              />
+            )}
+          </StyledCard>
+        </Col>
+        <Col xs={24} lg={12}>
+          <StyledCard title="Yêu cầu nhập kho (CEO)">
+            {directorInboundRequest.length <= 0 ? (
+              <NoDataText>Không có dữ liệu</NoDataText>
+            ) : (
+              <Table<OrderDto>
+                dataSource={directorInboundRequest}
+                columns={directorInboundRequestColumns}
+                pagination={{ pageSize: 5 }}
               />
             )}
           </StyledCard>
@@ -322,3 +420,16 @@ const DashboardPage = ({ data }: DashboardPageProps) => {
 };
 
 export default DashboardPage;
+
+const renderTagForInbound = (status: string) => {
+  const color = InboundStatusColors[InboundStatusAsNum[status] - 1];
+  return <Tag color={color}>{parseInboundStatusToVietnamese(status)}</Tag>;
+};
+
+const renderTagForInboundRequest = (status: string) => {
+  const color =
+    InboundRequestStatusColors[InboundRequestStatusAsNum[status] - 1];
+  return (
+    <Tag color={color}>{parseInboundRequestStatusToVietnamese(status)}</Tag>
+  );
+};

@@ -29,6 +29,11 @@ export const updateAccount = (data: UserPutRequest) =>
     body: JSON.stringify(data),
   });
 
+export const removeAccount = (accountId: number) =>
+  apiClient(`/api/Admin/deleteAccount/${accountId}`, {
+    method: "DELETE",
+  });
+
 export const getAccounts = (
   query: UserGetRequestParams = { Page: 1, PageSize: 10 }
 ) => {

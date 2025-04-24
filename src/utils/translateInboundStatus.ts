@@ -6,7 +6,7 @@ export const parseInboundStatusToVietnamese = (
 ): string => {
   switch (status) {
     case InboundStatusAsString[InboundStatus.Pending]:
-      return isAccountant ? "Chờ kế toán duyệt" : "Chờ thủ kho báo cáo";
+      return isAccountant ? "Chờ kế toán duyệt" : "Chờ thủ kho tạo báo cáo";
     case InboundStatusAsString[InboundStatus.InProgress]:
       return "Đang tiến hành";
     case InboundStatusAsString[InboundStatus.Completed]:

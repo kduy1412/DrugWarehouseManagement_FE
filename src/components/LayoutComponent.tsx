@@ -10,7 +10,14 @@ import {
   Space,
   theme,
 } from "antd";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  Outlet,
+  redirect,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { getVietnameseTranslations } from "../utils/breadcumHelper";
 import { privateRoutes } from "../routes/privateRoutes";
 import { useAuth } from "../hooks/useAuth";
@@ -28,6 +35,8 @@ import { Roles } from "../types/enums/roles";
 import styled from "styled-components";
 import { parseRoleName } from "../utils/translateRolesName";
 import { useState } from "react";
+import { queryClient } from "../lib/queryClient";
+import { AUTH_QUERY_KEY } from "../types/constants";
 
 const { Sider } = Layout;
 
@@ -42,6 +51,21 @@ const LayoutComponent = () => {
 
   const handleMenuClick = ({ key }: { key: string }) => {
     navigate(key, { replace: true, flushSync: true });
+  };
+
+  if (!role) {
+    return <Navigate to={"/login"} replace />;
+  }
+
+  const handleLogout = () => {
+    logout();
+    queryClient.invalidateQueries({
+      predicate: (query) => query.queryKey.includes(AUTH_QUERY_KEY),
+    });
+
+    queryClient.removeQueries({
+      predicate: (query) => !query.queryKey.includes(AUTH_QUERY_KEY),
+    });
   };
 
   const items: MenuProps["items"] = [
@@ -62,7 +86,7 @@ const LayoutComponent = () => {
       label: "Logout",
       key: "logout",
       icon: <LogoutOutlined />,
-      onClick: logout,
+      onClick: handleLogout,
     },
   ];
 
@@ -233,7 +257,8 @@ const UserInformation = styled.span`
 
 const CloseButton = styled(Button)`
   width: 2.5rem;
-  border: none;
+  margin-right: var(--line-width-thin);
+  border-color: var(--color-background);
   box-shadow: none;
   &:not(:disabled):hover {
     border-color: var(--color-secondary-600) !important;

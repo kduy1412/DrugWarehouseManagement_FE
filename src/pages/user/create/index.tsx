@@ -28,8 +28,7 @@ const CreateUserPage: React.FC = () => {
   };
 
   return (
-    <StyledContainer>
-      <h1>Tạo tài khoản mới</h1>
+    <StyledContainer title="Tạo tài khoản mới">
       <Form
         form={form}
         layout="vertical"
@@ -122,6 +121,7 @@ export default CreateUserPage;
 
 const StyledContainer = styled(Card)`
   max-width: 600px;
+  min-width: 400px;
   margin: 0 auto;
   padding: 24px;
 
@@ -139,6 +139,10 @@ const SpinWrapper = styled.div`
 `;
 
 const CtaButton = styled(Button)`
+  width: 100%;
+  padding: 1.5rem 0;
+  font-size: var(--font-size-title-2);
+  font-weight: var(--font-weight-medium);
   &:not(:disabled) {
     color: white !important;
   }

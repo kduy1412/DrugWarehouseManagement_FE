@@ -17,8 +17,7 @@ const CreateWarehousePage: React.FC = () => {
   };
 
   return (
-    <StyledContainer>
-      <h1>Tạo kho mới</h1>
+    <StyledContainer title="Tạo kho mới">
       <Form
         form={form}
         layout="vertical"
@@ -39,7 +38,7 @@ const CreateWarehousePage: React.FC = () => {
         <Form.Item
           label="Địa chỉ"
           name="address"
-          rules={[{ required: false }]} // Optional field
+          rules={[{ required: true, message: "Vui lòng nhập địa chỉ kho" }]}
         >
           <Input placeholder="Nhập địa chỉ kho" />
         </Form.Item>
@@ -63,17 +62,11 @@ const CreateWarehousePage: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={isPending}>
+          <CtaButton htmlType="submit" loading={isPending}>
             Tạo kho
-          </Button>
+          </CtaButton>
         </Form.Item>
       </Form>
-
-      {isPending && (
-        <SpinWrapper>
-          <Spin />
-        </SpinWrapper>
-      )}
     </StyledContainer>
   );
 };
@@ -92,9 +85,17 @@ const StyledContainer = styled(Card)`
   }
 `;
 
-const SpinWrapper = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+const CtaButton = styled(Button)`
+  width: 100%;
+  padding: 1.5rem 0;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-title-2);
+  &:not(:disabled) {
+    color: white !important;
+  }
+  border-color: transparent !important;
+  background-color: var(--color-secondary-600);
+  &:not(:disabled):hover {
+    background-color: var(--color-secondary-500) !important;
+  }
 `;

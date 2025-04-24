@@ -109,6 +109,7 @@ const CategoryPage = () => {
   const selectedMainCategoryData = mainCategories.find(
     (category) => category.categoriesId === selectedMainCategory
   );
+
   const selectedSubCategoryData = subCategories.find(
     (category) => category.categoriesId === selectedSubCategory
   );
@@ -248,7 +249,7 @@ const CategoryPage = () => {
         <CreateCategoryModal
           parentCategoryId={selectedMainCategory}
           isMainCategory={isActionOnMainCategory}
-          isOpen={setIsCreateModalOpen}
+          setOpen={setIsCreateModalOpen}
           params={initialParamsValue}
         />
       )}
@@ -270,7 +271,7 @@ const CategoryPage = () => {
                 }
           }
           isMainCategory={isActionOnMainCategory}
-          isOpen={setIsEditModalOpen}
+          setOpen={setIsEditModalOpen}
           params={initialParamsValue}
         />
       )}
@@ -281,7 +282,7 @@ const CategoryPage = () => {
               ? selectedMainCategory!
               : selectedSubCategory!
           }
-          isOpen={setIsRemoveModalOpen}
+          setOpen={setIsRemoveModalOpen}
           params={initialParamsValue}
         />
       )}

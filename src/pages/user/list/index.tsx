@@ -50,9 +50,26 @@ const UserListPage = () => {
 
   /** Data Fetching */
   const { data, isLoading } = useGetUserQuery(initParams);
-  const { mutate: resetPasswordMutation, isPending } =
+  const { mutate: resetPasswordMutation, isPending: resetPasswordPending } =
+    useResetUserPasswordMutation();
+  const { mutate: removeMutation, isPending: removePending } =
     useResetUserPasswordMutation();
 
+  const handleResetPasswordConfirmed = () => {
+    resetPasswordMutation(selectedItem!.id, {
+      onSuccess: () => {
+        setIsResetPasswordModalOpen(false);
+      },
+    });
+  };
+
+  const handleOnClickDelete = () => {
+    removeMutation(selectedItem!.id, {
+      onSuccess: () => {
+        setIsDeletedModalOpen(false);
+      },
+    });
+  };
   /** Column Def */
   const columns: TableProps<User>["columns"] = [
     {
@@ -116,110 +133,22 @@ const UserListPage = () => {
           setSelectedItem(item);
         };
 
-        const handleResetPasswordConfirmed = () => {
-          resetPasswordMutation(item.id);
-          setIsResetPasswordModalOpen(false);
+        const onClickDelete = () => {
+          setIsDeletedModalOpen(true);
+          setSelectedItem(item);
         };
 
-        const handleOnClickDelete = () => {
-          console.log("Delete: " + JSON.stringify(item.id));
+        const onClickResetPassword = () => {
+          setIsResetPasswordModalOpen(true);
+          setSelectedItem(item);
         };
 
         return (
-          <>
-            <ActionDropdown
-              onDetail={handleOnClickDetail}
-              onDelete={() => setIsDeletedModalOpen(true)}
-              onResetPassword={() => setIsResetPasswordModalOpen(true)}
-            />
-
-            {selectedItem && (
-              <DetailsModal
-                isModalOpen={isDetailModalOpen}
-                item={selectedItem}
-                setIsModalOpen={setIsDetailModalOpen}
-              />
-            )}
-            <StyledModal
-              open={isResetPasswordModalOpen}
-              title={
-                <span>
-                  <LockOutlined style={{ color: "#1890ff", marginRight: 8 }} />
-                  Thiết lập lại mật khẩu
-                </span>
-              }
-              onCancel={() => setIsResetPasswordModalOpen(false)}
-              footer={[
-                <CloseButton
-                  key="close"
-                  onClick={() => setIsResetPasswordModalOpen(false)}
-                >
-                  Đóng
-                </CloseButton>,
-                <CtaButton key="save" onClick={handleResetPasswordConfirmed}>
-                  Xác nhận
-                </CtaButton>,
-              ]}
-            >
-              <ContentWrapper>
-                <ExclamationCircleOutlined
-                  style={{
-                    color: "#1890ff",
-                    fontSize: 24,
-                    marginRight: 16,
-                  }}
-                />
-                <p>
-                  Bạn có chắc chắn muốn thiết lập lại mật khẩu cho người dùng
-                  với ID: <strong>{item.id}</strong> không? Hành động này không
-                  thể hoàn tác.
-                </p>
-              </ContentWrapper>
-            </StyledModal>
-
-            {/* Delete Modal */}
-            <StyledModal
-              open={isDeletedModalOpen}
-              title={
-                <span>
-                  <DeleteOutlined
-                    style={{ color: "#ff4d4f", marginRight: 8 }}
-                  />
-                  Xóa người dùng
-                </span>
-              }
-              onCancel={() => setIsDeletedModalOpen(false)}
-              footer={[
-                <CloseButton
-                  key="close"
-                  onClick={() => setIsDeletedModalOpen(false)}
-                >
-                  Đóng
-                </CloseButton>,
-                <CtaButton
-                  key="save"
-                  onClick={handleOnClickDelete}
-                  style={{ backgroundColor: "#ff4d4f" }}
-                >
-                  Xác nhận
-                </CtaButton>,
-              ]}
-            >
-              <ContentWrapper>
-                <ExclamationCircleOutlined
-                  style={{
-                    color: "#ff4d4f",
-                    fontSize: 24,
-                    marginRight: 16,
-                  }}
-                />
-                <p>
-                  Bạn có chắc chắn muốn xóa người dùng với ID:{" "}
-                  <strong>{item.id}</strong> không? Dữ liệu sẽ bị xóa vĩnh viễn.
-                </p>
-              </ContentWrapper>
-            </StyledModal>
-          </>
+          <ActionDropdown
+            onDetail={handleOnClickDetail}
+            onDelete={onClickDelete}
+            onResetPassword={onClickResetPassword}
+          />
         );
       },
     },
@@ -252,6 +181,7 @@ const UserListPage = () => {
     setInitParams((prev) => ({
       ...prev,
       PageSize: pageSize,
+      Page: 1,
     }));
   };
 
@@ -286,6 +216,95 @@ const UserListPage = () => {
         <Flex justify="center" align="center" style={{ height: "100%" }}>
           <Spin />
         </Flex>
+      )}
+      {selectedItem && (
+        <>
+          <DetailsModal
+            isModalOpen={isDetailModalOpen}
+            item={selectedItem}
+            setIsModalOpen={setIsDetailModalOpen}
+          />
+          <StyledModal
+            open={isResetPasswordModalOpen}
+            title={
+              <span>
+                <LockOutlined style={{ color: "#1890ff", marginRight: 8 }} />
+                Thiết lập lại mật khẩu
+              </span>
+            }
+            confirmLoading={resetPasswordPending}
+            onCancel={() => setIsResetPasswordModalOpen(false)}
+            footer={[
+              <CloseButton
+                key="close"
+                onClick={() => setIsResetPasswordModalOpen(false)}
+              >
+                Đóng
+              </CloseButton>,
+              <CtaButton key="save" onClick={handleResetPasswordConfirmed}>
+                Xác nhận
+              </CtaButton>,
+            ]}
+          >
+            <ContentWrapper>
+              <ExclamationCircleOutlined
+                style={{
+                  color: "#1890ff",
+                  fontSize: 24,
+                  marginRight: 16,
+                }}
+              />
+              <p>
+                Bạn có chắc chắn muốn thiết lập lại mật khẩu cho người dùng với
+                ID: <strong>{selectedItem.id}</strong> không? Hành động này
+                không thể hoàn tác.
+              </p>
+            </ContentWrapper>
+          </StyledModal>
+
+          {/* Delete Modal */}
+          <StyledModal
+            open={isDeletedModalOpen}
+            title={
+              <span>
+                <DeleteOutlined style={{ color: "#ff4d4f", marginRight: 8 }} />
+                Xóa người dùng
+              </span>
+            }
+            confirmLoading={removePending}
+            onCancel={() => setIsDeletedModalOpen(false)}
+            footer={[
+              <CloseButton
+                key="close"
+                onClick={() => setIsDeletedModalOpen(false)}
+              >
+                Đóng
+              </CloseButton>,
+              <CtaButton
+                key="save"
+                onClick={handleOnClickDelete}
+                style={{ backgroundColor: "#ff4d4f" }}
+              >
+                Xác nhận
+              </CtaButton>,
+            ]}
+          >
+            <ContentWrapper>
+              <ExclamationCircleOutlined
+                style={{
+                  color: "#ff4d4f",
+                  fontSize: 24,
+                  marginRight: 16,
+                }}
+              />
+              <p>
+                Bạn có chắc chắn muốn xóa người dùng với ID:{" "}
+                <strong>{selectedItem.id}</strong> không? Dữ liệu sẽ bị xóa vĩnh
+                viễn.
+              </p>
+            </ContentWrapper>
+          </StyledModal>
+        </>
       )}
     </>
   );

@@ -221,8 +221,13 @@ const ProfilePage = () => {
                 name="newPassword"
                 label="Mật khẩu mới"
                 rules={[
-                  { required: true, message: "Vui lòng nhập mật khẩu mới" },
+                  { required: true, message: "Vui lòng nhập mật khẩu!" },
                   { min: 8, message: "Mật khẩu phải có ít nhất 8 ký tự" },
+                  {
+                    pattern:
+                      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/,
+                    message: "Mật khẩu chứa ít nhất một số, và ký tự đặc biệt",
+                  },
                 ]}
               >
                 <Input.Password />
