@@ -8,6 +8,7 @@ export interface DashBoardGetResponse {
   outboundCancelledCount: number;
   outboundSampleCount: number;
   outboundReturnedCount: number;
+  outboundCompletedCount: number;
   bestExportedProduct?: ProductStatisticDto | null;
   bestImportedProduct?: ProductStatisticDto | null;
   inboundClassification: InboundClassificationDto;
@@ -18,7 +19,6 @@ export interface DashBoardGetResponse {
   accountantInboundOrders: OrderDto[];
   directorInboundOrders: OrderDto[];
 }
-
 
 export interface DashBoardGetRequestParams extends Record<any, any> {
   filter: DashboardGetRequestFilterParams;

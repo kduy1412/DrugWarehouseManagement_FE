@@ -99,6 +99,7 @@ const DashboardPage = ({ data }: DashboardPageProps) => {
     { type: "Hủy", value: Number(data.outboundCancelledCount) || 0 },
     { type: "Mẫu", value: Number(data.outboundSampleCount) || 0 },
     { type: "Trả hàng", value: Number(data.outboundReturnedCount) || 0 },
+    { type: "Đã giao", value: Number(data.outboundCompletedCount) || 0 },
   ].filter((item) => item.value > 0);
 
   const inboundClassificationChartData = [
@@ -185,8 +186,8 @@ const DashboardPage = ({ data }: DashboardPageProps) => {
   const accountantInboundRequestColumns: TableColumnsType<OrderDto> = [
     {
       title: "Mã tham chiếu",
-      dataIndex: "orderCode-accReq",
-      key: "orderCode",
+      dataIndex: "orderCode",
+      key: "orderCode-accReq",
     },
     {
       title: "Trạng thái",
