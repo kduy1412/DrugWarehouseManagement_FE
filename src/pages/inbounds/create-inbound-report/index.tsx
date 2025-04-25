@@ -26,13 +26,11 @@ import {
   InboundStatusColors,
 } from "../../../types/inbound";
 import { useUpdateInboundStatusMutation } from "../../../hooks/api/inbound/updateInboundStatusMutation";
-import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
 import { parseInboundStatusToVietnamese } from "../../../utils/translateInboundStatus";
 import { formatDateTime } from "../../../utils/timeHelper";
 import { useCreateInboundReportMutation } from "../../../hooks/api/inboundReport/createInboundReportMutation";
 import styled from "styled-components";
 import {
-  InboundReportStatus,
   InboundReportStatusAsString,
 } from "../../../types/inboundReport";
 

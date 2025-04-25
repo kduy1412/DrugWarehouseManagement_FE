@@ -129,7 +129,7 @@ const ImageContainer = styled.div`
 
 const FormContainer = styled(Card)`
   width: 50%;
-  padding: var(--line-width-heavy) var(--line-width-medium);
+  padding: var(--line-width-bold) var(--line-width-medium);
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
     rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
 `;
@@ -143,9 +143,9 @@ const StyledForm = styled.form`
 const LoginButton = styled(Button)`
   width: 100%;
   max-width: 90%;
-  padding: 2rem 0;
+  padding: 1.75rem 0;
   font-size: var(--font-size-title-1);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   &:not(:disabled) {
     color: white !important;
   }

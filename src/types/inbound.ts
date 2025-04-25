@@ -117,8 +117,8 @@ export interface InboundDetail {
 export enum InboundStatus {
   Pending = 1,
   InProgress = 2,
-  Cancelled = 3,
-  Completed = 4,
+  Completed = 3,
+  Cancelled = 4,
 }
 
 export const InboundStatusAsString = {
@@ -131,13 +131,13 @@ export const InboundStatusAsString = {
 export const InboundStatusAsNum: Record<string, number> = {
   Pending: 1,
   InProgress: 2,
-  Cancelled: 3,
-  Completed: 4,
+  Completed: 3,
+  Cancelled: 4,
 };
 
 export const InboundStatusColors = [
   "var(--status-pending)",
   "var(--status-in-progress)",
-  "var(--status-cancelled)",
   "var(--status-completed)",
+  "var(--status-cancelled)",
 ];
