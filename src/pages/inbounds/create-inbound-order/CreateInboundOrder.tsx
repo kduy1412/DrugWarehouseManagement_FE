@@ -12,9 +12,7 @@ import {
 import type { TabsProps } from "antd";
 import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
 import InformationProduct from "./InformationProducts";
-import {
-  CustomerGetRequestParams,
-} from "../../../types/customer";
+import { CustomerGetRequestParams } from "../../../types/customer";
 import { InboundRequestDetail } from "../../../types/inboundRequest";
 import { useGetWarehouseQuery } from "../../../hooks/api/warehouse/getWarehouseQuery";
 import { useCreateInboundMutation } from "../../../hooks/api/inbound/createInboundMutation";
@@ -81,10 +79,6 @@ const CreateInbound: React.FC<CreateInboundProps> = ({ record, onClose }) => {
       onClose();
     }
   }, [isSuccess]);
-
-  useEffect(() => {
-    console.log("Dữ liệu batches:", batches);
-  }, [batches]);
 
   const handleSubmit = async () => {
     try {

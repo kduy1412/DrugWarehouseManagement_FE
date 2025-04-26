@@ -219,18 +219,19 @@ const EditModal = ({
   };
 
   const handleSubmit = () => {
-    console.log(editData);
-    handleOnComplete();
     if (editData)
-      mutate({
-        id: item.outboundId,
-        data: {
-          ...editData,
-          status:
-            OutboundStatusAsString[editData.status as OutboundStatus] ??
-            editData.status,
+      mutate(
+        {
+          id: item.outboundId,
+          data: {
+            ...editData,
+            status:
+              OutboundStatusAsString[editData.status as OutboundStatus] ??
+              editData.status,
+          },
         },
-      });
+        { onSuccess: () => handleOnComplete() }
+      );
   };
   const handleOnComplete = () => {
     handleClear();
@@ -249,6 +250,7 @@ const EditModal = ({
       title="Chỉnh sửa"
       open={isModalOpen}
       onCancel={() => setIsModalOpen(false)}
+      confirmLoading={isPending}
       footer={[
         <CloseButton key="close" onClick={() => handleOnClose()}>
           Đóng

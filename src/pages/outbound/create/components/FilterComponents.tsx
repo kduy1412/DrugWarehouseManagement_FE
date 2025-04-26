@@ -8,13 +8,9 @@ import ProviderSelector from "../../../../components/provider/ProviderSelector";
 import { Provider, ProviderGetRequestParams } from "../../../../types/provider";
 import { useGetProviderQuery } from "../../../../hooks/api/provider/getProviderQuery";
 import { Product, ProductGetRequestParams } from "../../../../types/product";
-import { WarehouseGetRequestParams } from "../../../../types/warehouse";
 import { useGetProductQuery } from "../../../../hooks/api/product/getProductQuery";
-import { useGetWarehouseQuery } from "../../../../hooks/api/warehouse/getWarehouseQuery";
 import ProductSelector from "../../../../components/product/ProductSelector";
-import WarehouseSelector from "../../../../components/warehouse/WarehouseSelector";
 import styled from "styled-components";
-import { SystemWarehouseConfigEnum } from "../../../../types/enums/system";
 
 interface ComponentProps {
   setQuery: React.Dispatch<React.SetStateAction<LotGetRequestParams>>;
@@ -53,21 +49,11 @@ const FilterComponent = ({
       Search: null,
     });
 
-  const [warehouseFilterParams, setWarehouseFilterParams] =
-    useState<WarehouseGetRequestParams>({
-      Page: 1,
-      PageSize: 1000,
-      Search: null,
-    });
-
   const { data: queryProvider, isLoading: providerQueryLoading } =
     useGetProviderQuery(providerFilterParams);
 
   const { data: queryProduct, isLoading: productQueryLoading } =
     useGetProductQuery(productFilterParams);
-
-  const { data: queryWarehouse, isLoading: warehouseQueryLoading } =
-    useGetWarehouseQuery(warehouseFilterParams);
 
   const setDateFrom = (date: Dayjs | null) => {
     setFilterParam((prev) => ({
@@ -104,13 +90,6 @@ const FilterComponent = ({
     }));
   }, []);
 
-  const onSearchWarehouseChange = useCallback((value: string) => {
-    setWarehouseFilterParams((prev) => ({
-      ...prev,
-      Search: value,
-    }));
-  }, []);
-
   const onSelectedProvider = (record: Provider | null) => {
     setQuery((prev) => ({
       ...prev,
@@ -123,14 +102,6 @@ const FilterComponent = ({
     setQuery((prev) => ({
       ...prev,
       ProductId: record?.productId,
-      Page: 1,
-    }));
-  };
-
-  const onSelectedWarehouse = (record: number | null) => {
-    setQuery((prev) => ({
-      ...prev,
-      WarehouseId: record,
       Page: 1,
     }));
   };
@@ -149,12 +120,6 @@ const FilterComponent = ({
     setQuery(initialQueryParams);
     setFilterParam(initialFilterParams);
   };
-
-  const filteredWarehouse = queryWarehouse?.items.filter(
-    (item) =>
-      item.warehouseId !== SystemWarehouseConfigEnum.CancelWarehouse &&
-      item.warehouseId !== SystemWarehouseConfigEnum.ReturnedWarehouse
-  );
 
   return (
     <StyledSpace
@@ -201,13 +166,6 @@ const FilterComponent = ({
         onSelectedProductChange={onSelectedProduct}
         products={queryProduct?.items}
         loading={productQueryLoading}
-      />
-      <WarehouseSelector
-        value={query.WarehouseId}
-        onSearchValueChange={onSearchWarehouseChange}
-        onSelectedWarehouseChange={onSelectedWarehouse}
-        warehouses={filteredWarehouse}
-        loading={warehouseQueryLoading}
       />
       <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
         Tìm kiếm

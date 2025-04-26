@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { LotGetRequestParams, LotGetView } from "../../../../types/lot";
 import { useGetLotQuery } from "../../../../hooks/api/lot/getLotQuery";
 import { formatDateTime } from "../../../../utils/timeHelper";
@@ -27,6 +27,10 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { useCreateOutboundMutation } from "../../../../hooks/api/outbound/createOutboundMutation";
 import { useNavigate } from "react-router-dom";
 import { validateObjectProperties } from "../../../../utils/validateObjectProperties";
+import WarehouseSelector from "../../../../components/warehouse/WarehouseSelector";
+import { WarehouseGetRequestParams } from "../../../../types/warehouse";
+import { useGetWarehouseQuery } from "../../../../hooks/api/warehouse/getWarehouseQuery";
+import { SystemWarehouseConfigEnum } from "../../../../types/enums/system";
 
 const initialQueryParams: LotGetRequestParams = {
   Page: 1,
@@ -71,7 +75,21 @@ const ProductInformationStep = ({
     ProductsSelectedProps[] | []
   >([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedWarehouse, setSelectedWarehouse] = useState<number | null>(
+    null
+  );
+  const [warehouseFilterParams, setWarehouseFilterParams] =
+    useState<WarehouseGetRequestParams>({
+      Page: 1,
+      PageSize: 1000,
+      Search: null,
+    });
+
   const { mutate, isPending, isSuccess } = useCreateOutboundMutation();
+
+  const { data: queryWarehouse, isLoading: warehouseQueryLoading } =
+    useGetWarehouseQuery(warehouseFilterParams);
+
   const navigate = useNavigate();
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
@@ -249,19 +267,19 @@ const ProductInformationStep = ({
       title: "Đơn Giá",
       dataIndex: "unitPrice",
       key: "unitPrice",
-      render: (unitPrice, record, index) =>
-        !record.usePricingFormula && (
-          <InputNumber
-            min={1000}
-            value={unitPrice}
-            formatter={(value) =>
-              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            }
-            style={{ width: "100%", maxWidth: "12rem" }}
-            parser={(value) => (value ? parseInt(value.replace(/\D/g, "")) : 0)}
-            onChange={(value) => handleChange(index, "unitPrice", value)}
-          />
-        ),
+      render: (unitPrice, record, index) => (
+        <InputNumber
+          min={1000}
+          value={unitPrice}
+          formatter={(value) =>
+            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          }
+          style={{ width: "100%", maxWidth: "12rem" }}
+          parser={(value) => (value ? parseInt(value.replace(/\D/g, "")) : 0)}
+          onChange={(value) => handleChange(index, "unitPrice", value)}
+          disabled={record.usePricingFormula}
+        />
+      ),
     },
     {
       title: "Chiết Khấu",
@@ -286,43 +304,39 @@ const ProductInformationStep = ({
       title: "Biên Lợi Nhuận",
       dataIndex: "profitMargin",
       key: "profitMargin",
-      render: (profitMargin, record, index) =>
-        record.usePricingFormula ? (
-          <InputNumber
-            min={0}
-            value={profitMargin ?? 1}
-            formatter={(value) => `${value}%`}
-            style={{ width: "100%", maxWidth: "12rem" }}
-            parser={(value) => {
-              const parsed = value
-                ? parseFloat(value.replace(/[^\d.]/g, ""))
-                : 0;
-              return Math.min(Math.max(parsed, 0), 100);
-            }}
-            onChange={(value) => handleChange(index, "profitMargin", value)}
-          />
-        ) : null,
+      render: (profitMargin, record, index) => (
+        <InputNumber
+          min={0}
+          value={profitMargin ?? 1}
+          formatter={(value) => `${value}%`}
+          style={{ width: "100%", maxWidth: "12rem" }}
+          parser={(value) => {
+            const parsed = value ? parseFloat(value.replace(/[^\d.]/g, "")) : 0;
+            return Math.min(Math.max(parsed, 0), 100);
+          }}
+          disabled={!record.usePricingFormula}
+          onChange={(value) => handleChange(index, "profitMargin", value)}
+        />
+      ),
     },
     {
       title: "Phần Trăm Thuế",
       dataIndex: "taxPercentage",
       key: "taxPercentage",
-      render: (taxPercentage, record, index) =>
-        record.usePricingFormula ? (
-          <InputNumber
-            min={0}
-            value={taxPercentage ?? 1}
-            formatter={(value) => `${value}%`}
-            style={{ width: "100%", maxWidth: "12rem" }}
-            parser={(value) => {
-              const parsed = value
-                ? parseFloat(value.replace(/[^\d.]/g, ""))
-                : 0;
-              return Math.min(Math.max(parsed, 0), 100);
-            }}
-            onChange={(value) => handleChange(index, "taxPercentage", value)}
-          />
-        ) : null,
+      render: (taxPercentage, record, index) => (
+        <InputNumber
+          min={0}
+          value={taxPercentage ?? 1}
+          formatter={(value) => `${value}%`}
+          style={{ width: "100%", maxWidth: "12rem" }}
+          parser={(value) => {
+            const parsed = value ? parseFloat(value.replace(/[^\d.]/g, "")) : 0;
+            return Math.min(Math.max(parsed, 0), 100);
+          }}
+          disabled={!record.usePricingFormula}
+          onChange={(value) => handleChange(index, "taxPercentage", value)}
+        />
+      ),
     },
     {
       title: "Công thức định giá",
@@ -396,6 +410,23 @@ const ProductInformationStep = ({
     }
   };
 
+  const onSelectedWarehouse = (record: number | null) => {
+    setSelectedWarehouse(record);
+  };
+
+  const onSearchWarehouseChange = useCallback((value: string) => {
+    setWarehouseFilterParams((prev) => ({
+      ...prev,
+      Search: value,
+    }));
+  }, []);
+
+  const filteredWarehouse = queryWarehouse?.items.filter(
+    (item) =>
+      item.warehouseId !== SystemWarehouseConfigEnum.CancelWarehouse &&
+      item.warehouseId !== SystemWarehouseConfigEnum.ReturnedWarehouse
+  );
+
   useEffect(() => {
     const mapToFormData = () => {
       const outboundDetails: OutboundDetailRequest[] = selectedProduct.map(
@@ -424,81 +455,107 @@ const ProductInformationStep = ({
     updateFormData(mapToFormData());
   }, [selectedProduct, updateFormData]);
 
+  useEffect(() => {
+    if (selectedWarehouse) {
+      setQueryParams((prev) => ({
+        ...prev,
+        Page: 1,
+        WarehouseId: selectedWarehouse,
+      }));
+    }
+    setSelectedProduct([]);
+  }, [selectedWarehouse]);
+
   if (isSuccess) {
     navigate("/outbound/history", { flushSync: true });
   }
 
   return (
     <>
-      <StyledCard>
-        <ListProductButton onClick={() => setIsModalOpen(true)}>
-          {`Mặt hàng đã chọn (${selectedProduct.length})`}
-        </ListProductButton>
-        <FilterComponent
-          initialQueryParams={initialQueryParams}
-          setQuery={setQueryParams}
-          query={queryParams}
-        />
-        <CtaButton onClick={onClickAddProduct} disabled={!hasSelected}>
-          Thêm vào đơn
-        </CtaButton>
-      </StyledCard>
       <StyledDivider orientation="left" orientationMargin={0}>
-        Danh sách hàng tồn kho
+        Chọn kho muốn lấy hàng
       </StyledDivider>
-      <Table<LotGetView>
-        bordered
-        pagination={false}
-        dataSource={data?.items}
-        loading={isLoading}
-        columns={lotColumns}
-        rowSelection={rowSelection}
-        rowKey={(record) => record.lotId}
+      <WarehouseSelector
+        value={selectedWarehouse}
+        onSearchValueChange={onSearchWarehouseChange}
+        onSelectedWarehouseChange={onSelectedWarehouse}
+        warehouses={filteredWarehouse}
+        loading={warehouseQueryLoading}
+        rootClassName="root-select-width-full"
       />
-      {data && (
-        <StyledPagination
-          showSizeChanger
-          align="end"
-          style={{
-            marginTop: "var(--line-width-light)",
-          }}
-          defaultCurrent={1}
-          total={data?.totalCount}
-          pageSize={data?.pageSize}
-          current={queryParams.Page}
-          onChange={handleOnPageChange}
-          onShowSizeChange={handleOnPageSizeChange}
-        />
-      )}
-      <CtaButton
-        type="primary"
-        onClick={handleSubmit}
-        style={{ marginTop: 16 }}
-        loading={isPending}
-        disabled={selectedProduct.length <= 0}
-      >
-        Hoàn tất
-      </CtaButton>
+      {selectedWarehouse && (
+        <>
+          <StyledCard>
+            <ListProductButton onClick={() => setIsModalOpen(true)}>
+              {`Mặt hàng đã chọn (${selectedProduct.length})`}
+            </ListProductButton>
+            <FilterComponent
+              initialQueryParams={initialQueryParams}
+              setQuery={setQueryParams}
+              query={queryParams}
+            />
+            <CtaButton onClick={onClickAddProduct} disabled={!hasSelected}>
+              Thêm vào đơn
+            </CtaButton>
+          </StyledCard>
+          <StyledDivider orientation="left" orientationMargin={0}>
+            Danh sách hàng tồn kho
+          </StyledDivider>
+          <Table<LotGetView>
+            bordered
+            pagination={false}
+            dataSource={data?.items}
+            loading={isLoading}
+            columns={lotColumns}
+            rowSelection={rowSelection}
+            rowKey={(record) => record.lotId}
+          />
+          {data && (
+            <StyledPagination
+              showSizeChanger
+              align="end"
+              style={{
+                marginTop: "var(--line-width-light)",
+              }}
+              defaultCurrent={1}
+              total={data?.totalCount}
+              pageSize={data?.pageSize}
+              current={queryParams.Page}
+              onChange={handleOnPageChange}
+              onShowSizeChange={handleOnPageSizeChange}
+            />
+          )}
+          <CtaButton
+            type="primary"
+            onClick={handleSubmit}
+            style={{ marginTop: 16 }}
+            loading={isPending}
+            disabled={selectedProduct.length <= 0}
+          >
+            Hoàn tất
+          </CtaButton>
 
-      <StyledModal
-        title={null}
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        footer={null}
-        wrapClassName="ant-modal-fullscreen"
-      >
-        <StyledDivider orientation="left" orientationMargin={0}>
-          Mặt hàng đã chọn
-        </StyledDivider>
-        <Table<ProductsSelectedProps>
-          bordered
-          columns={productColumn}
-          dataSource={selectedProduct}
-          rowKey="lotId"
-          pagination={false}
-          style={{ maxHeight: "95vh", overflowY: "auto" }}
-        />
-      </StyledModal>
+          <StyledModal
+            title={null}
+            open={isModalOpen}
+            onCancel={() => setIsModalOpen(false)}
+            footer={null}
+            wrapClassName="ant-modal-fullscreen"
+          >
+            <StyledDivider orientation="left" orientationMargin={0}>
+              Mặt hàng đã chọn
+            </StyledDivider>
+            <Table<ProductsSelectedProps>
+              bordered
+              columns={productColumn}
+              dataSource={selectedProduct}
+              rowKey="lotId"
+              pagination={false}
+              style={{ maxHeight: "95vh", overflowY: "auto" }}
+            />
+          </StyledModal>
+        </>
+      )}
     </>
   );
 };
@@ -526,7 +583,7 @@ const ListProductButton = styled(CtaButton)`
 `;
 
 const StyledCard = styled(Card)`
-  margin-bottom: var(--line-width-regular);
+  margin: var(--line-width-regular) 0;
 
   .ant-card-body {
     display: flex;

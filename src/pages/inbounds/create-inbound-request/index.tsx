@@ -414,6 +414,7 @@ const CreateInboundRequest: React.FC = () => {
         open={modalConfirmInboundRequest}
         onOk={handleSubmit}
         onCancel={handleCancelSubmit}
+        confirmLoading={isPending}
         footer={[
           <CloseButton key="close" onClick={handleCancelSubmit}>
             Hủy

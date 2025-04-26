@@ -15,6 +15,7 @@ import {
   SubCategoryResponse,
 } from "../../types/category";
 import { useGetCategoryById } from "../../hooks/api/category/getCategoryByIdQuery";
+import { SystemCategoryConfigList } from "../../types/enums/system";
 
 const CategoryPage = () => {
   // Component State
@@ -173,7 +174,10 @@ const CategoryPage = () => {
               />
               <CloseButton
                 icon={<DeleteOutlined />}
-                disabled={!selectedMainCategory}
+                disabled={
+                  !selectedMainCategory ||
+                  SystemCategoryConfigList.includes(selectedMainCategory!)
+                }
                 onClick={onRemoveMainCategory}
               />
             </Flex>

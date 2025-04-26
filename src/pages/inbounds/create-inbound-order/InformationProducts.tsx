@@ -7,16 +7,16 @@ import {
   Modal,
   Input,
   Radio,
-  Select,
   DatePicker,
   InputNumber,
   notification,
+  TableColumnsType,
 } from "antd";
 import moment from "moment";
 import { InboundRequestDetail } from "../../../types/inboundRequest";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
 import dayjs from "dayjs";
-import styled from "styled-components";
+import { DeleteOutlined } from "@ant-design/icons";
 
 interface Batch {
   key: string;
@@ -71,6 +71,38 @@ const InformationProduct: React.FC<ProductProps> = ({
     key: index.toString(),
   }));
 
+  const removeBatch = (key: string) => {
+    const batch = batches.find((item) => item.key === key);
+    if (!batch) return;
+
+    setBatches((prev) => prev.filter((item) => item.key !== key));
+
+    setAvailableProducts((prev) => {
+      const existingProduct = prev.find(
+        (item) => item.productId === batch.productId
+      );
+
+      if (existingProduct) {
+        return prev.map((item) =>
+          item.productId === batch.productId
+            ? { ...item, quantity: item.quantity + batch.quantity }
+            : item
+        );
+      }
+
+      return [
+        ...prev,
+        {
+          productId: batch.productId,
+          productName: batch.productName,
+          quantity: batch.quantity,
+          totalPrice: batch.totalPrice,
+          unitPrice: batch.unitPrice,
+        },
+      ];
+    });
+  };
+
   const productColumns = [
     {
       title: "Chọn",
@@ -92,7 +124,7 @@ const InformationProduct: React.FC<ProductProps> = ({
     },
   ];
 
-  const batchColumns = [
+  const batchColumns: TableColumnsType<Batch> = [
     { title: "Mã lô", dataIndex: "lotNumber", key: "lotNumber" },
     { title: "Tên sản phẩm", dataIndex: "productName", key: "productName" },
     {
@@ -107,6 +139,15 @@ const InformationProduct: React.FC<ProductProps> = ({
       dataIndex: "totalPrice",
       key: "totalPrice",
       render: (totalPrice: number) => renderPrice(totalPrice),
+    },
+    {
+      key: "remove",
+      render: (_, record) => (
+        <DeleteOutlined
+          style={{ color: "red", cursor: "pointer", fontSize: "16px" }}
+          onClick={() => removeBatch(record.key)}
+        />
+      ),
     },
   ];
 
@@ -171,7 +212,22 @@ const InformationProduct: React.FC<ProductProps> = ({
       totalPrice: newPrice,
     };
 
-    setBatches((prevBatches) => [...prevBatches, newBatch]);
+    const existingBatch = batches.find(
+      (item) =>
+        item.lotNumber === newBatch.lotNumber &&
+        item.expiryDate === newBatch.expiryDate &&
+        item.manufacturingDate === newBatch.manufacturingDate
+    );
+    if (existingBatch) {
+      const newQuantity = existingBatch.quantity + newBatch.quantity;
+      setBatches((prev) => {
+        const idx = prev.findIndex((item) => item.key === existingBatch.key);
+        if (idx != -1) prev[idx].quantity = newQuantity;
+        return prev;
+      });
+    } else {
+      setBatches((prevBatches) => [...prevBatches, newBatch]);
+    }
 
     setAvailableProducts((prevProducts) => {
       if (newQuantity === 0) {
