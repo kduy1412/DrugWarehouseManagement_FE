@@ -13,7 +13,6 @@ import React, { useEffect, useState } from "react";
 import {
   Provider,
   ProviderGetRequestParams,
-  ProviderStatus,
   ProviderStatusColors,
 } from "../../../types/provider";
 import styled from "styled-components";
@@ -73,6 +72,12 @@ const ProviderListPage = () => {
       dataIndex: "taxCode",
       key: "taxCode",
       render: (_, { taxCode }) => <p>{taxCode}</p>,
+    },
+    {
+      title: "Mã chứng từ",
+      dataIndex: "documentNumber",
+      key: "documentNumber",
+      render: (_, { documentNumber }) => <p>{documentNumber}</p>,
     },
     {
       title: "Trạng Thái",

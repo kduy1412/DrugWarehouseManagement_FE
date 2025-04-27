@@ -11,6 +11,7 @@ export interface Warehouse {
   warehouseId: number;
   warehouseName: string;
   address: string;
+  documentNumber: string;
   status: number;
 }
 

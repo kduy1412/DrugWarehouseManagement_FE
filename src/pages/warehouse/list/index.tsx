@@ -61,6 +61,14 @@ const WarehouseListPage: React.FC = () => {
       render: (_, { address }) => <p>{address || "Chưa xác định"}</p>,
     },
     {
+      title: "Mã chứng từ",
+      dataIndex: "documentNumber",
+      key: "documentNumber",
+      render: (_, { documentNumber }) => (
+        <p>{documentNumber || "Chưa xác định"}</p>
+      ),
+    },
+    {
       title: "Trạng Thái",
       dataIndex: "status",
       key: "status",
