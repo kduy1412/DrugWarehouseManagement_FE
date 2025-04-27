@@ -117,6 +117,21 @@ export interface OutboundDetail {
   discount: number;
   productName: string | null;
   expiryDate: Date;
+  warehouseId: number;
+  warehouseCode: string;
+  warehouseName: string;
+  returns: OutboundDetailReturn[];
+}
+
+export interface OutboundDetailReturn {
+  returnOutboundDetailsId: number;
+  outboundDetailId: number;
+  returnedQuantity: number;
+  createdAt: Date;
+  note?: string | null;
+  productCode: string;
+  productName: string;
+  outboundCode: string;
 }
 
 //Status

@@ -7,8 +7,9 @@ import {
   Input,
   Modal,
   notification,
+  Select,
 } from "antd";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import {
   Product,
@@ -26,6 +27,8 @@ import {
   CategoryStatus,
   CategoryStatusArray,
 } from "../../../../types/category";
+import { useGetCategoryForSKUQuery } from "../../../../hooks/api/category/getCategoryByIdQuery";
+import { removeDiacritics } from "../../../../utils/removeDiacritics";
 
 interface ComponentProps {
   isModalOpen: boolean;
@@ -62,6 +65,8 @@ const EditModal = ({
       PageSize: 100,
       Search: "",
     });
+
+  const { data: SKUCategory } = useGetCategoryForSKUQuery();
   const { data, isLoading } = useGetCategoriesQuery(categoryFilterParams);
   const { mutate, isPending } = useUpdateProductMutation();
 
@@ -106,6 +111,13 @@ const EditModal = ({
       item.subCategories.length === 0 &&
       item.status !== CategoryStatusArray[CategoryStatus.Inactive - 1]
   );
+
+  const optionType = useMemo(() => {
+    return SKUCategory?.subCategories.map((item) => ({
+      value: item.categoryName,
+      label: item.categoryName,
+    }));
+  }, [SKUCategory]);
 
   const productInformationProps: DescriptionsProps["items"] = [
     {
@@ -157,7 +169,16 @@ const EditModal = ({
           ]}
           name="sku"
         >
-          <Input placeholder="Nhập đơn vị tính" />
+          <Select
+            showSearch
+            placeholder="Chọn đơn vị tính"
+            filterOption={(input, option) =>
+              (!option?.label ? "" : removeDiacritics(option.label))
+                .toLowerCase()
+                .includes(removeDiacritics(input.toLowerCase()))
+            }
+            options={optionType}
+          />
         </Form.Item>
       ),
     },

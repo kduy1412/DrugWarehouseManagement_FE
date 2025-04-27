@@ -14,6 +14,7 @@ import styled from "styled-components";
 import {
   OutboundDetail,
   OutboundGetView,
+  OutboundStatus,
   OutboundStatusColors,
 } from "../../../../types/outbound";
 import { formatDateTime } from "../../../../utils/timeHelper";
@@ -102,12 +103,10 @@ const DetailsModal = ({
   ];
 
   const columns: TableProps<OutboundDetail>["columns"] = [
-    {
-      title: "ID",
-      dataIndex: "outboundDetailsId",
-      key: "outboundDetailsId",
-    },
     { title: "Mã Số Lô", dataIndex: "lotNumber", key: "lotNumber" },
+    { title: "Tên Mặt Hàng", dataIndex: "productName", key: "productName" },
+    { title: "Kho", dataIndex: "warehouseName", key: "warehouseName" },
+    { title: "Loại", dataIndex: "unitType", key: "unitType" },
     {
       title: "Số Lượng",
       dataIndex: "quantity",
@@ -126,8 +125,6 @@ const DetailsModal = ({
       key: "totalPrice",
       render: (price: number) => `${parseToVietNameseCurrency(price)}`,
     },
-    { title: "Loại", dataIndex: "unitType", key: "unitType" },
-    { title: "Tên Mặt Hàng", dataIndex: "productName", key: "productName" },
     {
       title: "Ngày Hết Hạn",
       dataIndex: "expiryDate",
@@ -135,6 +132,22 @@ const DetailsModal = ({
       render: (date: string) => date,
     },
   ];
+
+  const columnsReturn: TableProps<OutboundDetail>["columns"] = [
+    ...columns,
+    {
+      key: "returnedQuantity",
+      title: "Số lượng trả về",
+      render: (_, record) => {
+        const item = record.returns.find(
+          (item) => item.outboundDetailId === record.outboundDetailsId
+        );
+        if (item) return <p>{item.returnedQuantity}</p>;
+        return "_";
+      },
+    },
+  ];
+
   return (
     <StyledModal
       title="Chi tiết"
@@ -171,7 +184,9 @@ const DetailsModal = ({
         Thông tin chi tiết đơn hàng
       </Divider>
       <StyledTable
-        columns={columns}
+        columns={
+          item.status === OutboundStatus.Returned ? columnsReturn : columns
+        }
         dataSource={item.outboundDetails}
         rowKey="outboundDetailsId"
         pagination={false}
