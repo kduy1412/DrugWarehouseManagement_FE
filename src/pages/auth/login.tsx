@@ -1,18 +1,59 @@
 import { Navigate } from "react-router-dom";
-import { Form, Input, Button, Card, Flex, Spin } from "antd"; // Import Ant Design components
+import { Form, Input, Button, Card, Flex, Spin, Switch } from "antd"; // Import Ant Design components
 import { useAuth } from "../../hooks/useAuth";
 import "./index.css";
 import Logo from "../../assets/shared/logoWhiteText.svg";
 import { UserOutlined, LockFilled } from "@ant-design/icons";
 import styled from "styled-components";
+import { useEffect, useState } from "react";
+import { Credentials } from "../../types/auth";
 
 const LoginPage: React.FC = () => {
   const { login, isAuthenticated, isLoading } = useAuth();
-  const [form] = Form.useForm();
+
+  const [isRequiredTwoFactor, setIsRequiredTwoFactor] = useState(false);
+  const [credential, setCredential] = useState<Credentials | null>(null);
+  const [onOtpInput, setOnOtpInput] = useState<string[]>([]);
+  const [otpCode, setOtpCode] = useState<string>("");
+  const [isBackupCodeUse, setIsBackupCodeUse] = useState<boolean>(false);
+
+  const [form] = Form.useForm<Credentials>();
 
   const onFinish = (values: { userName: string; password: string }) => {
-    login(values);
+    login({
+      ...values,
+      onRequiresTwoFactorCallback: handleOnRequiresTwoFactorCallBack,
+    });
   };
+
+  const onSubmitOtp = () => {
+    let data: Credentials = {
+      userName: credential?.userName ?? "",
+      password: credential?.password ?? "",
+      lostOTPCode: isBackupCodeUse,
+    };
+
+    if (isBackupCodeUse) data = { ...data, backupCode: otpCode };
+    else data = { ...data, otpCode: otpCode };
+
+    login(data);
+  };
+
+  const handleOnRequiresTwoFactorCallBack = (
+    userName: string,
+    password: string
+  ) => {
+    setIsRequiredTwoFactor(true);
+    setCredential({
+      userName: userName,
+      password: password,
+    });
+  };
+
+  useEffect(() => {
+    setOtpCode("");
+    setOnOtpInput([]);
+  }, [isBackupCodeUse]);
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />;
@@ -26,13 +67,17 @@ const LoginPage: React.FC = () => {
     );
   }
 
+  const isButtonDisabled = isBackupCodeUse
+    ? otpCode.length !== 16
+    : otpCode.length !== 6;
+
   return (
     <LoginContainer className="login-container">
       <FormWrapper>
         <ImageContainer>
           <img src={Logo} width={300} height={300} alt="Logo" />
         </ImageContainer>
-        <FormContainer>
+        <FormContainer hidden={isRequiredTwoFactor}>
           <Form
             form={form}
             name="login"
@@ -86,6 +131,57 @@ const LoginPage: React.FC = () => {
             </CenteredFormItem>
           </Form>
         </FormContainer>
+        <FormContainerOtpCode
+          title="Nhập mã xác thực 2 bước"
+          hidden={!isRequiredTwoFactor}
+          extra={
+            <Switch
+              checkedChildren="Xử dụng mã dự phòng"
+              unCheckedChildren="Không xử dụng mã dự phòng"
+              checked={isBackupCodeUse}
+              onChange={(e) => setIsBackupCodeUse(e)}
+            />
+          }
+        >
+          <Flex
+            vertical
+            justify="center"
+            gap={16}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && otpCode && !isButtonDisabled) {
+                onSubmitOtp();
+              }
+            }}
+          >
+            {!isBackupCodeUse && (
+              <Input.OTP
+                value={otpCode}
+                length={6}
+                onChange={(e) => setOtpCode(e)}
+                onInput={(value) => setOnOtpInput(value)}
+                type="number"
+                size="large"
+              />
+            )}
+            {isBackupCodeUse && (
+              <Input.OTP
+                value={otpCode}
+                length={16}
+                onChange={(e) => setOtpCode(e)}
+                onInput={(value) => setOnOtpInput(value)}
+                size="large"
+              />
+            )}
+            <CtaButton
+              type="primary"
+              size="large"
+              onClick={onSubmitOtp}
+              disabled={!otpCode || isButtonDisabled}
+            >
+              Xác Nhận
+            </CtaButton>
+          </Flex>
+        </FormContainerOtpCode>
       </FormWrapper>
     </LoginContainer>
   );
@@ -134,6 +230,11 @@ const FormContainer = styled(Card)`
     rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
 `;
 
+const FormContainerOtpCode = styled(FormContainer)`
+  width: auto !important;
+  max-width: 800px;
+`;
+
 const StyledForm = styled.form`
   width: 100%;
   display: flex;
@@ -146,6 +247,17 @@ const LoginButton = styled(Button)`
   padding: 1.75rem 0;
   font-size: var(--font-size-title-1);
   font-weight: var(--font-weight-medium);
+  &:not(:disabled) {
+    color: white !important;
+  }
+  border-color: transparent !important;
+  background-color: var(--color-secondary-600);
+  &:not(:disabled):hover {
+    background-color: var(--color-secondary-500) !important;
+  }
+`;
+
+const CtaButton = styled(Button)`
   &:not(:disabled) {
     color: white !important;
   }

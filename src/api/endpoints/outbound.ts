@@ -49,3 +49,12 @@ export const createReturnOutbound = (data: OutboundReturnRequest) =>
     method: "POST",
     body: JSON.stringify(data),
   });
+
+export const getOutboundInvoiceByPdf = (id: number) =>
+  apiClient(
+    `/api/Outbound/export/${id}`,
+    {
+      method: "GET",
+    },
+    true
+  );

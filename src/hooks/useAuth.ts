@@ -33,6 +33,15 @@ export function useAuth() {
   const loginMutation = useMutation<AuthResponse, Error, Credentials>({
     mutationFn: async (credentials: Credentials) => {
       const authData: LoginResponse = await login(credentials);
+      if (authData.requiresTwoFactor && authData.requiresTwoFactor === true) {
+        return {
+          token: "",
+          refreshToken: "",
+          role: Roles.Admin,
+          user: {} as StoredUser,
+          requiresTwoFactor: true,
+        } as AuthResponse;
+      }
       const userData: User = await whoAmI(authData.token);
 
       const storedUser: StoredUser = {
@@ -50,14 +59,22 @@ export function useAuth() {
         refreshToken: authData.refreshToken,
         role: Roles[currentRole],
         user: storedUser,
-      };
+        requiresTwoFactor: false,
+      } as AuthResponse;
     },
-    onSuccess: async (data: AuthResponse) => {
-      queryClient.setQueryData(AUTH_QUERY_KEY, data);
-      setAuthData(data);
-      notification.success({
-        message: "Đăng nhập thành công",
-      });
+    onSuccess: async (
+      data: AuthResponse,
+      { onRequiresTwoFactorCallback, userName, password }
+    ) => {
+      if (!data.requiresTwoFactor) {
+        queryClient.setQueryData(AUTH_QUERY_KEY, data);
+        setAuthData(data);
+        notification.success({
+          message: "Đăng nhập thành công",
+        });
+      } else {
+        onRequiresTwoFactorCallback!(userName, password);
+      }
     },
     onError: (error) => {
       notification.error({

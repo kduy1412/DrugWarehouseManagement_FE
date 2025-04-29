@@ -18,6 +18,15 @@ import { UserPutPasswordRequest, UserPutRequest } from "../../types/user";
 import { useChangeAccountPasswordMutationProps } from "../../hooks/api/account/changeAccountPasswordMutation";
 import { useUpdateAccountMutation } from "../../hooks/api/account/updateAccountMutation";
 import { useAuth } from "../../hooks/useAuth";
+import {
+  useConfirmSetup2FAMutation,
+  useSetup2FAMutation,
+} from "../../hooks/api/account/setup2FAMutation";
+import {
+  ConfirmSetup2FAPostResponse,
+  Setup2FAPostResponse,
+} from "../../types/auth";
+import Setup2FAComponents from "./components/setup2FAComponent";
 
 const { Title, Text } = Typography;
 
@@ -32,9 +41,16 @@ interface ChangePasswordForm extends UserPutPasswordRequest {
 }
 
 const ProfilePage = () => {
-  const { data, isLoading } = useGetAccountQuery();
+  // DATA FETCHING
+  const { data, isLoading, refetch } = useGetAccountQuery();
   const { setUser } = useAuth();
+
+  // STATE
   const [currentSegment, setCurrentSegment] = useState<type>(type.Details);
+  const [openSetup2FAModal, setOpenSetup2FAModal] = useState(false);
+  const [setup2FAResponse, setSetup2FAResponse] =
+    useState<Setup2FAPostResponse | null>(null);
+  const [backupCode, setBackupCode] = useState<string | null>(null);
 
   // FORM API
   const [updateForm] = Form.useForm<UserPutRequest | unknown>();
@@ -77,6 +93,39 @@ const ProfilePage = () => {
     );
   };
 
+  // UTILS
+  const handleSetup2FAResponse = (data: Setup2FAPostResponse) => {
+    setSetup2FAResponse(data);
+  };
+  const handleSubmitOtpCodeResponse = (
+    response: ConfirmSetup2FAPostResponse
+  ) => {
+    setBackupCode(response.result.backupCode);
+  };
+
+  const { mutate: setup2FAMutation } = useSetup2FAMutation(
+    handleSetup2FAResponse
+  );
+  const {
+    mutate: confirmSetup2FAMutation,
+    isPending: confirmSetup2FAMutationPending,
+  } = useConfirmSetup2FAMutation(handleSubmitOtpCodeResponse);
+
+  const onClickSetup2FA = () => {
+    setOpenSetup2FAModal(true);
+    setup2FAMutation();
+  };
+
+  const handleOnCloseSetup2FAModal = () => {
+    setOpenSetup2FAModal(false);
+    setSetup2FAResponse(null);
+    setBackupCode(null);
+    refetch();
+  };
+
+  const handleOnSubmitOtpCode = (otpCode: string) => {
+    confirmSetup2FAMutation({ otpCode: otpCode });
+  };
   // LOADING STATE
   if (isLoading)
     return (
@@ -106,6 +155,14 @@ const ProfilePage = () => {
             value={currentSegment}
             onChange={(value) => setCurrentSegment(value as type)}
           />
+        }
+        extra={
+          <CtaButton
+            disabled={data?.twoFactorEnabled}
+            onClick={onClickSetup2FA}
+          >
+            Xác thực 2 bước
+          </CtaButton>
         }
       >
         <Flex vertical align="center" gap={24}>
@@ -260,6 +317,17 @@ const ProfilePage = () => {
                 </CtaButton>
               </Form.Item>
             </StyledForm>
+          )}
+
+          {setup2FAResponse && openSetup2FAModal && (
+            <Setup2FAComponents
+              open={openSetup2FAModal}
+              onClose={handleOnCloseSetup2FAModal}
+              data={setup2FAResponse}
+              onSubmitOtpCode={handleOnSubmitOtpCode}
+              onSubmitOtpCodeLoading={confirmSetup2FAMutationPending}
+              backupCode={backupCode}
+            />
           )}
         </Flex>
       </StyledCard>
