@@ -1,72 +1,68 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# test
 # DrugWarehouseManagement_FE
+
+## Project Description
+
+DrugWarehouseManagement_FE is a React-based web application designed to streamline and manage drug warehouse operations. Key features include:
+
+-   **Inventory Management:** Track drug quantities, expiration dates, and storage locations.
+-   **Order Processing:** Create, manage, and fulfill drug orders.
+-   **Reporting:** Generate reports on inventory levels, order history, and other relevant metrics.
+-   **User Authentication:** Secure access with user roles and permissions.
+-   **Search and Filtering:** Quickly locate drugs and orders based on various criteria.
+
+## Getting Started
+
+Follow these instructions to set up your development environment and run the application:
+
+### Prerequisites
+
+-   [Node.js](https://nodejs.org/) (version >= 18)
+-   [npm](https://www.npmjs.com/) (Node Package Manager, installed with Node.js) or [Yarn](https://yarnpkg.com/)
+
+### Installation
+
+1.  Clone the repository:
+    bash
+    npm init
+    The following scripts are available in the `package.json` file:
+
+-   `npm start` or `yarn start`: Runs the application in development mode.  It uses Vite to serve the application with hot reloading.
+-   `npm run build` or `yarn build`: Builds the application for production.  It generates optimized static assets in the `dist` directory.
+-   `npm run serve` or `yarn serve`:  Serves the built application from the `dist` directory.  Useful for testing the production build locally.
+-   `npm run lint` or `yarn lint`:  Runs ESLint to analyze the code for potential errors and style issues.
+
+## Configuration
+
+The application relies on the following environment variables.  Create a `.env` file in the root directory of the project and define the variables there.
+```
+VITE_API_BASE_URL= "YOUR-BACKEND"
+```
+## Contributing
+
+We welcome contributions from the community! To contribute:
+
+1.  Fork the repository.
+2.  Create a new branch for your feature or bug fix.
+3.  Follow the code style and testing guidelines.
+4.  Submit a pull request.
+
+### Code Style
+
+-   Follow the ESLint rules defined in the `.eslintrc.js` file.
+-   Use consistent formatting (e.g., Prettier).
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Acknowledgements
+
+-   This project uses [Ant Design](https://ant.design/) for UI components.
+-   [React Query](https://tanstack.com/query/latest) for data fetching and caching.
+-   Create React App for project scaffolding.
+
+## Contact
+
+For questions or support, please contact:
+
+> [Nguyễn Quý Đức Minh] - [minhnqdse2003@gmail.com]
