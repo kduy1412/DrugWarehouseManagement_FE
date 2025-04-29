@@ -56,6 +56,11 @@ export interface ConfirmSetup2FAPostResponse {
   result: Result;
 }
 
+export interface UpdateAccountConfigInformation {
+  twoFactorEnabled?: boolean;
+  phoneNumberConfirmed?: boolean;
+}
+
 export interface Result {
   backupCode: string;
 }

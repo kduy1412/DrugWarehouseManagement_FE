@@ -34,6 +34,7 @@ import WarehouseSelector from "../../../../components/warehouse/WarehouseSelecto
 import { validateObjectProperties } from "../../../../utils/validateObjectProperties";
 import { useCreateLotTransferMutation } from "../../../../hooks/api/lotTransfer/createLotTransferMutation";
 import { SystemWarehouseConfigEnum } from "../../../../types/enums/system";
+import { Navigate } from "react-router-dom";
 
 const initialQueryParams: LotGetRequestParams = {
   Page: 1,
@@ -69,24 +70,27 @@ const ProductInformationStep = ({
   updateFormData,
 }: ProductInformationStepProps) => {
   const [form] = Form.useForm<FromWarehouseProps>();
-
   const [queryParams, setQueryParams] =
     useState<LotGetRequestParams>(initialQueryParams);
-  const { data: lotData, isLoading: isLotFetching } =
-    useGetLotQuery(queryParams);
-  const { mutate: lotTransferMutate, isPending } =
-    useCreateLotTransferMutation();
-  const [selectedLotRowKeys, setSelectedLotRowKeys] = useState<React.Key[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState<
-    ProductsSelectedProps[]
-  >([]);
   const [searchParams, setSearchParams] = useState<WarehouseGetRequestParams>({
     Page: 1,
     PageSize: 100,
   });
+  const [selectedLotRowKeys, setSelectedLotRowKeys] = useState<React.Key[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<
+    ProductsSelectedProps[]
+  >([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const { data: warehouseData, isLoading: isWarehouseFetching } =
     useGetWarehouseQuery(searchParams);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: lotData, isLoading: isLotFetching } =
+    useGetLotQuery(queryParams);
+  const {
+    mutate: lotTransferMutate,
+    isPending,
+    isSuccess: lotTransferMutateSuccess,
+  } = useCreateLotTransferMutation();
 
   const onSelectLotChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedLotRowKeys(newSelectedRowKeys);
@@ -342,6 +346,10 @@ const ProductInformationStep = ({
     }));
     setSelectedProduct([]);
   };
+
+  if (lotTransferMutateSuccess) {
+    return <Navigate to={"/outbound/history"} replace />;
+  }
 
   return (
     <div>

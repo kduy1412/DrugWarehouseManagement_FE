@@ -8,11 +8,18 @@ import {
   Flex,
   Form,
   Input,
+  Modal,
+  notification,
   Segmented,
   Spin,
   Typography,
 } from "antd";
-import { EditFilled, LockFilled, InfoCircleFilled } from "@ant-design/icons";
+import {
+  EditFilled,
+  LockFilled,
+  InfoCircleFilled,
+  PoweroffOutlined,
+} from "@ant-design/icons";
 import styled from "styled-components";
 import { UserPutPasswordRequest, UserPutRequest } from "../../types/user";
 import { useChangeAccountPasswordMutationProps } from "../../hooks/api/account/changeAccountPasswordMutation";
@@ -27,6 +34,7 @@ import {
   Setup2FAPostResponse,
 } from "../../types/auth";
 import Setup2FAComponents from "./components/setup2FAComponent";
+import { useUpdateAccountConfigInformationMutation } from "../../hooks/api/account/updateAccountConfigMutation";
 
 const { Title, Text } = Typography;
 
@@ -43,11 +51,15 @@ interface ChangePasswordForm extends UserPutPasswordRequest {
 const ProfilePage = () => {
   // DATA FETCHING
   const { data, isLoading, refetch } = useGetAccountQuery();
+  const { mutate: disabled2FAMutation, isPending: disabled2FAMutationPending } =
+    useUpdateAccountConfigInformationMutation();
   const { setUser } = useAuth();
 
   // STATE
   const [currentSegment, setCurrentSegment] = useState<type>(type.Details);
   const [openSetup2FAModal, setOpenSetup2FAModal] = useState(false);
+  const [openConfirmDisabled2FAModal, setOpenConfirmDisabled2FAModal] =
+    useState(false);
   const [setup2FAResponse, setSetup2FAResponse] =
     useState<Setup2FAPostResponse | null>(null);
   const [backupCode, setBackupCode] = useState<string | null>(null);
@@ -93,10 +105,31 @@ const ProfilePage = () => {
     );
   };
 
+  const onClickDisabled2FAModal = () => {
+    disabled2FAMutation(
+      { twoFactorEnabled: false },
+      {
+        onSuccess: () => {
+          notification.success({
+            message: "Đã tắt xác thực 2 bước",
+          });
+          setOpenConfirmDisabled2FAModal(false);
+          refetch();
+        },
+        onError: (error) =>
+          notification.error({
+            message: "Tắt xác thực 2 bước không thành công!",
+            description: error.message ?? "Không thể tắt xác thực 2 bước",
+          }),
+      }
+    );
+  };
+
   // UTILS
   const handleSetup2FAResponse = (data: Setup2FAPostResponse) => {
     setSetup2FAResponse(data);
   };
+
   const handleSubmitOtpCodeResponse = (
     response: ConfirmSetup2FAPostResponse
   ) => {
@@ -106,6 +139,7 @@ const ProfilePage = () => {
   const { mutate: setup2FAMutation } = useSetup2FAMutation(
     handleSetup2FAResponse
   );
+
   const {
     mutate: confirmSetup2FAMutation,
     isPending: confirmSetup2FAMutationPending,
@@ -157,12 +191,23 @@ const ProfilePage = () => {
           />
         }
         extra={
-          <CtaButton
-            disabled={data?.twoFactorEnabled}
-            onClick={onClickSetup2FA}
-          >
-            Xác thực 2 bước
-          </CtaButton>
+          !data?.twoFactorEnabled ? (
+            <CtaButton
+              icon={<PoweroffOutlined />}
+              disabled={data?.twoFactorEnabled}
+              onClick={onClickSetup2FA}
+            >
+              Xác thực 2 bước
+            </CtaButton>
+          ) : (
+            <Button
+              danger
+              icon={<PoweroffOutlined />}
+              onClick={() => setOpenConfirmDisabled2FAModal(true)}
+            >
+              Tắt xác thực 2 bước
+            </Button>
+          )
         }
       >
         <Flex vertical align="center" gap={24}>
@@ -329,6 +374,31 @@ const ProfilePage = () => {
               backupCode={backupCode}
             />
           )}
+          {openConfirmDisabled2FAModal && (
+            <Modal
+              title="Xác nhận"
+              open={openConfirmDisabled2FAModal}
+              confirmLoading={disabled2FAMutationPending}
+              onCancel={() => setOpenConfirmDisabled2FAModal(false)}
+              footer={[
+                <CloseButton
+                  key="cancel"
+                  onClick={() => setOpenConfirmDisabled2FAModal(false)}
+                >
+                  Hủy
+                </CloseButton>,
+                <CtaButton
+                  key="confirm"
+                  type="primary"
+                  onClick={onClickDisabled2FAModal}
+                >
+                  Xác nhận
+                </CtaButton>,
+              ]}
+            >
+              <p>Bạn có chắc chắn muốn tắt xác thực 2 bước?</p>
+            </Modal>
+          )}
         </Flex>
       </StyledCard>
     </StyledContainer>
@@ -388,6 +458,13 @@ const CtaButton = styled(Button)`
   background-color: var(--color-secondary-600);
   &:not(:disabled):hover {
     background-color: var(--color-secondary-500) !important;
+  }
+`;
+
+const CloseButton = styled(Button)`
+  &:not(:disabled):hover {
+    border-color: var(--color-secondary-600) !important;
+    color: var(--color-secondary-600) !important;
   }
 `;
 

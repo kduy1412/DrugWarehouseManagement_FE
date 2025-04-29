@@ -13,7 +13,6 @@ const LoginPage: React.FC = () => {
 
   const [isRequiredTwoFactor, setIsRequiredTwoFactor] = useState(false);
   const [credential, setCredential] = useState<Credentials | null>(null);
-  const [onOtpInput, setOnOtpInput] = useState<string[]>([]);
   const [otpCode, setOtpCode] = useState<string>("");
   const [isBackupCodeUse, setIsBackupCodeUse] = useState<boolean>(false);
 
@@ -52,7 +51,6 @@ const LoginPage: React.FC = () => {
 
   useEffect(() => {
     setOtpCode("");
-    setOnOtpInput([]);
   }, [isBackupCodeUse]);
 
   if (isAuthenticated) {
@@ -136,8 +134,8 @@ const LoginPage: React.FC = () => {
           hidden={!isRequiredTwoFactor}
           extra={
             <Switch
-              checkedChildren="Xử dụng mã dự phòng"
-              unCheckedChildren="Không xử dụng mã dự phòng"
+              checkedChildren="Sử dụng mã dự phòng"
+              unCheckedChildren="Không sử dụng mã dự phòng"
               checked={isBackupCodeUse}
               onChange={(e) => setIsBackupCodeUse(e)}
             />
@@ -158,17 +156,16 @@ const LoginPage: React.FC = () => {
                 value={otpCode}
                 length={6}
                 onChange={(e) => setOtpCode(e)}
-                onInput={(value) => setOnOtpInput(value)}
                 type="number"
                 size="large"
               />
             )}
             {isBackupCodeUse && (
-              <Input.OTP
+              <Input
                 value={otpCode}
-                length={16}
-                onChange={(e) => setOtpCode(e)}
-                onInput={(value) => setOnOtpInput(value)}
+                placeholder="Mã dự phòng đã được cung cấp"
+                maxLength={16}
+                onChange={(e) => setOtpCode(e.target.value)}
                 size="large"
               />
             )}
@@ -233,6 +230,7 @@ const FormContainer = styled(Card)`
 const FormContainerOtpCode = styled(FormContainer)`
   width: auto !important;
   max-width: 800px;
+  min-width: 600px;
 `;
 
 const StyledForm = styled.form`

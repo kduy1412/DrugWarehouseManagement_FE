@@ -1,4 +1,5 @@
 import apiClient from "..";
+import { UpdateAccountConfigInformation } from "../../types/auth";
 import {
   UserGetRequestParams,
   UserPostRequest,
@@ -43,3 +44,11 @@ export const getAccounts = (
     method: "GET",
   });
 };
+
+export const updateAccountConfigInformation = (
+  data: UpdateAccountConfigInformation
+) =>
+  apiClient(`/api/Account/updateAccount`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });

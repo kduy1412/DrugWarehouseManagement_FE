@@ -1,10 +1,16 @@
-import React, { useState } from "react";
-import OutboundPreviewComponent from "../../../../components/pdf/OutboundPdf";
-import { Button, Modal, Select } from "antd";
+import React, { useState, useEffect } from "react";
+import { Button, Modal, Card } from "antd";
 import styled from "styled-components";
+import { Document, Page } from "react-pdf";
+import { GlobalWorkerOptions } from "pdfjs-dist";
+import { DownloadOutlined } from "@ant-design/icons";
 import { Outbound } from "../../../../types/outbound";
-import { PageSize } from "@react-pdf/types";
-import { StandardPageSize } from "../../../../types/enums/pdfFormat";
+import { useGetOutboundInvoiceByPdfMutation } from "../../../../hooks/api/outbound/getOutboundInvoiceByPdfMutation";
+
+GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
 interface PreviewModalProps {
   isPreviewModalOpen: boolean;
@@ -17,60 +23,111 @@ const PreviewModal = ({
   setIsPreviewModalOpen,
   selectedItem,
 }: PreviewModalProps) => {
-  const [selectedSize, setSelectedSize] = useState<PageSize>("A4");
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
-  const handleOnClose = () => {
-    setIsPreviewModalOpen(false);
-    setSelectedSize("A4");
+  const onSuccessCallback = (blob: Blob) => {
+    const objectUrl = URL.createObjectURL(blob);
+    setPdfUrl(objectUrl);
   };
+
+  const outboundInvoicePdfMutation =
+    useGetOutboundInvoiceByPdfMutation(onSuccessCallback);
+
+  const handleClose = () => {
+    setIsPreviewModalOpen(false);
+    setPdfUrl(null);
+  };
+
+  useEffect(() => {
+    if (selectedItem) {
+      outboundInvoicePdfMutation.mutate(selectedItem.outboundId);
+    }
+  }, [selectedItem]);
+
+  useEffect(() => {
+    return () => {
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+    };
+  }, [pdfUrl]);
+
   return (
-    <StyledModal
-      title="Chi tiết"
-      open={isPreviewModalOpen}
-      onCancel={handleOnClose}
-      footer={[
-        <CloseButton key="close" onClick={() => setIsPreviewModalOpen(false)}>
-          Đóng
-        </CloseButton>,
-      ]}
-    >
-      <Select
-        showSearch
-        placeholder="Chọn định dạng"
-        optionFilterProp="children"
-        value={selectedSize}
-        onChange={setSelectedSize}
-        filterOption={(input, option) =>
-          typeof option?.label === "string"
-            ? option.label.toLowerCase().includes(input.toLowerCase())
-            : false
-        }
+    pdfUrl && (
+      <StyledModal
+        title="Xem trước hóa đơn xuất kho"
+        open={isPreviewModalOpen}
+        onCancel={handleClose}
+        footer={[
+          <CloseButton key="close" onClick={handleClose}>
+            Đóng
+          </CloseButton>,
+          <a key="download" href={pdfUrl} download>
+            <CtaButton>
+              <DownloadOutlined size={32} />
+            </CtaButton>
+          </a>,
+        ]}
       >
-        {Object.values(StandardPageSize).map((size) => (
-          <Select.Option key={size} value={size} label={size}>
-            {size}
-          </Select.Option>
-        ))}
-      </Select>
-      <OutboundPreviewComponent
-        data={selectedItem}
-        detailsData={selectedItem.outboundDetails}
-        size={selectedSize ?? "A4"}
-      />
-    </StyledModal>
+        <PreviewCard>
+          <PdfContainer>
+            <Document file={pdfUrl} onLoadError={console.error}>
+              <Page pageNumber={1} />
+            </Document>
+          </PdfContainer>
+        </PreviewCard>
+      </StyledModal>
+    )
   );
 };
 
 export default PreviewModal;
 
-const CloseButton = styled(Button)`
-  &:hover {
-    border-color: var(--color-secondary-600) !important;
-    color: var(--color-secondary-600) !important;
+const CtaButton = styled(Button)`
+  margin-left: 1rem;
+  font-size: var(--font-size-title-body);
+  font-weight: var(--font-weight-medium);
+  &:not(:disabled) {
+    color: white !important;
+  }
+  border-color: transparent !important;
+  background-color: var(--color-secondary-600);
+  &:not(:disabled):hover {
+    background-color: var(--color-secondary-500) !important;
   }
 `;
 
-const StyledModal = styled(Modal)`
-  width: fit-content !important;
-  height: fit-content !important;
+const StyledModal = styled(Modal)``;
+
+const PreviewCard = styled(Card)`
+  max-width: 70vw;
+  max-height: 85vh;
+  min-height: calc(100vh - 500px);
+  min-width: calc(100% - 500px);
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+`;
+
+const PdfContainer = styled.div`
+  height: 80%;
+  max-height: 85vh;
+  margin-top: 3rem;
+  overflow: auto;
+  .react-pdf__Page__canvas {
+    margin: 0 auto;
+    width: 100% !important;
+    height: auto !important;
+  }
+  .react-pdf__Page__textContent,
+  .react-pdf__Page__textContent.textLayer,
+  .react-pdf__Page__annotations,
+  .react-pdf__Page__annotations.annotationLayer {
+    display: none !important;
+  }
+`;
+
+const CloseButton = styled(Button)`
+  &:not(:disabled):hover {
+    border-color: var(--color-secondary-600) !important;
+    color: var(--color-secondary-600) !important;
+  }
 `;
