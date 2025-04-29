@@ -37,6 +37,7 @@ import { parseRoleName } from "../utils/translateRolesName";
 import { useState } from "react";
 import { queryClient } from "../lib/queryClient";
 import { AUTH_QUERY_KEY } from "../types/constants";
+import NotificationComponent from "./NotificationComponent";
 
 const { Sider } = Layout;
 
@@ -125,25 +126,30 @@ const LayoutComponent = () => {
               <StyledBreadcrumb items={breadcrumbItems} />
             </StyledFlex>
             {role && (
-              <Dropdown
-                menu={{ items }}
-                trigger={["click"]}
-                placement="bottomRight"
-                overlayStyle={{
-                  width: "fit-content",
-                  minWidth: 0,
-                }}
-              >
-                <StyledSpace>
-                  <StyledAvatar size="large">{user?.fullName[0]}</StyledAvatar>
-                  <UserContainer>
-                    <UserInformation>{`${user?.fullName} (${parseRoleName(
-                      getEnumKeyNameByValue(Roles, role) as string
-                    )})`}</UserInformation>
-                  </UserContainer>
-                  <DownOutlined />
-                </StyledSpace>
-              </Dropdown>
+              <Flex gap={24} align="center">
+                <NotificationComponent />
+                <Dropdown
+                  menu={{ items }}
+                  trigger={["click"]}
+                  placement="bottomRight"
+                  overlayStyle={{
+                    width: "fit-content",
+                    minWidth: 0,
+                  }}
+                >
+                  <StyledSpace>
+                    <StyledAvatar size="large">
+                      {user?.fullName[0]}
+                    </StyledAvatar>
+                    <UserContainer>
+                      <UserInformation>{`${user?.fullName} (${parseRoleName(
+                        getEnumKeyNameByValue(Roles, role) as string
+                      )})`}</UserInformation>
+                    </UserContainer>
+                    <DownOutlined />
+                  </StyledSpace>
+                </Dropdown>
+              </Flex>
             )}
           </PageHeader>
           <StyledLayout>
