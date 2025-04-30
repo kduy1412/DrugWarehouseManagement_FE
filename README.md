@@ -46,6 +46,21 @@ We welcome contributions from the community! To contribute:
 3.  Follow the code style and testing guidelines.
 4.  Submit a pull request.
 
+
+## Key Folder Descriptions
+
+*   **`public/`**: Contains static files that are copied directly to the build output folder without processing by Vite. Useful for `index.html`, favicons, and `manifest.json`.
+*   **`src/`**: The heart of the application, containing all the source code written for the project.
+    *   **`api/`**: Centralizes API logic, defining endpoints and configuring the API client (like Axios).
+    *   **`assets/`**: Stores images, fonts, SVGs, etc., that are imported and used within React components.
+    *   **`components/`**: Holds reusable UI pieces (buttons, modals, selectors, layout) used throughout the application.
+    *   **`hooks/`**: Contains custom React Hooks to encapsulate stateful logic, side effects, and API data fetching/mutation logic.
+    *   **`lib/`**: Setup and configuration for libraries like React Query.
+    *   **`pages/`**: Each subfolder typically represents a major feature or route in the application, containing the main component for that view.
+    *   **`routes/`**: Defines how URLs map to page components and handles route protection.
+    *   **`types/`**: Contains all TypeScript type definitions and interfaces for data structures used in the app.
+    *   **`utils/`**: A collection of helper functions for common tasks like date formatting, string manipulation, status translation, etc.
+
 ### Code Style
 
 -   Follow the ESLint rules defined in the `.eslintrc.js` file.
