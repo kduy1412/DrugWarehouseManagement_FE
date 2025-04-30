@@ -153,24 +153,24 @@ const ReturnOutboundPage = () => {
       sorter: (a, b) => a.outboundDetailsId - b.outboundDetailsId,
     },
     {
-      title: "Lot ID",
+      title: "#",
       dataIndex: "lotId",
       key: "lotId",
       sorter: (a, b) => a.lotId - b.lotId,
     },
     {
-      title: "Lot Number",
+      title: "Mã lô hàng",
       dataIndex: "lotNumber",
       key: "lotNumber",
     },
     {
-      title: "Product Name",
+      title: "Sản phẩm",
       dataIndex: "productName",
       key: "productName",
       render: (value: string | null) => value || "N/A",
     },
     {
-      title: "Quantity",
+      title: "Số Lượng",
       dataIndex: "quantity",
       key: "quantity",
       sorter: (a, b) => a.quantity - b.quantity,
@@ -183,20 +183,20 @@ const ReturnOutboundPage = () => {
       sorter: (a, b) => a.unitPrice - b.unitPrice,
     },
     {
-      title: "Total Price",
+      title: "Tổng tiền",
       dataIndex: "totalPrice",
       key: "totalPrice",
       render: (value: number) => `${parseToVietNameseCurrency(value)}`,
       sorter: (a, b) => a.totalPrice - b.totalPrice,
     },
     {
-      title: "Unit Type",
+      title: "SKU",
       dataIndex: "unitType",
       key: "unitType",
     },
 
     {
-      title: "Expiry Date",
+      title: "Ngày hết hạn",
       dataIndex: "expiryDate",
       key: "expiryDate",
       render: (value: Date) => {

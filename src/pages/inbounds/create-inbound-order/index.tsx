@@ -120,7 +120,7 @@ const CreateInboundOrderList: React.FC = () => {
       />
       {isModalOpen && (
         <StyledModal
-          title="Tạo Inbound Order"
+          title="Tạo đơn nhập kho"
           open={isModalOpen}
           onCancel={handleCancel}
           footer={null}

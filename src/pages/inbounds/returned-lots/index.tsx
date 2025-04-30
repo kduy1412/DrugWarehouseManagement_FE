@@ -147,7 +147,7 @@ const ReturnedLotsPage = () => {
     setIsDetailModalOpen(false);
     setSelectedWarehouse(null);
     setSelectedItem(null);
-    form.resetFields();
+    form.resetFields(["quantity"]);
   };
 
   const handleCancelReturnedLot = () => {
@@ -169,7 +169,9 @@ const ReturnedLotsPage = () => {
       ],
     };
     createLot(data, {
-      onSuccess: () => onFormClose(),
+      onSuccess: () => {
+        onFormClose();
+      },
     });
   };
 
@@ -207,7 +209,11 @@ const ReturnedLotsPage = () => {
       ],
     };
 
-    createLot(returnedData, { onSuccess: () => onFormClose() });
+    createLot(returnedData, {
+      onSuccess: () => {
+        onFormClose();
+      },
+    });
   };
 
   const filteredWarehouse = queryWarehouse?.items.filter(

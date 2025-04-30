@@ -13,6 +13,7 @@ import WarehouseSelector from "../../components/warehouse/WarehouseSelector";
 import { Document, Page } from "react-pdf";
 import { GlobalWorkerOptions } from "pdfjs-dist";
 import { DownloadOutlined } from "@ant-design/icons";
+import { SystemWarehouseConfigEnum } from "../../types/enums/system";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -118,6 +119,12 @@ const ReportForm = () => {
     setWarehouseFilterParams((prev) => ({ ...prev, Search: null }));
   };
 
+  const filteredWarehouse = queryWarehouse?.items.filter(
+    (item) =>
+      item.warehouseId !== SystemWarehouseConfigEnum.CancelWarehouse &&
+      item.warehouseId !== SystemWarehouseConfigEnum.ReturnedWarehouse
+  );
+
   useEffect(() => {
     return () => {
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
@@ -162,7 +169,7 @@ const ReportForm = () => {
             value={filterParams.warehouseId}
             onSearchValueChange={onSearchWarehouseChange}
             onSelectedWarehouseChange={onSelectedWarehouse}
-            warehouses={queryWarehouse?.items}
+            warehouses={filteredWarehouse}
             loading={warehouseQueryLoading}
             placeholder="Chọn kho"
           />

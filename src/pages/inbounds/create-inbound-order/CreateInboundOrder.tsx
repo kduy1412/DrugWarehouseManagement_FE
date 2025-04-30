@@ -126,9 +126,9 @@ const CreateInbound: React.FC<CreateInboundProps> = ({ record, onClose }) => {
 
             <Form.Item
               name="providerId"
-              label="Tên khách hàng"
+              label="Nhà cung cấp"
               rules={[
-                { required: true, message: "Vui lòng chọn tên khách hàng" },
+                { required: true, message: "Vui lòng chọn nhà cung cấp" },
               ]}
             >
               <Select
