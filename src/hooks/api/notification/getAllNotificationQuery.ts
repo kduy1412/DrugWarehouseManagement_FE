@@ -9,4 +9,7 @@ export const useGetAllNotificationQuery = (query: NotificationGetRequest) =>
   useQuery<NotificationGetResponse, Error, NotificationGetResponse>({
     queryFn: () => getAllNotification(query),
     queryKey: ["notifications"],
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+    gcTime: 0,
   });

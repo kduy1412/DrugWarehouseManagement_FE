@@ -61,7 +61,7 @@ const CreateInbound: React.FC<CreateInboundProps> = ({ record, onClose }) => {
   const {
     mutate: updateInboundRequest,
     isPending: pendingUpdateInboundRequest,
-  } = useUpdateInboundRequestMutation();
+  } = useUpdateInboundRequestMutation(false);
 
   //call API
   const { data } = useGetProviderQuery(initialData);

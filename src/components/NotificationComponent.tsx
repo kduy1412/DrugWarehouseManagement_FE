@@ -41,25 +41,22 @@ const NotificationComponent = () => {
 
   useEffect(() => {
     const connections = new signalR.HubConnectionBuilder()
+      .configureLogging(signalR.LogLevel.Debug)
       .withUrl(`${import.meta.env.VITE_API_BASE_URL}/notificationHub`, {
         skipNegotiation: true,
         transport: signalR.HttpTransportType.WebSockets,
         accessTokenFactory: () => accessToken ?? "",
       })
-      .withAutomaticReconnect()
       .build();
 
     connections
       .start()
+      .then(() => {
+        console.log("Connection started");
+      })
       .catch((e) => console.log("Error connecting to SignalR", e));
 
     connections.on("ReceiveMessage", (notificationData: NotificationModel) => {
-      notification.info({
-        message: `${notificationData.title}`,
-        description: `${notificationData.content}`,
-        duration: 3,
-        showProgress: true,
-      });
       refetch();
     });
 
@@ -67,12 +64,6 @@ const NotificationComponent = () => {
       connections.stop();
     };
   }, []);
-
-  useEffect(() => {
-    if (lastItemRef.current && scrollContainerRef.current) {
-      lastItemRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [data]);
 
   const unreadCount = useMemo(() => {
     return data?.items.filter((item) => !item.isRead).length ?? 0;

@@ -7,15 +7,16 @@ import { queryClient } from "../../../lib/queryClient";
 interface InboundRequestPutRequestParams {
   data: InboundRequestPutRequest;
 }
-export const useUpdateInboundRequestMutation = () =>
+export const useUpdateInboundRequestMutation = (isNotified = true) =>
   useMutation<unknown, Error, InboundRequestPutRequestParams>({
     mutationFn: ({ data }: InboundRequestPutRequestParams) =>
       updateInboundRequestStatus(data),
     onSuccess: () => {
-      notification.success({
-        message: "Cập nhật thành công",
-        placement: "topRight",
-      });
+      if (isNotified)
+        notification.success({
+          message: "Cập nhật thành công",
+          placement: "topRight",
+        });
       queryClient.invalidateQueries({
         predicate: (query) => query.queryKey.includes("inboundRequest"),
       });

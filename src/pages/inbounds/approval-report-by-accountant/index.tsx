@@ -69,11 +69,11 @@ const ApprovalInboundReportList = () => {
 
   // POST-PROCESS
   const { mutate: approvedReport, isPending: approvedReportPending } =
-    useApprovedReportMutation();
+    useApprovedReportMutation(false);
   const { mutate: updateInboundReport, isPending: updateInboundReportPending } =
     useUpdateInboundPendingMutation();
   const { mutate: updateInboundStatus, isPending: updateInboundStatusPending } =
-    useUpdateInboundStatusMutation();
+    useUpdateInboundStatusMutation(false);
 
   // TABLE
   const columns: TableProps<Inbound>["columns"] = [

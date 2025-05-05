@@ -30,9 +30,7 @@ import { parseInboundStatusToVietnamese } from "../../../utils/translateInboundS
 import { formatDateTime } from "../../../utils/timeHelper";
 import { useCreateInboundReportMutation } from "../../../hooks/api/inboundReport/createInboundReportMutation";
 import styled from "styled-components";
-import {
-  InboundReportStatusAsString,
-} from "../../../types/inboundReport";
+import { InboundReportStatusAsString } from "../../../types/inboundReport";
 
 type DataType = Inbound;
 const initialData: InboundGetRequestParams = {
@@ -49,7 +47,7 @@ const CreateInboundReport: React.FC = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadFile[]>([]);
   const [problemDescription, setProblemDescription] = useState("");
   const { mutate: updateInboundStatus, isPending: updateInboundStatusPending } =
-    useUpdateInboundStatusMutation();
+    useUpdateInboundStatusMutation(false);
   const { mutate: createInboundReport, isPending: createInboundReportPending } =
     useCreateInboundReportMutation();
   const [initialParams, setInitialParams] = useState(initialData);
@@ -67,6 +65,7 @@ const CreateInboundReport: React.FC = () => {
     setIsModalOpen(false); // Close the modal
     setSelectedRecord(null); // Reset the selected record
     setProblemDescription("");
+    setIsFulfilled(true);
     setUploadedFiles([]);
     form.resetFields();
   };
@@ -256,6 +255,13 @@ const CreateInboundReport: React.FC = () => {
               <Checkbox
                 checked={isFulfilled}
                 onChange={(e) => setIsFulfilled((prev) => !prev)}
+                disabled={
+                  (selectedRecord.report !== null &&
+                    selectedRecord.report.status !==
+                      InboundReportStatusAsString.Completed) ||
+                  selectedRecord.report?.status ===
+                    InboundReportStatusAsString.Completed
+                }
               >
                 Hàng không có lỗi
               </Checkbox>

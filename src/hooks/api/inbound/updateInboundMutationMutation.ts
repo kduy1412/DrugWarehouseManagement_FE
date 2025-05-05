@@ -3,13 +3,14 @@ import { InboundPutRequest } from "../../../types/inbound";
 import { updateInbound } from "../../../api/endpoints/inbound";
 import { notification } from "antd";
 
-export const useApprovedReportMutation = () =>
+export const useApprovedReportMutation = (isNotified = true) =>
   useMutation<unknown, Error, InboundPutRequest>({
     mutationFn: (data: InboundPutRequest) => updateInbound(data),
     onSuccess: () => {
-      notification.success({
-        message: "Duyệt đơn thành công",
-      });
+      if (isNotified)
+        notification.success({
+          message: "Duyệt đơn thành công",
+        });
     },
     onError: (error) => {
       notification.error({
