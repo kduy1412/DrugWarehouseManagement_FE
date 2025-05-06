@@ -94,8 +94,7 @@ const ApprovalInboundRequestListByCEO: React.FC = () => {
     {
       title: "Ngày tạo",
       dataIndex: "createDate",
-      render: (date: string) =>
-        formatDateTime(dayjs.utc(date, "DD/MM/YYYY HH:mm").toDate()),
+      render: (date: string) => formatDateTime(new Date(date)),
     },
     {
       title: "Tổng tiền",
