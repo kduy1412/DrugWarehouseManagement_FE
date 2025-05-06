@@ -109,8 +109,8 @@ const InventoryCheckListPage = () => {
     },
     {
       title: "Số lượng báo cáo",
-      dataIndex: "checkQuantity",
-      key: "checkQuantity",
+      dataIndex: "quantity",
+      key: "quantity",
     },
     {
       title: "Lý do",
@@ -151,12 +151,11 @@ const InventoryCheckListPage = () => {
         />
       </Space>
       {selectedReport && (
-        <Modal
+        <StyledModal
           title={`Chi tiết kiểm kê - ${selectedReport.title}`}
           open={true}
           onCancel={() => setSelectedReport(null)}
           footer={null}
-          width={1000}
         >
           <Table
             dataSource={selectedReport.details}
@@ -165,13 +164,18 @@ const InventoryCheckListPage = () => {
             scroll={{ x: true }}
             columns={detailColumns}
           />
-        </Modal>
+        </StyledModal>
       )}
     </div>
   );
 };
 
 export default InventoryCheckListPage;
+
+const StyledModal = styled(Modal)`
+  width: auto !important;
+  max-width: calc(100% - 8em);
+`;
 
 const CtaButton = styled(Button)`
   &:not(:disabled) {
