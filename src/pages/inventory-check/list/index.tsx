@@ -108,12 +108,7 @@ const InventoryCheckListPage = () => {
       ),
     },
     {
-      title: "Số lượng hệ thống",
-      dataIndex: "quantity",
-      key: "quantity",
-    },
-    {
-      title: "Số lượng kiểm",
+      title: "Số lượng báo cáo",
       dataIndex: "checkQuantity",
       key: "checkQuantity",
     },

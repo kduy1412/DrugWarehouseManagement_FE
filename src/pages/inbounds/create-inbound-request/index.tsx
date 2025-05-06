@@ -1,5 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import type { GetRef, InputRef, TableProps } from "antd";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import type { GetRef, InputRef, RefSelectProps, TableProps } from "antd";
 import {
   Button,
   Form,
@@ -9,7 +16,6 @@ import {
   Select,
   Modal,
   notification,
-  Typography,
 } from "antd";
 import { useGetProductQuery } from "../../../hooks/api/product/getProductQuery";
 import { useCreateInboundRequestMutation } from "../../../hooks/api/inboundRequest/createInboundRequestMutation";
@@ -17,6 +23,8 @@ import FileImport from "../../../components/FileImport";
 import { parseToVietNameseCurrency } from "../../../utils/parseToVietNameseCurrency";
 import styled from "styled-components";
 import { InboundRequestPostRequest } from "../../../types/inboundRequest";
+import { useDebounce } from "@uidotdev/usehooks";
+import { ProductFilterParams } from "../../../types/product";
 type FormInstance<T> = GetRef<typeof Form<T>>;
 
 const EditableContext = React.createContext<FormInstance<Item> | null>(null);
@@ -47,8 +55,15 @@ interface EditableCellProps {
   editable: boolean;
   dataIndex: keyof Item;
   record: Item;
-  productOptions?: { label: string; value: number }[];
+  productOptions?: ProductOption[];
   handleSave: (record: Item) => void;
+}
+
+interface ProductOption {
+  label: string;
+  value: number;
+  sku: string;
+  productCode: string;
 }
 
 const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
@@ -63,12 +78,11 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 }) => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef<InputRef>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const selectRef = useRef<RefSelectProps>(null);
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearchInput = useDebounce(searchInput, 400);
   const form = useContext(EditableContext)!;
-  useEffect(() => {
-    if (editing) {
-      inputRef.current?.focus();
-    }
-  }, [editing]);
 
   const toggleEdit = () => {
     setEditing(!editing);
@@ -80,12 +94,28 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
       const values = await form.validateFields();
       toggleEdit();
       handleSave({ ...record, ...values });
+      setSearchInput("");
     } catch (errInfo) {
       console.log("Save failed:", errInfo);
     }
   };
 
   let childNode = children;
+
+  useEffect(() => {
+    if (editing) {
+      inputRef.current?.focus();
+    }
+  }, [editing]);
+
+  const filteredProductOptions = useMemo(() => {
+    if (!debouncedSearchInput) return productOptions;
+    return productOptions?.filter((item) =>
+      (["label", "sku", "productCode"] as const).some((key) =>
+        item[key].toLowerCase().includes(debouncedSearchInput.toLowerCase())
+      )
+    );
+  }, [productOptions, debouncedSearchInput]);
 
   if (editable) {
     childNode = editing ? (
@@ -97,29 +127,67 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
         {dataIndex === "name" ? (
           <div>
             <Select
+              ref={selectRef}
               showSearch
               placeholder="Chọn sản phẩm"
               options={productOptions}
-              filterOption={(input, option) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              onBlur={save}
-              onChange={(value, option) => {
-                const selectedOption = option as {
-                  label: string;
-                  value: number;
-                };
-                if (!selectedOption) return;
-
-                form.setFieldsValue({
-                  name: selectedOption.label,
-                  productId: selectedOption.value,
-                });
-
-                save();
+              filterOption={(input, option) => {
+                setSearchInput(input.toLowerCase());
+                return true;
               }}
+              dropdownRender={() => (
+                <Table
+                  size="small"
+                  dataSource={filteredProductOptions}
+                  rowKey="value"
+                  pagination={false}
+                  bordered
+                  onRow={(record) => ({
+                    onClick: () => {
+                      form.setFieldsValue({
+                        name: record.label,
+                        productId: record.value,
+                      });
+                      save();
+                    },
+                    onMouseEnter: () => setIsHovered(true),
+                    onMouseLeave: () => setIsHovered(false),
+                  })}
+                  rowClassName="rowTableClassName"
+                  columns={[
+                    {
+                      title: "Tên sản phẩm",
+                      dataIndex: "label",
+                      key: "label",
+                    },
+                    {
+                      title: "ĐVT",
+                      dataIndex: "sku",
+                      key: "sku",
+                    },
+                    {
+                      title: "Mã sản phẩm",
+                      dataIndex: "productCode",
+                      key: "productCode",
+                    },
+                  ]}
+                />
+              )}
+              onBlur={() => !isHovered && save()}
+              // onChange={(value, option) => {
+              //   const selectedOption = option as {
+              //     label: string;
+              //     value: number;
+              //   };
+              //   if (!selectedOption) return;
+
+              //   form.setFieldsValue({
+              //     name: selectedOption.label,
+              //     productId: selectedOption.value,
+              //   });
+
+              //   save();
+              // }}
             />
             <Form.Item name="productId" hidden>
               <Input />
@@ -161,9 +229,10 @@ const initialData = {
 
 const CreateInboundRequest: React.FC = () => {
   const [dataSource, setDataSource] = useState<DataType[]>([]);
-  const { data, isLoading } = useGetProductQuery(initialData);
+  const [productQueryParams, setProductQueryParams] = useState(initialData);
+  const { data, isLoading } = useGetProductQuery(productQueryParams);
   const [productOptions, setProductOptions] = useState<
-    { label: string; value: number }[]
+    { label: string; value: number; sku: string; productCode: string }[]
   >([]);
   const { mutate, isSuccess, isPending } = useCreateInboundRequestMutation();
   const [modalConfirmInboundRequest, setModalConfirmInboundRequest] =
@@ -177,8 +246,10 @@ const CreateInboundRequest: React.FC = () => {
     if (data?.items) {
       setProductOptions(
         data.items.map((product) => ({
-          label: `${product.productName} | ${product.sku}`,
+          label: `${product.productName}`,
           value: product.productId,
+          productCode: product.productCode,
+          sku: product.sku,
         }))
       );
     }
