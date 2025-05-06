@@ -222,7 +222,10 @@ const InformationProduct: React.FC<ProductProps> = ({
       const newQuantity = existingBatch.quantity + newBatch.quantity;
       setBatches((prev) => {
         const idx = prev.findIndex((item) => item.key === existingBatch.key);
-        if (idx != -1) prev[idx].quantity = newQuantity;
+        if (idx != -1) {
+          prev[idx].quantity = newQuantity;
+          prev[idx].totalPrice += newPrice; 
+        }
         return prev;
       });
     } else {

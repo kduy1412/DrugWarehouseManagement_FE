@@ -95,23 +95,21 @@ const CtaButton = styled(Button)`
   }
 `;
 
-const StyledModal = styled(Modal)``;
+const StyledModal = styled(Modal)`
+  width: calc(100% - 25%) !important;
+`;
 
 const PreviewCard = styled(Card)`
-  max-width: 70vw;
-  max-height: 85vh;
-  min-height: calc(100vh - 500px);
-  min-width: calc(100% - 500px);
+  width: 70%;
+  height: 60%;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
 `;
 
 const PdfContainer = styled.div`
-  height: 80%;
-  max-height: 85vh;
+  height: 100%;
   margin-top: 3rem;
-  overflow: auto;
   .react-pdf__Page__canvas {
     margin: 0 auto;
     width: 100% !important;

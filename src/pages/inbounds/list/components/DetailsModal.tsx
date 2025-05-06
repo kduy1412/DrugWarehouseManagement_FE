@@ -7,7 +7,7 @@ import {
   Tag,
   Typography,
 } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import {
   Inbound,
@@ -19,6 +19,8 @@ import {
 import { formatDateTime } from "../../../../utils/timeHelper";
 import { TableColumnsType } from "antd/lib";
 import { parseInboundStatusToVietnamese } from "../../../../utils/translateInboundStatus";
+import AssetPreview from "../../../../components/AssetsPreview";
+import { useGetInboundReportAssetQuery } from "../../../../hooks/api/asset/getInboundReportAssetQuery";
 
 interface DetailsModalProps {
   open: boolean;
@@ -27,6 +29,28 @@ interface DetailsModalProps {
 }
 
 const DetailsModal = ({ data, handleCancel, open }: DetailsModalProps) => {
+  const [assetUrls, setAssetUrls] = useState<
+    { url: string; isImage: boolean; fileName: string }[]
+  >([]);
+  const { mutate: getAsset, isPending } = useGetInboundReportAssetQuery();
+
+  useEffect(() => {
+    const getAssetData = () => {
+      if (open) {
+        getAsset({
+          assets: data.report?.assets ?? [],
+          onSuccessCallback: (results) => {
+            setAssetUrls(results);
+          },
+        });
+      } else {
+        setAssetUrls([]);
+      }
+    };
+
+    getAssetData();
+  }, [open]);
+
   // Table columns for InboundDetail
   const columns: TableColumnsType<InboundDetail> = [
     {
@@ -124,6 +148,37 @@ const DetailsModal = ({ data, handleCancel, open }: DetailsModalProps) => {
         pagination={false}
         bordered
       />
+      {data.report ? (
+        <>
+          <StyledDivider orientation="left">Báo cáo liên quan</StyledDivider>
+          <StyledDescriptions
+            column={{ xs: 1, sm: 2, md: 3 }}
+            bordered
+            labelStyle={{
+              fontWeight: "bold",
+              color: "var(--color-secondary-600)",
+            }}
+            contentStyle={{ color: "var(--color-text)" }}
+          >
+            <Descriptions.Item label="ID">
+              {data.report.inboundReportId}
+            </Descriptions.Item>
+            <Descriptions.Item label="Ngày tạo báo cáo">
+              {data.report.reportDate
+                ? formatDateTime(new Date(data.report.reportDate), false)
+                : "N/A"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Lý do">
+              {data.report.problemDescription ?? "N/A"}
+            </Descriptions.Item>
+          </StyledDescriptions>
+          {data.report.assets.length > 0 && (
+            <AssetPreview assetUrls={assetUrls} isPending={isPending} />
+          )}
+        </>
+      ) : (
+        <Typography.Text>Không có báo cáo liên quan</Typography.Text>
+      )}
     </StyledModal>
   );
 };

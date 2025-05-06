@@ -25,8 +25,6 @@ import DetailsModal from "./components/DetailsModal";
 import EditModal from "./components/EditModal";
 import { parseOutboundStatusToVietnamese } from "../../../utils/translateOutboundStatus";
 import FilterComponent from "./components/FilterComponent";
-import OutboundPreviewComponent from "../../../components/pdf/OutboundPdf";
-import { PageSize } from "@react-pdf/types";
 import PreviewModal from "./components/PreviewModal";
 
 /**Types */
