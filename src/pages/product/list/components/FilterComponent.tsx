@@ -20,8 +20,6 @@ interface ComponentProps {
 
 const initialFilterParams: ProductFilterParams = {
   Search: "",
-  DateFrom: null,
-  DateTo: null,
 };
 
 const initialCategoryFilterParams: CategoryGetRequestParams = {
@@ -40,20 +38,6 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
 
   const { data, isLoading } = useGetCategoriesQuery(categoryFilterParams);
 
-  const setDateFrom = (date: Dayjs | null) => {
-    setFilterParam((prev) => ({
-      ...prev,
-      DateFrom: date ? dayjs(date).toISOString() : null,
-    }));
-  };
-
-  const setDateTo = (date: Dayjs | null) => {
-    setFilterParam((prev) => ({
-      ...prev,
-      DateTo: date ? dayjs(date).toISOString() : null,
-    }));
-  };
-
   const setSearchValue = (value: string) => {
     setFilterParam((prev) => ({
       ...prev,
@@ -68,12 +52,18 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
     }));
   }, []);
 
-  const onSelectedCategory = (record: Category | null) =>
+  const onSelectedCategory = (record: Category | null) => {
     setQuery((prev) => ({
       ...prev,
       CategoryId: record?.categoriesId,
       Page: 1,
     }));
+    setFilterParam((prev) => ({
+      ...prev,
+      CategoryId: record?.categoriesId,
+      Page: 1,
+    }));
+  };
 
   const handleSearch = () => {
     const cleanParams = cleanFilterParams(filterParam);
@@ -108,25 +98,6 @@ const FilterComponent = ({ setQuery, initialQueryParams }: ComponentProps) => {
         onChange={(e) => setSearchValue(e.target.value)}
         onPressEnter={handleSearch}
         style={{ width: 200 }}
-      />
-      <DatePicker
-        placeholder="Từ ngày"
-        value={filterParam.DateFrom ? dayjs(filterParam.DateFrom) : null}
-        onChange={setDateFrom}
-        format="DD/MM/YYYY"
-        style={{ width: 150 }}
-      />
-      <DatePicker
-        placeholder="Đến ngày"
-        value={filterParam.DateTo ? dayjs(filterParam.DateTo) : null}
-        onChange={setDateTo}
-        format="DD/MM/YYYY"
-        disabledDate={(current) =>
-          filterParam.DateFrom && current
-            ? current.isBefore(dayjs(filterParam.DateFrom), "day")
-            : false
-        }
-        style={{ width: 150 }}
       />
       <CategorySelector
         categories={subCategory}

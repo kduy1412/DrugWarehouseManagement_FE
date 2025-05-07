@@ -97,7 +97,7 @@ const CategorySelector = ({
         <Select.Option
           key={selectedCategory.categoriesId}
           value={selectedCategory.categoriesId}
-          label={`${selectedCategory.categoryName} (${selectedCategory.status})`}
+          label={`${selectedCategory.categoryName}`}
         >
           {selectedCategory.categoryName}
         </Select.Option>
