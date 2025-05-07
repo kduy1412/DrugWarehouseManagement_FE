@@ -148,7 +148,7 @@ const DetailsModal = ({ data, handleCancel, open }: DetailsModalProps) => {
         pagination={false}
         bordered
       />
-      {data.report ? (
+      {data.report && (
         <>
           <StyledDivider orientation="left">Báo cáo liên quan</StyledDivider>
           <StyledDescriptions
@@ -176,8 +176,6 @@ const DetailsModal = ({ data, handleCancel, open }: DetailsModalProps) => {
             <AssetPreview assetUrls={assetUrls} isPending={isPending} />
           )}
         </>
-      ) : (
-        <Typography.Text>Không có báo cáo liên quan</Typography.Text>
       )}
     </StyledModal>
   );
