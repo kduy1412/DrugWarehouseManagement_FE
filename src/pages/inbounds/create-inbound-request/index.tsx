@@ -135,6 +135,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
                 setSearchInput(input.toLowerCase());
                 return true;
               }}
+              popupClassName="dropdownClassNameSelector"
               dropdownRender={() => (
                 <Table
                   size="small"
