@@ -2,7 +2,9 @@ import {
   Button,
   Card,
   Divider,
+  Flex,
   Modal,
+  notification,
   Table,
   TableColumnsType,
   TableProps,
@@ -20,6 +22,13 @@ import FilterComponent from "./components/FilterComponent";
 import styled from "styled-components";
 import { formatDateTime } from "../../../utils/timeHelper";
 import FormModal from "./components/FormModal";
+import { ProductStockDetailsReportRequest } from "../../../types/inventoryReport";
+import ProductSelector from "../../../components/product/ProductSelector";
+import { ProductGetRequestParams, ProductStatus } from "../../../types/product";
+import { useGetProductQuery } from "../../../hooks/api/product/getProductQuery";
+import dayjs from "dayjs";
+import { useGetProductStockDetailsReport } from "../../../hooks/api/inventoryReport/getProductStockDetailsReportQuery";
+import PreviewModal from "./components/PreviewModal";
 
 const CreateInventoryCheckPage = () => {
   // Initial values
@@ -38,6 +47,14 @@ const CreateInventoryCheckPage = () => {
     []
   );
 
+  const [productFilterParams, setProductFilterParams] =
+    useState<ProductGetRequestParams>({
+      Page: 1,
+      PageSize: 100,
+      Search: null,
+      Status: ProductStatus.Active,
+    });
+
   // Component States
   const [selectedWarehouse, setSelectedWarehouse] = useState<number | null>(
     null
@@ -49,6 +66,10 @@ const CreateInventoryCheckPage = () => {
   const [selectedLots, setSelectedLots] = useState<Lot[]>([]);
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalCreateProductStock, setModalCreateProductStock] = useState(false);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [createProductStockData, setCreateProductStockData] =
+    useState<ProductStockDetailsReportRequest | null>(null);
 
   // Table config
   const columns: TableColumnsType<Lot> = [
@@ -116,6 +137,8 @@ const CreateInventoryCheckPage = () => {
     useGetLotQuery(lotQueryParams);
   const { data: warehouseData, isLoading: warehouseLoading } =
     useGetWarehouseQuery(warehouseQueryParams);
+  const { data: queryProduct, isLoading: productQueryLoading } =
+    useGetProductQuery(productFilterParams);
 
   // Utils
   const handleTableChange = ({
@@ -162,6 +185,58 @@ const CreateInventoryCheckPage = () => {
     setModalOpen(false);
   };
 
+  const onSearchProductChange = useCallback((value: string) => {
+    setProductFilterParams((prev) => ({ ...prev, Search: value }));
+  }, []);
+
+  const onSelectedProduct = (record: any | null) => {
+    setCreateProductStockData((prev) => {
+      if (!selectedWarehouse) {
+        return prev;
+      }
+      return {
+        ...prev,
+        productId: record?.productId,
+      } as ProductStockDetailsReportRequest;
+    });
+  };
+
+  const handleCancelModalCreateProductStocks = () => {
+    setModalCreateProductStock(false);
+  };
+
+  const handleCreateProductStocksDetails = () => {
+    if (
+      !createProductStockData?.warehouseId ||
+      !createProductStockData?.productId
+    ) {
+      notification.error({
+        message:
+          "Không thể tạo danh sách do thiếu thông tin kho hoặc sản phẩm!",
+      });
+      return;
+    }
+
+    const submitData: ProductStockDetailsReportRequest = {
+      ...createProductStockData,
+      to: dayjs().endOf("date").toISOString(),
+    };
+
+    setPreviewModalOpen(true);
+    setCreateProductStockData(submitData);
+  };
+
+  const onPreviewModalCancel = () => {
+    if (selectedWarehouse) {
+      setCreateProductStockData(
+        (prev) =>
+          ({
+            warehouseId: selectedWarehouse,
+          } as ProductStockDetailsReportRequest)
+      );
+    }
+  };
+
   const filteredWarehouse = useMemo(() => {
     return (
       warehouseData?.items.filter(
@@ -171,6 +246,18 @@ const CreateInventoryCheckPage = () => {
       ) || []
     );
   }, [warehouseData]);
+
+  useEffect(() => {
+    setCreateProductStockData((prev) => {
+      if (!selectedWarehouse) {
+        return prev;
+      }
+      return {
+        ...prev,
+        warehouseId: selectedWarehouse,
+      } as ProductStockDetailsReportRequest;
+    });
+  }, [selectedWarehouse]);
 
   return (
     <>
@@ -201,13 +288,17 @@ const CreateInventoryCheckPage = () => {
             query={lotQueryParams}
             setQuery={setLotQueryParams}
           />
-
-          <CtaButton
-            disabled={selectedLots.length <= 0}
-            onClick={() => setModalOpen(true)}
-          >
-            Tạo báo cáo kiểm kê
-          </CtaButton>
+          <Flex justify="end" gap={16} style={{ width: "100%" }}>
+            <CtaButton
+              disabled={selectedLots.length <= 0}
+              onClick={() => setModalOpen(true)}
+            >
+              Tạo báo cáo kiểm kê
+            </CtaButton>
+            <CtaButton onClick={() => setModalCreateProductStock(true)}>
+              Tạo danh sách kiểm kê theo sản phẩm
+            </CtaButton>
+          </Flex>
           <Table<Lot>
             rowSelection={{ type: "checkbox", ...rowSelection }}
             columns={columns}
@@ -240,6 +331,47 @@ const CreateInventoryCheckPage = () => {
           selectedWarehouse={selectedWarehouse}
         />
       )}
+      {selectedWarehouse && modalCreateProductStock && (
+        <Modal
+          title="Tạo Kiểm Kê Sản Phẩm"
+          open={modalCreateProductStock}
+          onCancel={handleCancelModalCreateProductStocks}
+          footer={[
+            <Button key="cancel" onClick={handleCancelModalCreateProductStocks}>
+              Hủy
+            </Button>,
+            <Button
+              key="submit"
+              type="primary"
+              onClick={() => {
+                handleCreateProductStocksDetails();
+                handleCancelModalCreateProductStocks();
+              }}
+              disabled={!createProductStockData?.productId}
+            >
+              Tạo
+            </Button>,
+          ]}
+        >
+          <ProductSelector
+            value={createProductStockData?.productId}
+            onSearchValueChange={onSearchProductChange}
+            onSelectedProductChange={onSelectedProduct}
+            products={queryProduct?.items}
+            loading={productQueryLoading}
+            rootClassName="root-select-width-full"
+            placeholder="Chọn sản phẩm"
+          />
+        </Modal>
+      )}
+      {previewModalOpen && createProductStockData && (
+        <PreviewModal
+          isPreviewModalOpen={previewModalOpen}
+          createProductStockData={createProductStockData}
+          setIsPreviewModalOpen={setPreviewModalOpen}
+          onClose={onPreviewModalCancel}
+        />
+      )}
     </>
   );
 };
@@ -263,6 +395,7 @@ const StyledDivider = styled(Divider)`
 
 const CtaButton = styled(Button)`
   margin-bottom: var(--line-width-regular);
+  width: 50%;
   &:not(:disabled) {
     color: white !important;
   }

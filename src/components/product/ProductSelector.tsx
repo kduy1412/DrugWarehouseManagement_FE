@@ -11,6 +11,7 @@ interface ProductSelectorProps {
   products: Product[] | undefined;
   loading?: boolean;
   placeholder?: string;
+  rootClassName?: string;
 }
 
 const ProductSelector = ({
@@ -20,6 +21,7 @@ const ProductSelector = ({
   products,
   loading = false,
   placeholder = "Chọn sản phẩm",
+  rootClassName = "",
 }: ProductSelectorProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 400);
@@ -58,6 +60,7 @@ const ProductSelector = ({
       onClear={() => onSelectedProductChange(null)}
       popupClassName="dropdownClassNameSelector"
       onBlur={() => !isHovered && setDropdownOpen(false)}
+      rootClassName={rootClassName ?? ""}
       open={dropdownOpen}
       dropdownRender={() => {
         if (loading) {
@@ -116,6 +119,13 @@ const StyledSelect = styled(Select)`
   }
   .ant-select-dropdown {
     padding: 0 !important;
+  }
+
+  .ant-select-selection-item {
+    max-width: 90% !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 `;
 

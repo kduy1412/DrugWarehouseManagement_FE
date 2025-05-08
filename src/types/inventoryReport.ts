@@ -10,3 +10,9 @@ export interface ProductStockReportRequest extends Record<any, any> {
   from: Date | string;
   to: Date | string;
 }
+
+export interface ProductStockDetailsReportRequest extends Record<any, any> {
+  warehouseId: number;
+  productId: number;
+  to: Date | string;
+}
